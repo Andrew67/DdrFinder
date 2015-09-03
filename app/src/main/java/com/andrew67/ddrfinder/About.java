@@ -1,7 +1,5 @@
 package com.andrew67.ddrfinder;
 
-//import com.google.analytics.tracking.android.EasyTracker;
-
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -52,16 +50,4 @@ public class About extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
-/*	@Override
-	protected void onStart() {
-		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-	}
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
-	}*/
 }

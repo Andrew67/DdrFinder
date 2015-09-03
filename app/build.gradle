@@ -22,7 +22,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:18.0.0'
-    compile 'com.google.android.gms:play-services:+'
-    /*compile files('libs/libGoogleAnalyticsV2.jar')*/
+    compile 'com.android.support:support-v4:23.0.0'
+    compile 'com.google.android.gms:play-services:7.8.0'
 }

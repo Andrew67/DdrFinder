@@ -61,7 +61,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 
-		private static final String LOADER_API_URL = "http://www.ddrfinder.tk/locate.php";
+		private static final String LOADER_API_URL = "http://ddrfinder.andrew67.com/locate.php";
 		private final GoogleMap map;
 		private final Map<Marker,ArcadeLocation> markers;
 		private final ProgressBarController pbc;

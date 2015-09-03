@@ -25,7 +25,6 @@ package com.andrew67.ddrfinder;
 
 import com.andrew67.ddrfinder.adapters.ActionListAdapter;
 import com.andrew67.ddrfinder.data.ArcadeLocation;
-//import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.annotation.TargetApi;
@@ -122,16 +121,4 @@ public class LocationActions extends ListActivity {
 			super.onListItemClick(l, v, position, id);
 		}
 	}
-	
-/*	@Override
-	protected void onStart() {
-		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-	}
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
-	}*/
 }
