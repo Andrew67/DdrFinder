@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_reload"
+        android:showAsAction="ifRoom"
+        style="@style/AppTheme.Reload"
+        android:title="@string/action_reload"/>
+    
+    <item
+        android:id="@+id/action_settings"
+        android:showAsAction="never"
+        style="@style/AppTheme.Settings"
+        android:title="@string/action_settings"
+        android:visible="false"/>
+    
+    <item
+        android:id="@+id/action_about"
+        android:showAsAction="never"
+        style="@style/AppTheme.About"
+        android:title="@string/action_about"/>
+
+</menu>

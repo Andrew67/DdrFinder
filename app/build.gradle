@@ -1,0 +1,28 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 'Google Inc.:Google APIs:22'
+    buildToolsVersion "22.0.0"
+    defaultConfig {
+        applicationId "com.andrew67.ddrfinder"
+        minSdkVersion 9
+        targetSdkVersion 17
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+        debug {
+            debuggable true
+            versionNameSuffix '-debug'
+        }
+    }
+    /*useLibrary 'org.apache.http.legacy'*/
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:18.0.0'
+    compile 'com.google.android.gms:play-services:+'
+    /*compile files('libs/libGoogleAnalyticsV2.jar')*/
+}
