@@ -17,9 +17,9 @@ Developing your own version
 ---------------------------
 * Request a Google Maps V2 API Key from the [Google API Developer Console](https://code.google.com/apis/console/).
 * Modify AndroidManifest.xml and add the new key.
-* Modify res/values/analytics.xml with your own Google Analytics tracking ID (or remove it if you have none).
-* Deploy your own version of [ddr-finder](https://github.com/Andrew67/ddr-finder).
-* Modify LOADER_API_URL in com.andrew67.ddrfinder.adapters.MapLoader to point to your API endpoint.
+* Deploy your own version of [ddr-finder](https://github.com/Andrew67/ddr-finder) or compatible.
+* Modify api_endpoint defaultValue property in res/xml/preferences.xml to point to your API endpoint.
+* Modify settings_api_version_default in res/values/strings.xml to set your endpoint API version as default.
 * Modify about_url in res/values/strings.xml to point to your about page.
 
 Acknowledgments
