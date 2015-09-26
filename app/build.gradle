@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 'Google Inc.:Google APIs:22'
-    buildToolsVersion "22.0.0"
+    compileSdkVersion 'Google Inc.:Google APIs:23'
+    buildToolsVersion "23.0.0"
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
         versionCode 9
         versionName "1.1.0.1"
         minSdkVersion 9
-        targetSdkVersion 17
+        targetSdkVersion 23
     }
     buildTypes {
         release {
@@ -20,10 +20,11 @@ android {
             versionNameSuffix '-debug'
         }
     }
-    /*useLibrary 'org.apache.http.legacy'*/
+    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {
     compile 'com.android.support:support-v4:23.0.0'
-    compile 'com.google.android.gms:play-services:7.8.0'
+    compile 'com.google.android.gms:play-services-maps:7.8.0'
+    provided 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
 }
