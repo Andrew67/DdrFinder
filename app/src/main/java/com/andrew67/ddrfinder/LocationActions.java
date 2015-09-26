@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Andrés Cordero 
+ * Copyright (c) 2013-2015 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +27,6 @@ import com.andrew67.ddrfinder.adapters.ActionListAdapter;
 import com.andrew67.ddrfinder.data.ArcadeLocation;
 import com.google.android.gms.maps.model.LatLng;
 
-import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.ClipData;
@@ -35,8 +34,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -47,20 +46,21 @@ public class LocationActions extends ListActivity {
 	private ActionListAdapter adapter;
 	private static final String MORE_INFO_PREFIX =
 		"http://m.zenius-i-vanisher.com/arcadelocations_viewarcade.php?locationid=";
-	
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			final ActionBar actionBar = getActionBar();
-			if (actionBar != null) {
-				actionBar.setDisplayHomeAsUpEnabled(true);
-			}
+
+		final ActionBar actionBar = getActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
 		
 		location = (ArcadeLocation) getIntent().getExtras().get("location");
+		if (location == null) {
+			location = ArcadeLocation.EMPTY_LOCATION;
+			Log.d("LocationActions", "location was null; replaced with dummy empty location");
+		}
 		
 		setTitle(location.getName());
 		adapter = new ActionListAdapter(this);
@@ -78,7 +78,6 @@ public class LocationActions extends ListActivity {
 		}
 	}
 	
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		final LatLng coordinates = location.getLocation();
@@ -95,7 +94,6 @@ public class LocationActions extends ListActivity {
 			startActivity(new Intent(Intent.ACTION_VIEW,
 					Uri.parse(MORE_INFO_PREFIX + location.getId())));
 			break;
-		// API 11 code; this list item should not exist on older devices
 		case ActionListAdapter.ACTION_COPYGPS:
 			final ClipboardManager clipboard =
 				(ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);

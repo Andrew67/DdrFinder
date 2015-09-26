@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Andrés Cordero 
+ * Copyright (c) 2013-2015 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,6 +38,9 @@ public class ArcadeLocation implements Parcelable {
 	private final LatLng location;
 	private final boolean hasDDR;
 	private final boolean closed;
+
+	public static final ArcadeLocation EMPTY_LOCATION =
+			new ArcadeLocation(0, "", "", new LatLng(0,0), false, false);
 	
 	public ArcadeLocation(int id, String name, String city, LatLng location,
 			boolean hasDDR, boolean closed) {
@@ -75,7 +78,7 @@ public class ArcadeLocation implements Parcelable {
 	
 	@Override
 	public boolean equals(Object o) {
-		return this.id == ((ArcadeLocation) o).id;
+		return o instanceof ArcadeLocation && this.id == ((ArcadeLocation) o).id;
 	}
 
 	@Override
