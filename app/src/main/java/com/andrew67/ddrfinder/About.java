@@ -41,6 +41,7 @@ public class About extends Activity {
 		final WebView webview = new WebView(this);
 		setContentView(webview);
 		
+		setTitle(R.string.action_about);
 		final ActionBar actionBar = getActionBar();
 		if (actionBar != null) {
 			actionBar.setDisplayHomeAsUpEnabled(true);
