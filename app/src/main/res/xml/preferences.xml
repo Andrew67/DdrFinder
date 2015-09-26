@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="@string/settings_src_default"
+        android:key="api_src"
+        android:title="@string/settings_src"
+        android:entries="@array/settings_src_entries"
+        android:entryValues="@array/settings_src_entryValues"
+        android:selectable="false"/>
+    <EditTextPreference
+        android:defaultValue="all"
+        android:key="api_src_custom"
+        android:title="@string/settings_api_src"
+        android:selectable="false"/>
+    <EditTextPreference
+        android:defaultValue="http://ddrfinder.andrew67.com/locate.php"
+        android:key="api_endpoint"
+        android:title="@string/settings_api_endpoint"
+        android:selectable="false"/>
+    <ListPreference
+        android:defaultValue="@string/settings_api_version_default"
+        android:key="api_version"
+        android:title="@string/settings_api_version"
+        android:entries="@array/settings_api_version_entries"
+        android:entryValues="@array/settings_api_version_entryValues"
+        android:selectable="false"/>
+</PreferenceScreen>

@@ -15,4 +15,32 @@
         <item >Walk (Sygic)</item>
     </string-array>
     <string name="copy_complete">Copied</string>
+
+    <!-- Preferences -->
+    <string name="settings_src">Data Source</string>
+    <string-array name="settings_src_entries">
+        <item>Zenius -I- vanisher.com</item>
+        <item>DDR-Navi</item>
+        <item>Custom (Advanced)</item>
+        <item>All Sources</item>
+    </string-array>
+    <string-array name="settings_src_entryValues">
+        <item>ziv</item>
+        <item>navi</item>
+        <item>custom</item>
+        <item>all</item>
+    </string-array>
+    <string name="settings_src_default">ziv</string>
+    <string name="settings_api_endpoint">API Endpoint (Advanced)</string>
+    <string name="settings_api_version">Client API Version (Advanced)</string>
+    <string-array name="settings_api_version_entries">
+        <item>1.1 (1.0 compatible)</item>
+        <item>2.0</item>
+    </string-array>
+    <string-array name="settings_api_version_entryValues">
+        <item>11</item>
+        <item>20</item>
+    </string-array>
+    <string name="settings_api_version_default">11</string>
+    <string name="settings_api_src">Custom Data Source (Advanced)</string>
 </resources>

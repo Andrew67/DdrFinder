@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  * 
- * Copyright (c) 2013 Andrés Cordero 
+ * Copyright (c) 2013-2015 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,6 +46,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,15 +63,16 @@ implements ProgressBarController, MessageDisplay {
 	private SupportMapFragment mMapFragment = null;
 	private MenuItem reloadButton;
 
-	private final Map<Marker,ArcadeLocation> currentMarkers =
-			new HashMap<Marker,ArcadeLocation>();
+	private final Map<Marker,ArcadeLocation> currentMarkers = new HashMap<>();
 	// Set as ArrayList instead of List due to Bundle packing
-	private final ArrayList<LatLngBounds> loadedAreas =
-			new ArrayList<LatLngBounds>();
+	private final ArrayList<LatLngBounds> loadedAreas =	new ArrayList<>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.map_viewer);
 		
@@ -99,7 +101,7 @@ implements ProgressBarController, MessageDisplay {
 				savedInstanceState.containsKey("loadedLocations")) {
 			final ArrayList<LatLngBounds> savedLoadedAreas =
 					savedInstanceState.getParcelableArrayList("loadedAreas");
-			loadedAreas.addAll(savedLoadedAreas);
+			if (savedLoadedAreas != null) loadedAreas.addAll(savedLoadedAreas);
 			final ArrayList<ArcadeLocation> savedLoadedLocations =
 					savedInstanceState.getParcelableArrayList("loadedLocations");
 			MapLoader.fillMap(mMap, currentMarkers, savedLoadedLocations);
@@ -137,8 +139,8 @@ implements ProgressBarController, MessageDisplay {
 	
 	/**
 	 * Test whether the given boundaries have already been loaded
-	 * @param box
-	 * @return
+	 * @param box Bounding box
+	 * @return Whether data for the boundaries has been loaded
 	 */
 	private boolean alreadyLoaded(LatLngBounds box) {
 		// Test all four corners (best we can do)
@@ -172,8 +174,7 @@ implements ProgressBarController, MessageDisplay {
 		
 		// Save the list of currently loaded map areas and locations
 		outState.putParcelableArrayList("loadedAreas", loadedAreas);
-		final ArrayList<ArcadeLocation> loadedLocations = 
-				new ArrayList<ArcadeLocation>(currentMarkers.size());
+		final ArrayList<ArcadeLocation> loadedLocations = new ArrayList<>(currentMarkers.size());
 		loadedLocations.addAll(currentMarkers.values());
 		outState.putParcelableArrayList("loadedLocations", loadedLocations);
 	}
@@ -217,7 +218,7 @@ implements ProgressBarController, MessageDisplay {
 			startActivity(new Intent(this, About.class));
 			return true;
 		case R.id.action_settings:
-			// Open Settings screen
+			startActivity(new Intent(this, SettingsActivity.class));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
