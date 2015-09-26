@@ -63,17 +63,6 @@ public class LocationActions extends ListActivity {
 	}
 	
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
-	
-	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		final LatLng coordinates = location.getLocation();
 		switch ((int) adapter.getItemId(position)) {
