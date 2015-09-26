@@ -82,17 +82,21 @@ implements ProgressBarController, MessageDisplay {
 						
 		mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mMap = mMapFragment.getMap();
-		
-		mMap.setMyLocationEnabled(true);
-		final LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-		final Location lastKnown = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		// Animate to user's current location if first load
-		if (lastKnown != null && savedInstanceState == null) {
-			mMap.animateCamera(
-					CameraUpdateFactory.newLatLngZoom(
-							new LatLng(lastKnown.getLatitude(),
-									lastKnown.getLongitude()),
-							BASE_ZOOM));
+
+		try {
+			mMap.setMyLocationEnabled(true);
+			final LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+			final Location lastKnown = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			// Animate to user's current location if first load
+			if (lastKnown != null && savedInstanceState == null) {
+				mMap.animateCamera(
+						CameraUpdateFactory.newLatLngZoom(
+								new LatLng(lastKnown.getLatitude(),
+										lastKnown.getLongitude()),
+								BASE_ZOOM));
+			}
+		} catch (SecurityException e) {
+			showMessage(R.string.error_perm_loc);
 		}
 		
 		// Restore previously loaded areas and locations if available
