@@ -43,6 +43,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -132,8 +133,9 @@ implements ProgressBarController, MessageDisplay {
 	 */
 	private void updateMap(boolean force) {
 		final LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
+		final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		if (force || !alreadyLoaded(box)) {
-			new MapLoader(mMap, currentMarkers, this, this, loadedAreas).execute(box);
+			new MapLoader(mMap, currentMarkers, this, this, loadedAreas, sharedPref).execute(box);
 		}
 	}
 	

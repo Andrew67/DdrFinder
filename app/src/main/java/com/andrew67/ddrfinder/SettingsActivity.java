@@ -26,15 +26,32 @@
 
 package com.andrew67.ddrfinder;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
+
+import java.util.Arrays;
 
 // Based on https://developer.android.com/guide/topics/ui/settings.html#Fragment
 public class SettingsActivity extends Activity {
+
+    public static final String KEY_PREF_API_SRC = "api_src";
+    public static final String KEY_PREF_API_SRC_CUSTOM = "api_src_custom";
+    public static final String KEY_PREF_API_URL = "api_endpoint";
+    public static final String KEY_PREF_API_VERSION = "api_version";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setTitle(R.string.action_settings);
+        final ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
@@ -42,13 +59,83 @@ public class SettingsActivity extends Activity {
                 .commit();
     }
 
-    public static class SettingsFragment extends PreferenceFragment {
+    public static class SettingsFragment extends PreferenceFragment
+            implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.preferences);
+
+            // Set preference summaries to current values
+            final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
+
+            Preference pref = findPreference(KEY_PREF_API_URL);
+            pref.setSummary(sharedPref.getString(KEY_PREF_API_URL, ""));
+
+            pref = findPreference(KEY_PREF_API_SRC_CUSTOM);
+            pref.setSummary(sharedPref.getString(KEY_PREF_API_SRC_CUSTOM, ""));
+
+            pref = findPreference(KEY_PREF_API_SRC);
+            pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
+                    sharedPref.getString(KEY_PREF_API_SRC, "")));
+
+            pref = findPreference(KEY_PREF_API_VERSION);
+            pref.setSummary(getPrefSummary(R.array.settings_api_version_entryValues, R.array.settings_api_version_entries,
+                    sharedPref.getString(KEY_PREF_API_VERSION, "")));
         }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceScreen().getSharedPreferences()
+                    .registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getPreferenceScreen().getSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(this);
+        }
+
+        public void onSharedPreferenceChanged(SharedPreferences sharedPref,
+                                              String key) {
+            final Preference pref = findPreference(key);
+            if (pref != null) {
+                switch (key) {
+                    case KEY_PREF_API_SRC_CUSTOM:
+                    case KEY_PREF_API_URL:
+                        // Set summary to be the selected value
+                        pref.setSummary(sharedPref.getString(key, ""));
+                        break;
+                    case KEY_PREF_API_SRC:
+                        pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
+                                sharedPref.getString(KEY_PREF_API_SRC, "")));
+                        break;
+                    case KEY_PREF_API_VERSION:
+                        pref.setSummary(getPrefSummary(R.array.settings_api_version_entryValues, R.array.settings_api_version_entries,
+                                sharedPref.getString(KEY_PREF_API_VERSION, "")));
+                        break;
+                }
+            }
+        }
+
+        /**
+         * Find the user-friendly description of a ListPreference value key
+         * @param keys ID of keys array
+         * @param values ID of user-friendly values array
+         * @param key Current key
+         * @return User-friendly value description, or the key itself if not found
+         */
+        private String getPrefSummary(int keys, int values, String key) {
+            String[] keys_arr = getResources().getStringArray(keys);
+            String[] values_arr = getResources().getStringArray(values);
+            int idx = Arrays.asList(keys_arr).indexOf(key);
+            if (idx == -1) return key;
+            else return values_arr[idx];
+        }
+
     }
 }

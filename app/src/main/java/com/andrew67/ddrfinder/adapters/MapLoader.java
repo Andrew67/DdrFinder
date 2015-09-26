@@ -44,10 +44,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.andrew67.ddrfinder.R;
+import com.andrew67.ddrfinder.SettingsActivity;
 import com.andrew67.ddrfinder.data.ApiResult;
 import com.andrew67.ddrfinder.data.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
@@ -61,12 +63,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 
-		private static final String LOADER_API_URL = "http://ddrfinder.andrew67.com/locate.php";
 		private final GoogleMap map;
 		private final Map<Marker,ArcadeLocation> markers;
 		private final ProgressBarController pbc;
 		private final MessageDisplay display;
 		private final List<LatLngBounds> areas;
+		private final SharedPreferences sharedPref;
 		
 		/** Precomiled pattern for searching for closed tag in names */
 		private static final Pattern closedPattern =
@@ -74,13 +76,14 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 		
 		public MapLoader(GoogleMap map, Map<Marker,ArcadeLocation> markers,
 				ProgressBarController pbc, MessageDisplay display,
-				List<LatLngBounds> areas) {
+				List<LatLngBounds> areas, SharedPreferences sharedPref) {
 			super();
 			this.map = map;
 			this.markers = markers;
 			this.pbc = pbc;
 			this.display = display;
 			this.areas = areas;
+			this.sharedPref = sharedPref;
 			
 			// Show indeterminate progress bar
 			// Assumes this class is constructed followed by a call to execute()
@@ -93,10 +96,12 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 			// Fetch machine data in JSON format
 			JSONArray jArray = new JSONArray();
 			try {
-				if (boxes.length == 0) throw new Exception();
+				if (boxes.length == 0) throw new IllegalArgumentException("No boxes passed to doInBackground");
 				final LatLngBounds box = boxes[0];
+
+				final String LOADER_API_URL = sharedPref.getString(SettingsActivity.KEY_PREF_API_URL, "");
 				
-				final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+				final ArrayList<NameValuePair> params = new ArrayList<>();
 				params.add(new BasicNameValuePair("source", "android"));
 				params.add(new BasicNameValuePair("latupper", "" + box.northeast.latitude));
 				params.add(new BasicNameValuePair("longupper", "" + box.northeast.longitude));
@@ -138,7 +143,7 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 			}
 			
 			// Return list
-			ArrayList<ArcadeLocation> out = new ArrayList<ArcadeLocation>();
+			ArrayList<ArcadeLocation> out = new ArrayList<>();
 			try{
 				for (int i = 0; i < jArray.length(); ++i)
 				{
