@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  * 
- * Copyright (c) 2013 Andrés Cordero 
+ * Copyright (c) 2013-2015 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -68,9 +68,6 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 		private final MessageDisplay display;
 		private final List<LatLngBounds> areas;
 		
-		/** Maximum distance for box boundaries, in degrees */
-		private int MAX_DISTANCE = 1;
-		
 		/** Precomiled pattern for searching for closed tag in names */
 		private static final Pattern closedPattern =
 				Pattern.compile(".*(?i:closed).*");
@@ -99,13 +96,6 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 				if (boxes.length == 0) throw new Exception();
 				final LatLngBounds box = boxes[0];
 				
-				// If box boundaries exceed valid API boundaries,
-				// avoid making the HTTP request altogether.
-				if (Math.abs(box.northeast.latitude - box.southwest.latitude) > MAX_DISTANCE
-					|| Math.abs(box.northeast.latitude - box.southwest.latitude) > MAX_DISTANCE) {
-					return new ApiResult(ApiResult.ERROR_ZOOM);
-				}
-				
 				final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 				params.add(new BasicNameValuePair("source", "android"));
 				params.add(new BasicNameValuePair("latupper", "" + box.northeast.latitude));
@@ -114,11 +104,13 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 				params.add(new BasicNameValuePair("longlower", "" + box.southwest.longitude));
 				
 				final HttpClient client = new DefaultHttpClient();
-				final HttpGet get = new HttpGet(LOADER_API_URL + "?" + URLEncodedUtils.format(params, "utf-8"));
+				final String requestURL = LOADER_API_URL + "?" + URLEncodedUtils.format(params, "utf-8");
+				Log.d("api", "Request URL: " + requestURL);
+				final HttpGet get = new HttpGet(requestURL);
 				
 				final HttpResponse response = client.execute(get);
 				final int statusCode = response.getStatusLine().getStatusCode();
-				Log.d("api", "" + statusCode);
+				Log.d("api", "Status code: " + statusCode);
 				
 				// Data loaded OK
 				if (statusCode == 200) {
@@ -127,7 +119,7 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 					final StringBuilder sb = new StringBuilder();
 					String line;
 					while ((line = reader.readLine()) != null) sb.append(line);
-					Log.d("api", sb.toString());
+					Log.d("api", "Raw API result: " + sb.toString());
 					jArray = new JSONArray(sb.toString());
 				}
 				// Code used for invalid parameters; in this case exceeding
