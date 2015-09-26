@@ -5,6 +5,8 @@ android {
     buildToolsVersion "22.0.0"
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
+        versionCode 9
+        versionName "1.1.0.1"
         minSdkVersion 9
         targetSdkVersion 17
     }
