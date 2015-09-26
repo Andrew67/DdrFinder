@@ -46,12 +46,7 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setTitle(R.string.action_settings);
-        final ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
 
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()

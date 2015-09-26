@@ -50,11 +50,6 @@ public class LocationActions extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		final ActionBar actionBar = getActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
 		
 		location = (ArcadeLocation) getIntent().getExtras().get("location");
 		if (location == null) {

@@ -40,12 +40,7 @@ public class About extends Activity {
 		super.onCreate(savedInstanceState);
 		final WebView webview = new WebView(this);
 		setContentView(webview);
-		
 		setTitle(R.string.action_about);
-		final ActionBar actionBar = getActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
 		
 		int versionCode = 1;
 		String versionName = "1.0";
