@@ -56,12 +56,11 @@ import android.widget.Toast;
 
 
 public class MapViewer extends FragmentActivity
-implements ProgressBarController, MessageDisplay {
+	implements ProgressBarController, MessageDisplay {
 	
 	public static final int BASE_ZOOM = 12;
 	
 	private GoogleMap mMap;
-	private SupportMapFragment mMapFragment = null;
 	private MenuItem reloadButton;
 
 	private final Map<Marker,ArcadeLocation> currentMarkers = new HashMap<>();
@@ -80,7 +79,8 @@ implements ProgressBarController, MessageDisplay {
 		setProgressBarIndeterminate(true);
 		setProgressBarIndeterminateVisibility(false);
 						
-		mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+		final SupportMapFragment mMapFragment =
+				(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mMap = mMapFragment.getMap();
 
 		try {
@@ -173,6 +173,15 @@ implements ProgressBarController, MessageDisplay {
 		
 		return loaded;
 	}
+
+	/**
+	 * Clears map of all markers, and internal data structures of all loaded areas.
+	 */
+	private void clearMap() {
+		mMap.clear();
+		currentMarkers.clear();
+		loadedAreas.clear();
+	}
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -224,10 +233,24 @@ implements ProgressBarController, MessageDisplay {
 			startActivity(new Intent(this, About.class));
 			return true;
 		case R.id.action_settings:
+			// Store current preferences for future comparison in onResume.
+			prevPrefs = PreferenceManager.getDefaultSharedPreferences(this).getAll();
 			startActivity(new Intent(this, SettingsActivity.class));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	private Map<String, ?> prevPrefs = null;
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// Clear all markers and reload current view when a preference changed.
+		final Map<String, ?> currPrefs = PreferenceManager.getDefaultSharedPreferences(this).getAll();
+		if (prevPrefs != null && !currPrefs.equals(prevPrefs)) {
+			clearMap();
+			updateMap(false);
 		}
 	}
 }
