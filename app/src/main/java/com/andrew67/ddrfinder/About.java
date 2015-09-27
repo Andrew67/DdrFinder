@@ -42,16 +42,8 @@ public class About extends Activity {
 		setContentView(webview);
 		setTitle(R.string.action_about);
 		
-		int versionCode = 1;
-		String versionName = "1.0";
-		try {
-			final PackageInfo info = getPackageManager().getPackageInfo(
-					getPackageName(), 0);
-			versionCode = info.versionCode;
-			versionName = info.versionName;
-		} catch (NameNotFoundException e) {
-			e.printStackTrace();
-		}
+		final int versionCode = BuildConfig.VERSION_CODE;
+		final String versionName = BuildConfig.VERSION_NAME;
 		
 		webview.loadUrl(String.format(getString(R.string.about_url),
 				versionCode, versionName));
