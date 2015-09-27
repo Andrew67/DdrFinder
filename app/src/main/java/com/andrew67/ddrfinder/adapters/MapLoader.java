@@ -26,21 +26,11 @@
 
 package com.andrew67.ddrfinder.adapters;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -48,6 +38,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.SettingsActivity;
 import com.andrew67.ddrfinder.data.ApiResult;
@@ -60,6 +51,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 
@@ -99,33 +94,31 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 				if (boxes.length == 0) throw new IllegalArgumentException("No boxes passed to doInBackground");
 				final LatLngBounds box = boxes[0];
 
+				final OkHttpClient client = new OkHttpClient();
 				final String LOADER_API_URL = sharedPref.getString(SettingsActivity.KEY_PREF_API_URL, "");
-				
-				final ArrayList<NameValuePair> params = new ArrayList<>();
-				params.add(new BasicNameValuePair("source", "android"));
-				params.add(new BasicNameValuePair("latupper", "" + box.northeast.latitude));
-				params.add(new BasicNameValuePair("longupper", "" + box.northeast.longitude));
-				params.add(new BasicNameValuePair("latlower", "" + box.southwest.latitude));
-				params.add(new BasicNameValuePair("longlower", "" + box.southwest.longitude));
-				
-				final HttpClient client = new DefaultHttpClient();
-				final String requestURL = LOADER_API_URL + "?" + URLEncodedUtils.format(params, "utf-8");
+				final HttpUrl requestURL = HttpUrl.parse(LOADER_API_URL).newBuilder()
+						.addQueryParameter("source", "android")
+						.addQueryParameter("latupper", "" + box.northeast.latitude)
+						.addQueryParameter("longupper", "" + box.northeast.longitude)
+						.addQueryParameter("latlower", "" + box.southwest.latitude)
+						.addQueryParameter("longlower", "" + box.southwest.longitude)
+						.build();
+
 				Log.d("api", "Request URL: " + requestURL);
-				final HttpGet get = new HttpGet(requestURL);
+				final Request get = new Request.Builder()
+						.header("User-Agent", BuildConfig.APPLICATION_ID + " " + BuildConfig.VERSION_NAME)
+						.url(requestURL)
+						.build();
 				
-				final HttpResponse response = client.execute(get);
-				final int statusCode = response.getStatusLine().getStatusCode();
+				final Response response = client.newCall(get).execute();
+				final int statusCode = response.code();
 				Log.d("api", "Status code: " + statusCode);
 				
 				// Data loaded OK
 				if (statusCode == 200) {
-					final InputStream is = response.getEntity().getContent();
-					final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-					final StringBuilder sb = new StringBuilder();
-					String line;
-					while ((line = reader.readLine()) != null) sb.append(line);
-					Log.d("api", "Raw API result: " + sb.toString());
-					jArray = new JSONArray(sb.toString());
+					final String jResponse = response.body().string();
+					Log.d("api", "Raw API result: " + jResponse);
+					jArray = new JSONArray(jResponse);
 				}
 				// Code used for invalid parameters; in this case exceeding
 				// the limits of the boundary box

@@ -20,10 +20,9 @@ android {
             versionNameSuffix '-debug'
         }
     }
-    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {
     compile 'com.google.android.gms:play-services-maps:7.8.0'
-    provided 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
 }
