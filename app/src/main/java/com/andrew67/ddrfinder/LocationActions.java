@@ -24,10 +24,9 @@
 package com.andrew67.ddrfinder;
 
 import com.andrew67.ddrfinder.adapters.ActionListAdapter;
-import com.andrew67.ddrfinder.data.ArcadeLocation;
+import com.andrew67.ddrfinder.model.v1.ArcadeLocation;
 import com.google.android.gms.maps.model.LatLng;
 
-import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -36,7 +35,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;

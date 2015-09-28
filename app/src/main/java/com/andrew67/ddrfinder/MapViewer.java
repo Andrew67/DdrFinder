@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.andrew67.ddrfinder.adapters.MapLoader;
-import com.andrew67.ddrfinder.data.ArcadeLocation;
+import com.andrew67.ddrfinder.model.v1.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.google.android.gms.maps.CameraUpdateFactory;

@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder.data;
+package com.andrew67.ddrfinder.model.v1;
 
 import java.util.List;
 
