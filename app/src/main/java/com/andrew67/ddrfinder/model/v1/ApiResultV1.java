@@ -26,6 +26,8 @@ package com.andrew67.ddrfinder.model.v1;
 import java.util.Collections;
 import java.util.List;
 
+import com.andrew67.ddrfinder.interfaces.ApiResult;
+import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -33,7 +35,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
  * An (almost) immutable class that represents the result of an API query.
  * Provides more information than a mere list (such as errors).
  */
-public class ApiResult implements com.andrew67.ddrfinder.interfaces.ApiResult {
+public class ApiResultV1 implements ApiResult {
 	/** Arcade locations returned by the query. */
 	private final List<com.andrew67.ddrfinder.interfaces.ArcadeLocation> locations;
 	/** Geographical boundary covered by the query. */
@@ -47,19 +49,19 @@ public class ApiResult implements com.andrew67.ddrfinder.interfaces.ApiResult {
 	/** The user has zoomed out past the valid API boundary box values. */
 	public static final int ERROR_ZOOM = 2;
 	
-	public ApiResult(List<com.andrew67.ddrfinder.interfaces.ArcadeLocation> locations, LatLngBounds bounds) {
+	public ApiResultV1(List<ArcadeLocation> locations, LatLngBounds bounds) {
 		this.locations = locations;
 		this.bounds = bounds;
 		this.errorCode = ERROR_NONE;
 	}
 	
-	public ApiResult(int errorCode) {
+	public ApiResultV1(int errorCode) {
 		this.locations = null;
 		this.bounds = null;
 		this.errorCode = errorCode;
 	}
 
-	public List<com.andrew67.ddrfinder.interfaces.ArcadeLocation> getLocations() {
+	public List<ArcadeLocation> getLocations() {
 		return locations;
 	}
 

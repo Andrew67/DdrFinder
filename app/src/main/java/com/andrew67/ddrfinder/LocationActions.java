@@ -24,7 +24,7 @@
 package com.andrew67.ddrfinder;
 
 import com.andrew67.ddrfinder.adapters.ActionListAdapter;
-import com.andrew67.ddrfinder.model.v1.ArcadeLocation;
+import com.andrew67.ddrfinder.model.v1.ArcadeLocationV1;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.app.ListActivity;
@@ -40,7 +40,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class LocationActions extends ListActivity {
-	private ArcadeLocation location;
+	private ArcadeLocationV1 location;
 	private ActionListAdapter adapter;
 	private static final String MORE_INFO_PREFIX =
 		"http://m.zenius-i-vanisher.com/arcadelocations_viewarcade.php?locationid=";
@@ -49,9 +49,9 @@ public class LocationActions extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		location = (ArcadeLocation) getIntent().getExtras().get("location");
+		location = (ArcadeLocationV1) getIntent().getExtras().get("location");
 		if (location == null) {
-			location = ArcadeLocation.EMPTY_LOCATION;
+			location = ArcadeLocationV1.EMPTY_LOCATION;
 			Log.d("LocationActions", "location was null; replaced with dummy empty location");
 		}
 		

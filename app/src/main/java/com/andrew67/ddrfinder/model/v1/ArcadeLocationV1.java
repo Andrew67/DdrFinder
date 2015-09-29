@@ -26,12 +26,13 @@ package com.andrew67.ddrfinder.model.v1;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
  * An immutable class that represents an arcade location from the database.
  */
-public class ArcadeLocation implements com.andrew67.ddrfinder.interfaces.ArcadeLocation {
+public class ArcadeLocationV1 implements ArcadeLocation {
 	private final int id;
 	private final String name;
 	private final String city;
@@ -39,11 +40,11 @@ public class ArcadeLocation implements com.andrew67.ddrfinder.interfaces.ArcadeL
 	private final boolean hasDDR;
 	private final boolean closed;
 
-	public static final ArcadeLocation EMPTY_LOCATION =
-			new ArcadeLocation(0, "", "", new LatLng(0,0), false, false);
+	public static final ArcadeLocationV1 EMPTY_LOCATION =
+			new ArcadeLocationV1(0, "", "", new LatLng(0,0), false, false);
 	
-	public ArcadeLocation(int id, String name, String city, LatLng location,
-			boolean hasDDR, boolean closed) {
+	public ArcadeLocationV1(int id, String name, String city, LatLng location,
+							boolean hasDDR, boolean closed) {
 		this.id = id;
 		this.name = name;
 		this.city = city;
@@ -86,7 +87,7 @@ public class ArcadeLocation implements com.andrew67.ddrfinder.interfaces.ArcadeL
 	
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof ArcadeLocation && this.id == ((ArcadeLocation) o).id;
+		return o instanceof ArcadeLocationV1 && this.id == ((ArcadeLocationV1) o).id;
 	}
 
 	@Override
@@ -111,7 +112,7 @@ public class ArcadeLocation implements com.andrew67.ddrfinder.interfaces.ArcadeL
 		out.writeBooleanArray(bools);
 	}
 	
-	private ArcadeLocation(Parcel in) {
+	private ArcadeLocationV1(Parcel in) {
 		id = in.readInt();
 		name = in.readString();
 		city = in.readString();
@@ -128,14 +129,14 @@ public class ArcadeLocation implements com.andrew67.ddrfinder.interfaces.ArcadeL
 		closed = bools[1];
 	}
 	
-	public static final Parcelable.Creator<ArcadeLocation> CREATOR
-		= new Parcelable.Creator<ArcadeLocation>() {
-		public ArcadeLocation createFromParcel(Parcel in) {
-			return new ArcadeLocation(in);
+	public static final Parcelable.Creator<ArcadeLocationV1> CREATOR
+		= new Parcelable.Creator<ArcadeLocationV1>() {
+		public ArcadeLocationV1 createFromParcel(Parcel in) {
+			return new ArcadeLocationV1(in);
 		}
 		
-		public ArcadeLocation[] newArray(int size) {
-			return new ArcadeLocation[size];
+		public ArcadeLocationV1[] newArray(int size) {
+			return new ArcadeLocationV1[size];
 		}
 	};
 

@@ -29,7 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 /**
  * Standard interface for API arcade locations.
  * When new fields are added in API versions, old models should provide new functions to compensate.
- * For example, the model.v1 ArcadeLocation class was extended to return static "ziv" source information.
+ * For example, the model.v1 ArcadeLocationV1 class was extended to return static "ziv" source information.
  * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
  */
 public interface ArcadeLocation extends Parcelable {

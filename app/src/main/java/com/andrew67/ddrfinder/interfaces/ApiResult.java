@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Standard interface for API results.
  * When new fields are added in API versions, old models should provide new functions to compensate.
- * For example, the model.v1 ApiResult class was extended to return static "ziv" source information.
+ * For example, the model.v1 ApiResultV1 class was extended to return static "ziv" source information.
  * Normalizes error codes to latest API level as well.
  * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
  */
