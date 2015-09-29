@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder;
+package com.andrew67.ddrfinder.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -33,6 +33,9 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebView;
+
+import com.andrew67.ddrfinder.BuildConfig;
+import com.andrew67.ddrfinder.R;
 
 public class About extends Activity {
 	@Override

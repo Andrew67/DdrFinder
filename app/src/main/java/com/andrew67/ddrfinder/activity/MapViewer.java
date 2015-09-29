@@ -24,12 +24,13 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder;
+package com.andrew67.ddrfinder.activity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.MapLoader;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;

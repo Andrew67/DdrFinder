@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder;
+package com.andrew67.ddrfinder.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -32,6 +32,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+
+import com.andrew67.ddrfinder.R;
 
 import java.util.Arrays;
 

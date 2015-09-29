@@ -21,8 +21,9 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder;
+package com.andrew67.ddrfinder.activity;
 
+import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.ActionListAdapter;
 import com.andrew67.ddrfinder.model.v1.ArcadeLocationV1;
 import com.google.android.gms.maps.model.LatLng;

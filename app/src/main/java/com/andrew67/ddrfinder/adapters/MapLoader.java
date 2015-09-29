@@ -29,7 +29,6 @@ package com.andrew67.ddrfinder.adapters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,7 +39,7 @@ import android.util.Log;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.SettingsActivity;
+import com.andrew67.ddrfinder.activity.SettingsActivity;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
