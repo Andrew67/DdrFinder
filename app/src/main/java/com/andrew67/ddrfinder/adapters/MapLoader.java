@@ -67,10 +67,6 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 		private final List<LatLngBounds> areas;
 		private final SharedPreferences sharedPref;
 		
-		/** Precomiled pattern for searching for closed tag in names */
-		private static final Pattern closedPattern =
-				Pattern.compile(".*(?i:closed).*");
-		
 		public MapLoader(GoogleMap map, Map<Marker,ArcadeLocation> markers,
 				ProgressBarController pbc, MessageDisplay display,
 				List<LatLngBounds> areas, SharedPreferences sharedPref) {
@@ -146,7 +142,7 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 					final String name = obj.getString("name");
 					
 					boolean closed = false;
-					if (closedPattern.matcher(name).matches()) {
+					if (ArcadeLocation.CLOSED.matcher(name).matches()) {
 						closed = true;
 					}
 					// Fields added after ddr-finder 1.0 API should be

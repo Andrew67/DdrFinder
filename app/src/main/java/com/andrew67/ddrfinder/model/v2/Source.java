@@ -20,29 +20,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.andrew67.ddrfinder.interfaces;
 
-import android.os.Parcelable;
+package com.andrew67.ddrfinder.model.v2;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.regex.Pattern;
+import com.andrew67.ddrfinder.interfaces.DataSource;
 
 /**
- * Standard interface for API arcade locations.
- * When new fields are added in API versions, old models should provide new functions to compensate.
- * For example, the model.v1 ArcadeLocationV1 class was extended to return static "ziv" source information.
+ * Represents the API v2 source.
  * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
+ * Note: the infoURL field is ignored, mInfoURL is used in its place.
  */
-public interface ArcadeLocation extends Parcelable {
-    int getId();
-    String getSrc();
-    String getSid();
-    String getName();
-    String getCity();
-    LatLng getLocation();
-    boolean hasDDR();
-    boolean isClosed();
+public class Source implements DataSource {
+    private String name;
+    private String mInfoURL;
+    private boolean hasDDR;
 
-    Pattern CLOSED = Pattern.compile(".*(?i:closed).*");
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getInfoURL() {
+        return mInfoURL;
+    }
+
+    @Override
+    public boolean hasDDR() {
+        return hasDDR;
+    }
 }

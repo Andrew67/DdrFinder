@@ -20,29 +20,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.andrew67.ddrfinder.interfaces;
 
-import android.os.Parcelable;
+package com.andrew67.ddrfinder.model.v2;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.andrew67.ddrfinder.interfaces.ApiResult;
+import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
+import com.andrew67.ddrfinder.interfaces.DataSource;
+import com.google.android.gms.maps.model.LatLngBounds;
 
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Standard interface for API arcade locations.
- * When new fields are added in API versions, old models should provide new functions to compensate.
- * For example, the model.v1 ArcadeLocationV1 class was extended to return static "ziv" source information.
+ * Represents the API v2 result.
  * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
  */
-public interface ArcadeLocation extends Parcelable {
-    int getId();
-    String getSrc();
-    String getSid();
-    String getName();
-    String getCity();
-    LatLng getLocation();
-    boolean hasDDR();
-    boolean isClosed();
+public class Result implements ApiResult {
+    private String error;
+    private Integer errorCode;
+    private Source[] sources;
+    private Location[] locations;
+    private transient LatLngBounds bounds; // non-standard
 
-    Pattern CLOSED = Pattern.compile(".*(?i:closed).*");
+    @Override
+    public int getErrorCode() {
+        return (errorCode == null) ? ERROR_OK : errorCode;
+    }
+
+    @Override
+    public List<ArcadeLocation> getLocations() {
+        return Arrays.<ArcadeLocation>asList(locations);
+    }
+
+    @Override
+    public List<DataSource> getSources() {
+        return Arrays.<DataSource>asList(sources);
+    }
+
+    @Override
+    public void setBounds(LatLngBounds bounds) {
+        this.bounds = bounds;
+    }
+
+    @Override
+    public LatLngBounds getBounds() {
+        return bounds;
+    }
 }

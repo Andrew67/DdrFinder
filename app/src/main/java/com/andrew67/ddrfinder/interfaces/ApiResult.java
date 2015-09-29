@@ -64,14 +64,14 @@ public interface ApiResult {
     List<DataSource> getSources();
 
     /**
-     * Set the latitude/longitude bounds this result belongs to.
+     * (non-API) Set the latitude/longitude bounds this result belongs to.
      * This field should only be set once.
      * @param bounds Latitude/longitude bounds.
      */
     void setBounds(LatLngBounds bounds);
 
     /**
-     * Get the latitude/longitude bounds this result belongs to.
+     * (non-API) Get the latitude/longitude bounds this result belongs to.
      * @return Latitude/longitude bounds.
      */
     LatLngBounds getBounds();
