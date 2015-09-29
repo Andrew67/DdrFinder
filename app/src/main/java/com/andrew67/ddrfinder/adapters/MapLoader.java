@@ -41,8 +41,8 @@ import android.util.Log;
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.SettingsActivity;
-import com.andrew67.ddrfinder.model.v1.ApiResult;
-import com.andrew67.ddrfinder.model.v1.ArcadeLocation;
+import com.andrew67.ddrfinder.interfaces.ApiResult;
+import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.google.android.gms.maps.GoogleMap;
@@ -123,11 +123,11 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 				// Code used for invalid parameters; in this case exceeding
 				// the limits of the boundary box
 				else if (statusCode == 400) {
-					return new ApiResult(ApiResult.ERROR_ZOOM);
+					return new com.andrew67.ddrfinder.model.v1.ApiResult(com.andrew67.ddrfinder.model.v1.ApiResult.ERROR_ZOOM);
 				}
 				// Unexpected error code
 				else {
-					return new ApiResult(ApiResult.ERROR_API);
+					return new com.andrew67.ddrfinder.model.v1.ApiResult(com.andrew67.ddrfinder.model.v1.ApiResult.ERROR_API);
 				}
 			} 
 			catch(Exception e)
@@ -155,7 +155,7 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 						hasDDR = true;
 					}
 					
-					out.add(new ArcadeLocation(
+					out.add(new com.andrew67.ddrfinder.model.v1.ArcadeLocation(
 							obj.getInt("id"),
 							name,
 							obj.getString("city"),
@@ -169,7 +169,7 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 			{
 				out.clear();
 			}
-			return new ApiResult(out, boxes[0]);
+			return new com.andrew67.ddrfinder.model.v1.ApiResult(out, boxes[0]);
 		}
 		
 		@Override
@@ -178,11 +178,11 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 			pbc.hideProgressBar();
 			
 			switch(result.getErrorCode()) {
-			case ApiResult.ERROR_NONE:
+			case com.andrew67.ddrfinder.model.v1.ApiResult.ERROR_NONE:
 				fillMap(map, markers, result.getLocations());
 				areas.add(result.getBounds());
 				break;
-			case ApiResult.ERROR_ZOOM:
+			case com.andrew67.ddrfinder.model.v1.ApiResult.ERROR_ZOOM:
 				display.showMessage(R.string.error_zoom);
 				break;
 			default:

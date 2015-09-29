@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Andrés Cordero 
+ * Copyright (c) 2013-2015 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,19 +23,21 @@
 
 package com.andrew67.ddrfinder.model.v1;
 
+import java.util.Collections;
 import java.util.List;
 
+import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 /**
- * An immutable class that represents the result of an API query.
+ * An (almost) immutable class that represents the result of an API query.
  * Provides more information than a mere list (such as errors).
  */
-public class ApiResult {
+public class ApiResult implements com.andrew67.ddrfinder.interfaces.ApiResult {
 	/** Arcade locations returned by the query. */
-	private final List<ArcadeLocation> locations;
+	private final List<com.andrew67.ddrfinder.interfaces.ArcadeLocation> locations;
 	/** Geographical boundary covered by the query. */
-	private final LatLngBounds bounds;
+	private LatLngBounds bounds;
 	
 	private final int errorCode;
 	/** Everything is OK; can use the locations list. */
@@ -45,7 +47,7 @@ public class ApiResult {
 	/** The user has zoomed out past the valid API boundary box values. */
 	public static final int ERROR_ZOOM = 2;
 	
-	public ApiResult(List<ArcadeLocation> locations, LatLngBounds bounds) {
+	public ApiResult(List<com.andrew67.ddrfinder.interfaces.ArcadeLocation> locations, LatLngBounds bounds) {
 		this.locations = locations;
 		this.bounds = bounds;
 		this.errorCode = ERROR_NONE;
@@ -57,15 +59,44 @@ public class ApiResult {
 		this.errorCode = errorCode;
 	}
 
-	public List<ArcadeLocation> getLocations() {
+	public List<com.andrew67.ddrfinder.interfaces.ArcadeLocation> getLocations() {
 		return locations;
 	}
 
-	public int getErrorCode() {
+	public Integer getErrorCode() {
 		return errorCode;
 	}
 	
 	public LatLngBounds getBounds() {
 		return bounds;
+	}
+
+	public void setBounds(LatLngBounds bounds) {
+		this.bounds = bounds;
+	}
+
+	public List<DataSource> getSources() {
+		return Collections.<DataSource>singletonList(new ZivSource());
+	}
+
+	/**
+	 * Custom class for returning a hardcoded data source, since V1 used Ziv exclusively.
+	 */
+	private static class ZivSource implements DataSource {
+
+		@Override
+		public String getName() {
+			return "Zenius -I- vanisher.com";
+		}
+
+		@Override
+		public String getInfoURL() {
+			return "http://m.zenius-i-vanisher.com/arcadelocations_viewarcade.php?locationid=${sid}";
+		}
+
+		@Override
+		public boolean hasDDR() {
+			return false;
+		}
 	}
 }

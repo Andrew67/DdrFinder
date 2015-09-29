@@ -31,7 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 /**
  * An immutable class that represents an arcade location from the database.
  */
-public class ArcadeLocation implements Parcelable {
+public class ArcadeLocation implements com.andrew67.ddrfinder.interfaces.ArcadeLocation {
 	private final int id;
 	private final String name;
 	private final String city;
@@ -54,6 +54,14 @@ public class ArcadeLocation implements Parcelable {
 
 	public int getId() {
 		return id;
+	}
+
+	public String getSrc() {
+		return "ziv";
+	}
+
+	public String getSid() {
+		return Integer.toString(id);
 	}
 
 	public String getName() {
