@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.adapters.MapLoader;
+import com.andrew67.ddrfinder.adapters.MapLoaderV1;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
@@ -110,7 +110,7 @@ public class MapViewer extends FragmentActivity
 			if (savedLoadedAreas != null) loadedAreas.addAll(savedLoadedAreas);
 			final ArrayList<ArcadeLocation> savedLoadedLocations =
 					savedInstanceState.getParcelableArrayList("loadedLocations");
-			MapLoader.fillMap(mMap, currentMarkers, savedLoadedLocations);
+			MapLoaderV1.fillMap(mMap, currentMarkers, savedLoadedLocations);
 		}
 		
 		mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
@@ -140,7 +140,7 @@ public class MapViewer extends FragmentActivity
 		final LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
 		final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		if (force || !alreadyLoaded(box)) {
-			new MapLoader(mMap, currentMarkers, this, this, loadedAreas, sharedPref).execute(box);
+			new MapLoaderV1(mMap, currentMarkers, this, this, loadedAreas, sharedPref).execute(box);
 		}
 	}
 	
