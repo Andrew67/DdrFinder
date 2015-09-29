@@ -180,15 +180,15 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>{
 			pbc.hideProgressBar();
 			
 			switch(result.getErrorCode()) {
-			case ApiResultV1.ERROR_NONE:
-				fillMap(map, markers, result.getLocations());
-				areas.add(result.getBounds());
-				break;
-			case ApiResultV1.ERROR_ZOOM:
-				display.showMessage(R.string.error_zoom);
-				break;
-			default:
-				display.showMessage(R.string.error_api);
+				case ApiResult.ERROR_OK:
+					fillMap(map, markers, result.getLocations());
+					areas.add(result.getBounds());
+					break;
+				case ApiResult.ERROR_OVERSIZED_BOX:
+					display.showMessage(R.string.error_zoom);
+					break;
+				default:
+					display.showMessage(R.string.error_api);
 			}
 		}
 		

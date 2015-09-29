@@ -38,9 +38,18 @@ public interface ApiResult {
 
     /**
      * Returns the error code from the API.
-     * @return Error code, or null if request was successful.
+     * @return Error code.
      */
-    Integer getErrorCode();
+    int getErrorCode();
+
+    // Error codes, from V2
+    int ERROR_CLIENT_API_VERSION = 1;
+    int ERROR_REQUIRED_FIELD = 20;
+    int ERROR_DATA_SOURCE = 21;
+    int ERROR_OVERSIZED_BOX = 23;
+    int ERROR_REQUESTS = 42;
+    int ERROR_OK = -1; // non-standard; success case
+    int ERROR_UNEXPECTED = -2; // non-standard
 
     /**
      * Returns the list of ArcadeLocation items from the API.

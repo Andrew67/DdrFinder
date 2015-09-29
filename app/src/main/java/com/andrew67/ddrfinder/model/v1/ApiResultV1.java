@@ -65,7 +65,19 @@ public class ApiResultV1 implements ApiResult {
 		return locations;
 	}
 
-	public Integer getErrorCode() {
+	public int getErrorCode() {
+		switch (errorCode) {
+			case ERROR_API:
+				return ERROR_UNEXPECTED;
+			case ERROR_ZOOM:
+				return ERROR_OVERSIZED_BOX;
+			case ERROR_NONE:
+			default:
+				return ERROR_OK;
+		}
+	}
+
+	public int getV1ErrorCode() {
 		return errorCode;
 	}
 	
