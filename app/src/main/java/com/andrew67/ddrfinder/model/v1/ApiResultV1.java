@@ -23,6 +23,9 @@
 
 package com.andrew67.ddrfinder.model.v1;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -112,5 +115,26 @@ public class ApiResultV1 implements ApiResult {
 		public boolean hasDDR() {
 			return false;
 		}
+
+		@Override
+		public int describeContents() {
+			return 0;
+		}
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags) {
+
+		}
+
+		public static final Parcelable.Creator<ZivSource> CREATOR
+				= new Parcelable.Creator<ZivSource>() {
+			public ZivSource createFromParcel(Parcel in) {
+				return new ZivSource();
+			}
+
+			public ZivSource[] newArray(int size) {
+				return new ZivSource[size];
+			}
+		};
 	}
 }

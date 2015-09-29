@@ -23,6 +23,9 @@
 
 package com.andrew67.ddrfinder.model.v2;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.andrew67.ddrfinder.interfaces.DataSource;
 
 /**
@@ -49,4 +52,35 @@ public class Source implements DataSource {
     public boolean hasDDR() {
         return hasDDR;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(mInfoURL);
+        dest.writeBooleanArray(new boolean[] { hasDDR });
+    }
+
+    private Source(Parcel in) {
+        this.name = in.readString();
+        this.mInfoURL = in.readString();
+        boolean[] hasDDRArray = new boolean[1];
+        in.readBooleanArray(hasDDRArray);
+        this.hasDDR = hasDDRArray[0];
+    }
+
+    public static final Parcelable.Creator<Source> CREATOR
+            = new Parcelable.Creator<Source>() {
+        public Source createFromParcel(Parcel in) {
+            return new Source(in);
+        }
+
+        public Source[] newArray(int size) {
+            return new Source[size];
+        }
+    };
 }

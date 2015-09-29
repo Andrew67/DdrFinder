@@ -22,13 +22,15 @@
  */
 package com.andrew67.ddrfinder.interfaces;
 
+import android.os.Parcelable;
+
 /**
  * Standard interface for API data source.
  * When new fields are added in API versions, old models should provide new functions to compensate.
  * For example, the model.v1 ApiResultV1 class was extended to return static "ziv" source information.
  * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
  */
-public interface DataSource {
+public interface DataSource extends Parcelable {
 
     /**
      * Get the human-readable name of the data source, e.g. "Zenius -I- vanisher.com"
