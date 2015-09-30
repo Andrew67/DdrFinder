@@ -34,9 +34,15 @@ import com.andrew67.ddrfinder.interfaces.DataSource;
  * Note: the infoURL field is ignored, mInfoURL is used in its place.
  */
 public class Source implements DataSource {
+    private String shortName;
     private String name;
     private String mInfoURL;
     private boolean hasDDR;
+
+    @Override
+    public String getShortName() {
+        return shortName;
+    }
 
     @Override
     public String getName() {

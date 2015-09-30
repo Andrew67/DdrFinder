@@ -102,6 +102,11 @@ public class ApiResultV1 implements ApiResult {
 	private static class ZivSource implements DataSource {
 
 		@Override
+		public String getShortName() {
+			return "ziv";
+		}
+
+		@Override
 		public String getName() {
 			return "Zenius -I- vanisher.com";
 		}

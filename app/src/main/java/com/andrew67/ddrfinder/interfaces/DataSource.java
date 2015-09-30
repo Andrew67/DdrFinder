@@ -33,6 +33,12 @@ import android.os.Parcelable;
 public interface DataSource extends Parcelable {
 
     /**
+     * Get the key/shortname of the data source, e.g. "ziv"
+     * @return Shortname of data source.
+     */
+    String getShortName();
+
+    /**
      * Get the human-readable name of the data source, e.g. "Zenius -I- vanisher.com"
      * @return Human-readable name of the data soruce.
      */
