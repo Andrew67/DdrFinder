@@ -31,8 +31,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.andrew67.ddrfinder.R;
+import com.andrew67.ddrfinder.adapters.MapLoader;
 import com.andrew67.ddrfinder.adapters.MapLoaderV1;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
+import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -67,6 +69,11 @@ public class MapViewer extends FragmentActivity
 	private final Map<Marker,ArcadeLocation> currentMarkers = new HashMap<>();
 	// Set as ArrayList instead of List due to Bundle packing
 	private final ArrayList<LatLngBounds> loadedAreas =	new ArrayList<>();
+
+	/**
+	 * Loaded data sources, keyed by source name
+	 */
+	private final Map<String,DataSource> loadedSources = new HashMap<>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -100,17 +107,27 @@ public class MapViewer extends FragmentActivity
 			showMessage(R.string.error_perm_loc);
 		}
 		
-		// Restore previously loaded areas and locations if available
+		// Restore previously loaded areas locations, and sources if available
 		// (and re-create the location markers)
 		if (savedInstanceState != null &&
 				savedInstanceState.containsKey("loadedAreas") &&
-				savedInstanceState.containsKey("loadedLocations")) {
+				savedInstanceState.containsKey("loadedLocations") &&
+				savedInstanceState.containsKey("loadedSources")) {
 			final ArrayList<LatLngBounds> savedLoadedAreas =
 					savedInstanceState.getParcelableArrayList("loadedAreas");
 			if (savedLoadedAreas != null) loadedAreas.addAll(savedLoadedAreas);
 			final ArrayList<ArcadeLocation> savedLoadedLocations =
 					savedInstanceState.getParcelableArrayList("loadedLocations");
-			MapLoaderV1.fillMap(mMap, currentMarkers, savedLoadedLocations);
+
+			final ArrayList<DataSource> savedLoadedSources =
+					savedInstanceState.getParcelableArrayList("loadedSources");
+			if (savedLoadedSources != null) {
+				for (DataSource src : savedLoadedSources) {
+					loadedSources.put(src.getShortName(), src);
+				}
+			}
+
+			MapLoader.fillMap(mMap, currentMarkers, savedLoadedLocations);
 		}
 		
 		mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
@@ -193,6 +210,11 @@ public class MapViewer extends FragmentActivity
 		final ArrayList<ArcadeLocation> loadedLocations = new ArrayList<>(currentMarkers.size());
 		loadedLocations.addAll(currentMarkers.values());
 		outState.putParcelableArrayList("loadedLocations", loadedLocations);
+
+		// Save the map of currently loaded sources, as a list
+		final ArrayList<DataSource> currSources = new ArrayList<>(loadedSources.size());
+		currSources.addAll(loadedSources.values());
+		outState.putParcelableArrayList("loadedSources", currSources);
 	}
 	
 	@Override
