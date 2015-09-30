@@ -36,11 +36,11 @@
     <string name="settings_api_version">Client API Version (Advanced)</string>
     <string-array name="settings_api_version_entries">
         <item>1.1 (1.0 compatible)</item>
-        <item>2.0</item>
+        <item>3.0</item>
     </string-array>
     <string-array name="settings_api_version_entryValues">
         <item>11</item>
-        <item>20</item>
+        <item>30</item>
     </string-array>
     <string name="settings_api_version_default">11</string>
     <string name="settings_api_src">Custom Data Source (Advanced)</string>

@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder.model.v2;
+package com.andrew67.ddrfinder.model.v3;
 
 import android.os.Parcel;
 import android.os.Parcelable;

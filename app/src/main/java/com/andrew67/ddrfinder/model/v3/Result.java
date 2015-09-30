@@ -21,72 +21,49 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder.model.v2;
+package com.andrew67.ddrfinder.model.v3;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
+import com.andrew67.ddrfinder.interfaces.ApiResult;
+import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
+import com.google.android.gms.maps.model.LatLngBounds;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Represents the API v2 source.
+ * Represents the API v2 result.
  * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
- * Note: the infoURL field is ignored, mInfoURL is used in its place.
  */
-public class Source implements DataSource {
-    private String shortName;
-    private String name;
-    private String mInfoURL;
-    private boolean hasDDR;
+public class Result implements ApiResult {
+    private String error;
+    private Integer errorCode;
+    private Source[] sources;
+    private Location[] locations;
+    private transient LatLngBounds bounds; // non-standard
 
     @Override
-    public String getShortName() {
-        return shortName;
-    }
-
-    @Override
-    public String getName() {
-        return name;
+    public int getErrorCode() {
+        return (errorCode == null) ? ERROR_OK : errorCode;
     }
 
     @Override
-    public String getInfoURL() {
-        return mInfoURL;
+    public List<ArcadeLocation> getLocations() {
+        return Arrays.<ArcadeLocation>asList(locations);
     }
 
     @Override
-    public boolean hasDDR() {
-        return hasDDR;
+    public List<DataSource> getSources() {
+        return Arrays.<DataSource>asList(sources);
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public void setBounds(LatLngBounds bounds) {
+        this.bounds = bounds;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(mInfoURL);
-        dest.writeBooleanArray(new boolean[] { hasDDR });
+    public LatLngBounds getBounds() {
+        return bounds;
     }
-
-    private Source(Parcel in) {
-        this.name = in.readString();
-        this.mInfoURL = in.readString();
-        boolean[] hasDDRArray = new boolean[1];
-        in.readBooleanArray(hasDDRArray);
-        this.hasDDR = hasDDRArray[0];
-    }
-
-    public static final Parcelable.Creator<Source> CREATOR
-            = new Parcelable.Creator<Source>() {
-        public Source createFromParcel(Parcel in) {
-            return new Source(in);
-        }
-
-        public Source[] newArray(int size) {
-            return new Source[size];
-        }
-    };
 }
