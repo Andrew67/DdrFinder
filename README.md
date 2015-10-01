@@ -21,6 +21,7 @@ Developing your own version
 * Modify api_endpoint defaultValue property in res/xml/preferences.xml to point to your API endpoint.
 * Modify settings_api_version_default in res/values/strings.xml to set your endpoint API version as default.
 * Modify about_url in res/values/strings.xml to point to your about page.
+* Modify values in getFallback() in the model.v3.Source class to your info redirection script.
 
 Acknowledgments
 ---------------

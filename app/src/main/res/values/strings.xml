@@ -9,7 +9,7 @@
     <string name="about_url">http://ddrfinder.andrew67.com/about.php?c=%1$s&amp;n=%2$s</string>
     <string-array name="location_actions">
         <item >Navigate</item>
-        <item >More Info (Zenius-I-vanisher)</item>
+        <item >More Info</item>
         <item >Copy GPS Coordinates</item>
         <item >Drive (Sygic)</item>
         <item >Walk (Sygic)</item>

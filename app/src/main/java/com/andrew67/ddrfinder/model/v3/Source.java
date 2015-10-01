@@ -39,6 +39,8 @@ public class Source implements DataSource {
     private String mInfoURL;
     private boolean hasDDR;
 
+    private Source() { }
+
     @Override
     public String getShortName() {
         return shortName;
@@ -66,12 +68,14 @@ public class Source implements DataSource {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(shortName);
         dest.writeString(name);
         dest.writeString(mInfoURL);
         dest.writeBooleanArray(new boolean[] { hasDDR });
     }
 
     private Source(Parcel in) {
+        this.shortName = in.readString();
         this.name = in.readString();
         this.mInfoURL = in.readString();
         boolean[] hasDDRArray = new boolean[1];
@@ -89,4 +93,18 @@ public class Source implements DataSource {
             return new Source[size];
         }
     };
+
+    /**
+     * Provides a "fallback" data source.
+     * Since this is hard-coded, it should only be used if the server API fails to provide it.
+     * @return Fallback data source for locations.
+     */
+    public static DataSource getFallback() {
+        Source src = new Source();
+        src.shortName = "fallback";
+        src.name = "Source Website";
+        src.mInfoURL = "http://ddrfinder.andrew67.com/info.php?id=${id}&android=1";
+        src.hasDDR = false;
+        return src;
+    }
 }

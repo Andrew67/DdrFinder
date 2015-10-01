@@ -40,6 +40,7 @@ import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.activity.SettingsActivity;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
+import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.andrew67.ddrfinder.model.v1.ApiResultV1;
@@ -57,8 +58,9 @@ public class MapLoaderV1 extends MapLoader {
 
 	public MapLoaderV1(GoogleMap map, Map<Marker, ArcadeLocation> markers,
 					 ProgressBarController pbc, MessageDisplay display,
-					 List<LatLngBounds> areas, SharedPreferences sharedPref) {
-		super(map, markers, pbc, display, areas, sharedPref);
+					 List<LatLngBounds> areas, Map<String,DataSource> sources,
+					 SharedPreferences sharedPref) {
+		super(map, markers, pbc, display, areas, sources, sharedPref);
 	}
 
 	@Override

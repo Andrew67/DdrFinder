@@ -25,7 +25,10 @@ package com.andrew67.ddrfinder.activity;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.ActionListAdapter;
+import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
+import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.model.v1.ArcadeLocationV1;
+import com.andrew67.ddrfinder.model.v3.Source;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.app.ListActivity;
@@ -41,19 +44,25 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class LocationActions extends ListActivity {
-	private ArcadeLocationV1 location;
+	private ArcadeLocation location;
+	private DataSource source;
+
 	private ActionListAdapter adapter;
-	private static final String MORE_INFO_PREFIX =
-		"http://m.zenius-i-vanisher.com/arcadelocations_viewarcade.php?locationid=";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		location = (ArcadeLocationV1) getIntent().getExtras().get("location");
+		location = (ArcadeLocation) getIntent().getExtras().get("location");
 		if (location == null) {
 			location = ArcadeLocationV1.EMPTY_LOCATION;
 			Log.d("LocationActions", "location was null; replaced with dummy empty location");
+		}
+
+		source = (DataSource) getIntent().getExtras().get("source");
+		if (source == null) {
+			source = Source.getFallback();
+			Log.d("LocationActions", "source was null; replaced with hard-coded fallback source");
 		}
 		
 		setTitle(location.getName());
@@ -75,7 +84,7 @@ public class LocationActions extends ListActivity {
 			break;
 		case ActionListAdapter.ACTION_MOREINFO:
 			startActivity(new Intent(Intent.ACTION_VIEW,
-					Uri.parse(MORE_INFO_PREFIX + location.getId())));
+					Uri.parse(calculateInfoURL(source, location))));
 			break;
 		case ActionListAdapter.ACTION_COPYGPS:
 			final ClipboardManager clipboard =
@@ -101,5 +110,11 @@ public class LocationActions extends ListActivity {
 		default:
 			super.onListItemClick(l, v, position, id);
 		}
+	}
+
+	private static String calculateInfoURL(DataSource source, ArcadeLocation location) {
+		return source.getInfoURL()
+				.replace("${id}", "" + location.getId())
+				.replace("${sid}", location.getSid());
 	}
 }

@@ -29,6 +29,7 @@ import android.os.AsyncTask;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
+import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,17 +47,20 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
     protected final ProgressBarController pbc;
     protected final MessageDisplay display;
     protected final List<LatLngBounds> areas;
+    protected final Map<String,DataSource> sources;
     protected final SharedPreferences sharedPref;
 
     public MapLoader(GoogleMap map, Map<Marker, ArcadeLocation> markers,
                      ProgressBarController pbc, MessageDisplay display,
-                     List<LatLngBounds> areas, SharedPreferences sharedPref) {
+                     List<LatLngBounds> areas, Map<String,DataSource> sources,
+                     SharedPreferences sharedPref) {
         super();
         this.map = map;
         this.markers = markers;
         this.pbc = pbc;
         this.display = display;
         this.areas = areas;
+        this.sources = sources;
         this.sharedPref = sharedPref;
 
         // Show indeterminate progress bar
@@ -75,6 +79,11 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
             case ApiResult.ERROR_OK:
                 fillMap(map, markers, result.getLocations());
                 areas.add(result.getBounds());
+
+                for (DataSource src : result.getSources()) {
+                    sources.put(src.getShortName(), src);
+                }
+
                 break;
             case ApiResult.ERROR_OVERSIZED_BOX:
                 display.showMessage(R.string.error_zoom);

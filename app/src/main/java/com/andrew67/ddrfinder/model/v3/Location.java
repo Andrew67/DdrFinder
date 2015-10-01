@@ -43,6 +43,8 @@ public class Location implements ArcadeLocation {
     private double lng;
     private Integer hasDDR; // optional; interface should be Boolean, but this gets fed to us as "0" or "1" (or null!)
 
+    private Location() { }
+
     @Override
     public int getId() {
         return id;

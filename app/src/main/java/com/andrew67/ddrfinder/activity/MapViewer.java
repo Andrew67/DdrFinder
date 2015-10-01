@@ -52,6 +52,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -144,7 +145,8 @@ public class MapViewer extends FragmentActivity
 				final ArcadeLocation location = currentMarkers.get(marker);
 
 				startActivity(new Intent(MapViewer.this, LocationActions.class)
-						.putExtra("location", location));
+						.putExtra("location", location)
+                        .putExtra("source", getSource(location)));
 			}
 		});
 	}
@@ -157,7 +159,7 @@ public class MapViewer extends FragmentActivity
 		final LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
 		final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		if (force || !alreadyLoaded(box)) {
-			new MapLoaderV1(mMap, currentMarkers, this, this, loadedAreas, sharedPref).execute(box);
+			new MapLoaderV1(mMap, currentMarkers, this, this, loadedAreas, loadedSources, sharedPref).execute(box);
 		}
 	}
 	
@@ -200,6 +202,20 @@ public class MapViewer extends FragmentActivity
 		currentMarkers.clear();
 		loadedAreas.clear();
 	}
+
+    /**
+     * Get the source corresponding to the given location.
+     * If specific source not found, "fallback" source is returned.
+     * @return Data source of location.
+     */
+    private DataSource getSource(ArcadeLocation location) {
+        if (loadedSources.containsKey(location.getSrc()))
+            return loadedSources.get(location.getSrc());
+        else {
+            Log.d("MapViewer", "failed to get source: " + location.getSrc());
+            return loadedSources.get("fallback");
+        }
+    }
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
