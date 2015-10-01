@@ -46,6 +46,6 @@
         <item>11</item>
         <item>30</item>
     </string-array>
-    <string name="settings_api_version_default">11</string>
+    <string name="settings_api_version_default">30</string>
     <string name="settings_api_src">Custom Data Source (Advanced)</string>
 </resources>
