@@ -33,6 +33,7 @@ import java.util.Map;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.MapLoader;
 import com.andrew67.ddrfinder.adapters.MapLoaderV1;
+import com.andrew67.ddrfinder.adapters.MapLoaderV3;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
@@ -168,7 +169,9 @@ public class MapViewer extends FragmentActivity
                             loadedAreas, loadedSources, sharedPref).execute(box);
                     break;
                 case SettingsActivity.API_V30:
-                    // TODO: MapLoaderV3
+                    new MapLoaderV3(mMap, currentMarkers, this, this,
+                            loadedAreas, loadedSources, sharedPref).execute(box);
+                    break;
                 default:
                     showMessage(R.string.error_api_ver);
                     Log.d("MapViewer", "unsupported API version requested: " + version);

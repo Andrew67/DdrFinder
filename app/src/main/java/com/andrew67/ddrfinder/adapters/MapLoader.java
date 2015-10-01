@@ -75,8 +75,17 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
         super.onPostExecute(result);
         pbc.hideProgressBar();
 
+        if (result == null) {
+            display.showMessage(R.string.error_api_unexpected);
+            return;
+        }
+
         switch(result.getErrorCode()) {
             case ApiResult.ERROR_OK:
+                if (result.getLocations().size() == 0) {
+                    display.showMessage(R.string.area_no_results);
+                }
+
                 fillMap(map, markers, result.getLocations());
                 areas.add(result.getBounds());
 
@@ -88,6 +97,11 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
             case ApiResult.ERROR_OVERSIZED_BOX:
                 display.showMessage(R.string.error_zoom);
                 break;
+            case ApiResult.ERROR_DATA_SOURCE:
+                display.showMessage(R.string.error_datasrc);
+                break;
+            case ApiResult.ERROR_CLIENT_API_VERSION:
+                display.showMessage(R.string.error_api_ver);
             default:
                 display.showMessage(R.string.error_api);
         }

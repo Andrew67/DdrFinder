@@ -48,6 +48,8 @@ public class SettingsActivity extends Activity {
     public static final int API_V11 = 11;
     public static final int API_V30 = 30;
 
+    public static final String API_SRC_CUSTOM = "custom";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

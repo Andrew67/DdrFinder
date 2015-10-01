@@ -17,6 +17,9 @@
     <string name="copy_complete">Copied</string>
     <string name="error_perm_loc">Enable location permission in settings to detect current location</string>
     <string name="error_api_ver">Unsupported API version requested</string>
+    <string name="error_datasrc">Server did not recognize the data source(s) requested</string>
+    <string name="error_api_unexpected">Unexpected API error</string>
+    <string name="area_no_results">No arcades found in this area</string>
 
     <!-- Preferences -->
     <string name="settings_src">Data Source</string>
