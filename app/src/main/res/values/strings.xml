@@ -16,6 +16,7 @@
     </string-array>
     <string name="copy_complete">Copied</string>
     <string name="error_perm_loc">Enable location permission in settings to detect current location</string>
+    <string name="error_api_ver">Unsupported API version requested</string>
 
     <!-- Preferences -->
     <string name="settings_src">Data Source</string>

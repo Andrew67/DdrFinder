@@ -45,6 +45,9 @@ public class SettingsActivity extends Activity {
     public static final String KEY_PREF_API_URL = "api_endpoint";
     public static final String KEY_PREF_API_VERSION = "api_version";
 
+    public static final int API_V11 = 11;
+    public static final int API_V30 = 30;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
