@@ -141,7 +141,9 @@ public class MapViewer extends FragmentActivity
 			
 			@Override
 			public void onCameraChange(CameraPosition position) {
-				updateMap(false);
+				if (isAutoloadEnabled()) {
+					updateMap(false);
+				}
 			}
 		});
 		mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -155,6 +157,14 @@ public class MapViewer extends FragmentActivity
                         .putExtra("source", getSource(location)));
 			}
 		});
+	}
+
+	/**
+	 * Whether the autoload flag is enabled for map scrolling.
+     */
+	private boolean isAutoloadEnabled() {
+		return PreferenceManager.getDefaultSharedPreferences(this)
+				.getBoolean(SettingsActivity.KEY_PREF_AUTOLOAD, true);
 	}
 	
 	/**
@@ -341,7 +351,9 @@ public class MapViewer extends FragmentActivity
 		final Map<String, ?> currPrefs = PreferenceManager.getDefaultSharedPreferences(this).getAll();
 		if (prevPrefs != null && !currPrefs.equals(prevPrefs)) {
 			clearMap();
-			updateMap(false);
+			if (isAutoloadEnabled()) {
+				updateMap(false);
+			}
 		}
 	}
 
@@ -356,9 +368,9 @@ public class MapViewer extends FragmentActivity
 						mMap.setMyLocationEnabled(true);
 					} catch (SecurityException e) { /* Satisfy linter; it should be granted */ }
 					zoomToCurrentLocation();
-				}
-				else
+				} else {
 					showMessage(R.string.error_perm_loc);
+				}
 		}
 	}
 }

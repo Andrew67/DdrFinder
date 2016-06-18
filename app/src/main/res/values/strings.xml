@@ -48,4 +48,6 @@
     </string-array>
     <string name="settings_api_version_default">30</string>
     <string name="settings_api_src">Custom Data Source (Advanced)</string>
+    <string name="settings_autoload">Auto-load</string>
+    <string name="settings_autoload_desc">Automatically download location data when moving map</string>
 </resources>

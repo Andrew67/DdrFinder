@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="autoload"
+        android:title="@string/settings_autoload"
+        android:summary="@string/settings_autoload_desc"/>
     <ListPreference
         android:defaultValue="@string/settings_src_default"
         android:key="api_src"
