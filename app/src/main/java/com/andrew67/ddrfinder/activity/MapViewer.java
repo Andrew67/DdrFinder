@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  * 
- * Copyright (c) 2013-2015 Andrés Cordero
+ * Copyright (c) 2013-2016 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,7 +34,6 @@ import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.MapLoader;
 import com.andrew67.ddrfinder.adapters.MapLoaderV1;
 import com.andrew67.ddrfinder.adapters.MapLoaderV3;
-import com.andrew67.ddrfinder.interfaces.ApiResult;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
@@ -49,11 +48,15 @@ import com.google.android.gms.maps.model.Marker;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,6 +68,7 @@ public class MapViewer extends FragmentActivity
 	implements ProgressBarController, MessageDisplay {
 	
 	public static final int BASE_ZOOM = 12;
+	private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 	
 	private GoogleMap mMap;
 	private MenuItem reloadButton;
@@ -94,20 +98,18 @@ public class MapViewer extends FragmentActivity
 				(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mMap = mMapFragment.getMap();
 
-		try {
+		// Check for location permission, and request if disabled
+		// This permission allows the user to locate themselves on the map
+		if (ContextCompat.checkSelfPermission(this,
+				android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 			mMap.setMyLocationEnabled(true);
-			final LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-			final Location lastKnown = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			// Animate to user's current location if first load
-			if (lastKnown != null && savedInstanceState == null) {
-				mMap.animateCamera(
-						CameraUpdateFactory.newLatLngZoom(
-								new LatLng(lastKnown.getLatitude(),
-										lastKnown.getLongitude()),
-								BASE_ZOOM));
+			if (savedInstanceState == null) {
+				zoomToCurrentLocation();
 			}
-		} catch (SecurityException e) {
-			showMessage(R.string.error_perm_loc);
+		} else {
+			ActivityCompat.requestPermissions(this,
+					new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+					PERMISSIONS_REQUEST_LOCATION);
 		}
 		
 		// Restore previously loaded areas locations, and sources if available
@@ -234,6 +236,26 @@ public class MapViewer extends FragmentActivity
             return loadedSources.get("fallback");
         }
     }
+
+	/**
+	 * Zooms and moves the map to the user's last known current location, typically on app startup.
+	 */
+	private void zoomToCurrentLocation() {
+		final LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+		Location lastKnown = null;
+		try {
+			lastKnown = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		} catch (SecurityException e) {
+			showMessage(R.string.error_perm_loc);
+		}
+		if (lastKnown != null) {
+			mMap.animateCamera(
+					CameraUpdateFactory.newLatLngZoom(
+							new LatLng(lastKnown.getLatitude(),
+									lastKnown.getLongitude()),
+							BASE_ZOOM));
+		}
+	}
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -308,6 +330,23 @@ public class MapViewer extends FragmentActivity
 		if (prevPrefs != null && !currPrefs.equals(prevPrefs)) {
 			clearMap();
 			updateMap(false);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+										   @NonNull String permissions[],
+										   @NonNull int[] grantResults) {
+		switch (requestCode) {
+			case PERMISSIONS_REQUEST_LOCATION:
+				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					try {
+						mMap.setMyLocationEnabled(true);
+					} catch (SecurityException e) { /* Satisfy linter; it should be granted */ }
+					zoomToCurrentLocation();
+				}
+				else
+					showMessage(R.string.error_perm_loc);
 		}
 	}
 }
