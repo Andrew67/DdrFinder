@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -60,6 +61,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -72,6 +74,7 @@ public class MapViewer extends FragmentActivity
 	
 	private GoogleMap mMap;
 	private MenuItem reloadButton;
+	private CircleProgressBar progressBar;
 
 	private final Map<Marker,ArcadeLocation> currentMarkers = new HashMap<>();
 	// Set as ArrayList instead of List due to Bundle packing
@@ -90,9 +93,8 @@ public class MapViewer extends FragmentActivity
 
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.map_viewer);
-		
-		setProgressBarIndeterminate(true);
-		setProgressBarIndeterminateVisibility(false);
+
+		progressBar = (CircleProgressBar) findViewById(R.id.progressBar);
 						
 		final SupportMapFragment mMapFragment =
 				(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -275,14 +277,14 @@ public class MapViewer extends FragmentActivity
 	
 	@Override
 	public void showProgressBar() {
+		progressBar.setVisibility(View.VISIBLE);
 		if (reloadButton != null) reloadButton.setVisible(false);
-		setProgressBarIndeterminateVisibility(true);
 	}
 	
 	@Override
 	public void hideProgressBar() {
-		setProgressBarIndeterminateVisibility(false);
 		if (reloadButton != null) reloadButton.setVisible(true);
+		progressBar.setVisibility(View.INVISIBLE);
 	}
 
 	@Override

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 'Google Inc.:Google APIs:23'
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "24.0.0"
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
         versionCode 13
@@ -27,4 +27,5 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.lsjwzh:materialloadingprogressbar:0.5.8-RELEASE'
 }

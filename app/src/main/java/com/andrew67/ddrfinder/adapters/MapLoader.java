@@ -25,6 +25,7 @@ package com.andrew67.ddrfinder.adapters;
 
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
@@ -117,13 +118,19 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
 
     public static void addMarker(GoogleMap map,
                                  Map<Marker,ArcadeLocation> markers, ArcadeLocation loc) {
+        // Set default marker color to red.
         float hue = BitmapDescriptorFactory.HUE_RED;
 
-        // Has the location been tagged as closed?
+        // Set the default to purple on Material devices to match accent color.
+        if (Build.VERSION.SDK_INT >= 21) {
+            hue = BitmapDescriptorFactory.HUE_VIOLET;
+        }
+
+        // Has the location been tagged as closed? Mark orange.
         if (loc.isClosed()) {
             hue = BitmapDescriptorFactory.HUE_ORANGE;
         }
-        // Does the location have a DDR machine?
+        // Does the location have a DDR machine? Mark blue.
         else if (loc.hasDDR()) {
             hue = BitmapDescriptorFactory.HUE_AZURE;
         }

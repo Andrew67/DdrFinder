@@ -4,5 +4,14 @@
     android:id="@+id/map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.google.android.gms.maps.MapFragment"
-    />
+    android:name="com.google.android.gms.maps.MapFragment">
+    <com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/progressBar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        app:mlpb_progress_stoke_width="3dp"
+        app:mlpb_progress_color="@android:color/holo_purple"
+        android:visibility="invisible"/>
+</fragment>
