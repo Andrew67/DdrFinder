@@ -37,6 +37,8 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="http" android:host="ddrfinder.andrew67.com"
                     android:pathPrefix="/locator"/>
+                <data android:scheme="https" android:host="ddrfinder.andrew67.com"
+                    android:pathPrefix="/locator"/>
             </intent-filter>
         </activity>
         <meta-data

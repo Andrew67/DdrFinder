@@ -11,7 +11,7 @@
         android:key="api_src_custom"
         android:title="@string/settings_api_src"/>
     <EditTextPreference
-        android:defaultValue="http://ddrfinder.andrew67.com/locate.php"
+        android:defaultValue="https://ddrfinder.andrew67.com/locate.php"
         android:key="api_endpoint"
         android:title="@string/settings_api_endpoint"/>
     <ListPreference
