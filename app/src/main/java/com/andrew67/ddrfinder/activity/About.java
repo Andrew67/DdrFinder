@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2013-2015 Andrés Cordero
+ * Copyright (c) 2013-2016 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,8 +28,6 @@ package com.andrew67.ddrfinder.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebView;
@@ -44,11 +42,27 @@ public class About extends Activity {
 		final WebView webview = new WebView(this);
 		setContentView(webview);
 		setTitle(R.string.action_about);
+
+		final ActionBar actionBar = getActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 		
 		final int versionCode = BuildConfig.VERSION_CODE;
 		final String versionName = BuildConfig.VERSION_NAME;
 		
 		webview.loadUrl(String.format(getString(R.string.about_url),
 				versionCode, versionName));
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015 Andrés Cordero
+ * Copyright (c) 2013-2016 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,6 +31,7 @@ import com.andrew67.ddrfinder.model.v1.ArcadeLocationV1;
 import com.andrew67.ddrfinder.model.v3.Source;
 import com.google.android.gms.maps.model.LatLng;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -39,6 +40,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -52,6 +54,11 @@ public class LocationActions extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		final ActionBar actionBar = getActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 		
 		location = (ArcadeLocation) getIntent().getExtras().get("location");
 		if (location == null) {
@@ -117,4 +124,15 @@ public class LocationActions extends ListActivity {
 				.replace("${id}", "" + location.getId())
 				.replace("${sid}", location.getSid());
 	}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

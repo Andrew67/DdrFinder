@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2015 Andrés Cordero
+ * Copyright (c) 2015-2016 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,6 +32,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.R;
 
@@ -56,10 +57,26 @@ public class SettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.action_settings);
 
+        final ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public static class SettingsFragment extends PreferenceFragment
@@ -139,6 +156,5 @@ public class SettingsActivity extends Activity {
             if (idx == -1) return key;
             else return values_arr[idx];
         }
-
     }
 }
