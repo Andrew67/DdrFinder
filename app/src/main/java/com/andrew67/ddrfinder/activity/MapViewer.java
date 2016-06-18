@@ -290,9 +290,19 @@ public class MapViewer extends FragmentActivity
 		Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 	}
 
+	// Keep toast references mapped by resource id, to prevent excessive repeated toasts.
+	private Map<Integer, Toast> toasts = new HashMap<>();
 	@Override
 	public void showMessage(int resourceId) {
-		Toast.makeText(this, resourceId, Toast.LENGTH_SHORT).show();
+		final Toast oldToast = toasts.get(resourceId);
+		if (oldToast == null) {
+			final Toast newToast = Toast.makeText(this, resourceId, Toast.LENGTH_SHORT);
+			toasts.put(resourceId, newToast);
+			newToast.show();
+		} else {
+			oldToast.setText(resourceId);
+			oldToast.show();
+		}
 	}
 	
 	@Override
