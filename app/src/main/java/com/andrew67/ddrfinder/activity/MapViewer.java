@@ -40,6 +40,7 @@ import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -69,7 +70,7 @@ import android.widget.Toast;
 
 
 public class MapViewer extends FragmentActivity
-	implements ProgressBarController, MessageDisplay {
+	implements ProgressBarController, MessageDisplay, OnMapReadyCallback {
 	
 	public static final int BASE_ZOOM = 12;
 	private static final int PERMISSIONS_REQUEST_LOCATION = 1;
@@ -97,17 +98,26 @@ public class MapViewer extends FragmentActivity
 		setContentView(R.layout.map_viewer);
 
 		progressBar = (CircleProgressBar) findViewById(R.id.progressBar);
-						
-		final SupportMapFragment mMapFragment =
-				(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-		mMap = mMapFragment.getMap();
+		onCreateSavedInstanceState = savedInstanceState;
+
+		((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+				.getMapAsync(this);
+	}
+
+	/**
+	 * Finalize initialization steps that depend on GoogleMap (previously in onCreate).
+	 */
+	private Bundle onCreateSavedInstanceState = null;
+	@Override
+	public void onMapReady(GoogleMap googleMap) {
+		mMap = googleMap;
 
 		// Check for location permission, and request if disabled
 		// This permission allows the user to locate themselves on the map
 		if (ContextCompat.checkSelfPermission(this,
 				android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 			mMap.setMyLocationEnabled(true);
-			if (savedInstanceState == null) {
+			if (onCreateSavedInstanceState == null) {
 				zoomToCurrentLocation();
 			}
 		} else {
@@ -115,21 +125,21 @@ public class MapViewer extends FragmentActivity
 					new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
 					PERMISSIONS_REQUEST_LOCATION);
 		}
-		
+
 		// Restore previously loaded areas locations, and sources if available
 		// (and re-create the location markers)
-		if (savedInstanceState != null &&
-				savedInstanceState.containsKey("loadedAreas") &&
-				savedInstanceState.containsKey("loadedLocations") &&
-				savedInstanceState.containsKey("loadedSources")) {
+		if (onCreateSavedInstanceState != null &&
+				onCreateSavedInstanceState.containsKey("loadedAreas") &&
+				onCreateSavedInstanceState.containsKey("loadedLocations") &&
+				onCreateSavedInstanceState.containsKey("loadedSources")) {
 			final ArrayList<LatLngBounds> savedLoadedAreas =
-					savedInstanceState.getParcelableArrayList("loadedAreas");
+					onCreateSavedInstanceState.getParcelableArrayList("loadedAreas");
 			if (savedLoadedAreas != null) loadedAreas.addAll(savedLoadedAreas);
 			final ArrayList<ArcadeLocation> savedLoadedLocations =
-					savedInstanceState.getParcelableArrayList("loadedLocations");
+					onCreateSavedInstanceState.getParcelableArrayList("loadedLocations");
 
 			final ArrayList<DataSource> savedLoadedSources =
-					savedInstanceState.getParcelableArrayList("loadedSources");
+					onCreateSavedInstanceState.getParcelableArrayList("loadedSources");
 			if (savedLoadedSources != null) {
 				for (DataSource src : savedLoadedSources) {
 					loadedSources.put(src.getShortName(), src);
@@ -138,9 +148,9 @@ public class MapViewer extends FragmentActivity
 
 			MapLoader.fillMap(mMap, currentMarkers, savedLoadedLocations);
 		}
-		
+
 		mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-			
+
 			@Override
 			public void onCameraChange(CameraPosition position) {
 				if (isAutoloadEnabled()) {
