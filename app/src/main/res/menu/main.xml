@@ -3,19 +3,19 @@
     <item
         android:id="@+id/action_reload"
         android:showAsAction="always"
-        style="@style/AppTheme.Reload"
+        android:icon="@drawable/dark_navigation_refresh"
         android:title="@string/action_reload"/>
     
     <item
         android:id="@+id/action_settings"
         android:showAsAction="never"
-        style="@style/AppTheme.Settings"
+        android:icon="@drawable/dark_action_settings"
         android:title="@string/action_settings"/>
     
     <item
         android:id="@+id/action_about"
         android:showAsAction="never"
-        style="@style/AppTheme.About"
+        android:icon="@drawable/dark_action_about"
         android:title="@string/action_about"/>
 
 </menu>

@@ -16,15 +16,5 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
-    
-    <style name="AppTheme.Reload">
-        <item name="android:icon">@drawable/dark_navigation_refresh</item>
-    </style>
-    <style name="AppTheme.Settings">
-        <item name="android:icon">@drawable/dark_action_settings</item>
-    </style>
-    <style name="AppTheme.About">
-        <item name="android:icon">@drawable/dark_action_about</item>
-    </style>
 
 </resources>
