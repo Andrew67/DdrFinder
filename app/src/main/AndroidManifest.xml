@@ -45,7 +45,6 @@
     		android:name="com.google.android.maps.v2.API_KEY"
     		android:value="AIzaSyCd56mJAgfzpvF4yL-YXj9S8JsQyCd84tc"/>
         <activity android:name=".activity.About"/>
-        <activity android:name=".activity.LocationActions"/>
         <activity android:name=".activity.SettingsActivity"/>
        </application>
 
