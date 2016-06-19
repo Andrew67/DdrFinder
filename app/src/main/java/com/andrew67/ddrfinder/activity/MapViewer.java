@@ -375,8 +375,8 @@ public class MapViewer extends FragmentActivity
 		public boolean onMarkerClick(Marker marker) {
 			if (actionMode == null) {
 				actionMode = MapViewer.this.startActionMode(actionModeCallback);
-				selectedMarker = marker;
 			}
+			selectedMarker = marker;
 			return false; // keep the default action of moving view and showing info window
 		}
 	};
