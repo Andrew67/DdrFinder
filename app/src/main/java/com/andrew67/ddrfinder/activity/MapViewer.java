@@ -59,7 +59,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -146,17 +148,8 @@ public class MapViewer extends FragmentActivity
 				}
 			}
 		});
-		mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-			
-			@Override
-			public void onInfoWindowClick(Marker marker) {
-				final ArcadeLocation location = currentMarkers.get(marker);
-
-				startActivity(new Intent(MapViewer.this, LocationActions.class)
-						.putExtra("location", location)
-                        .putExtra("source", getSource(location)));
-			}
-		});
+		mMap.setOnMarkerClickListener(actionModeEnabler);
+		mMap.setOnMapClickListener(actionModeDisabler);
 	}
 
 	/**
@@ -373,5 +366,91 @@ public class MapViewer extends FragmentActivity
 				}
 		}
 	}
+
+	/**
+	 * Listener class that activates the action bar on marker click.
+	 */
+	private GoogleMap.OnMarkerClickListener actionModeEnabler = new GoogleMap.OnMarkerClickListener() {
+		@Override
+		public boolean onMarkerClick(Marker marker) {
+			if (actionMode == null) {
+				actionMode = MapViewer.this.startActionMode(actionModeCallback);
+				selectedMarker = marker;
+			}
+			return false; // keep the default action of moving view and showing info window
+		}
+	};
+
+	/**
+	 * Listener class that de-activates the action bar on clicking elsewhere.
+	 */
+	private GoogleMap.OnMapClickListener actionModeDisabler = new GoogleMap.OnMapClickListener() {
+		@Override
+		public void onMapClick(LatLng coords) {
+			if (actionMode != null) {
+				actionMode.finish();
+			}
+		}
+	};
+
+	/**
+	 * Handles action mode creation, destruction, and actions.
+	 * Template: https://developer.android.com/guide/topics/ui/menus.html#CAB
+	 */
+	private ActionMode actionMode = null;
+	private Marker selectedMarker = null;
+	private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+		// Called when the action mode is created; startActionMode() was called
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			// Inflate a menu resource providing context menu items
+			MenuInflater inflater = mode.getMenuInflater();
+			inflater.inflate(R.menu.context_menu, menu);
+			return true;
+		}
+
+		// Called each time the action mode is shown. Always called after onCreateActionMode, but
+		// may be called multiple times if the mode is invalidated.
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false; // Return false if nothing is done
+		}
+
+		// Called when the user selects a contextual menu item
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			if (selectedMarker == null) return false;
+
+			final ArcadeLocation selectedLocation = currentMarkers.get(selectedMarker);
+			if (selectedLocation == null) return false;
+
+			final LocationActions actions =
+					new LocationActions(selectedLocation, getSource(selectedLocation));
+
+			switch (item.getItemId()) {
+				case R.id.action_navigate:
+					actions.navigate(MapViewer.this);
+					return true;
+				case R.id.action_moreinfo:
+					actions.moreInfo(MapViewer.this);
+					return true;
+				case R.id.action_copygps:
+					actions.copyGps(MapViewer.this, MapViewer.this);
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		// Called when the user exits the action mode
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			actionMode = null;
+			if (selectedMarker != null) {
+				selectedMarker.hideInfoWindow();
+			}
+		}
+
+	};
 }
 

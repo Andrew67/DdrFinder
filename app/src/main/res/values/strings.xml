@@ -7,13 +7,9 @@
     <string name="error_zoom">Zoom in to load more locations</string>
     <string name="error_api">Error loading data</string>
     <string name="about_url">https://ddrfinder.andrew67.com/about.php?c=%1$s&amp;n=%2$s</string>
-    <string-array name="location_actions">
-        <item >Navigate</item>
-        <item >More Info</item>
-        <item >Copy GPS Coordinates</item>
-        <item >Drive (Sygic)</item>
-        <item >Walk (Sygic)</item>
-    </string-array>
+    <string name="location_actions_navigate">Navigate</string>
+    <string name="location_actions_info">More Info</string>
+    <string name="location_actions_copy">Copy GPS Coordinates</string>
     <string name="copy_complete">Copied</string>
     <string name="error_perm_loc">Enable location permission in settings to detect current location</string>
     <string name="error_api_ver">Unsupported API version requested</string>

@@ -24,115 +24,75 @@
 package com.andrew67.ddrfinder.activity;
 
 import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.adapters.ActionListAdapter;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
-import com.andrew67.ddrfinder.model.v1.ArcadeLocationV1;
+import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.model.v3.Source;
 import com.google.android.gms.maps.model.LatLng;
 
-import android.app.ActionBar;
-import android.app.ListActivity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-public class LocationActions extends ListActivity {
-	private ArcadeLocation location;
-	private DataSource source;
+/**
+ * Helper class for location actions.
+ */
+public class LocationActions {
+	private final @NonNull ArcadeLocation location;
+	private final @NonNull DataSource source;
 
-	private ActionListAdapter adapter;
+    /**
+     * Set up a new location action helper.
+     * @param location Location to act upon.
+     * @param source Source metadata for location. Pass null to use fallback.
+     */
+    public LocationActions(@NonNull ArcadeLocation location, @Nullable DataSource source) {
+        this.location = location;
+        this.source = (source != null) ? source : Source.getFallback();
+    }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		final ActionBar actionBar = getActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
-		
-		location = (ArcadeLocation) getIntent().getExtras().get("location");
-		if (location == null) {
-			location = ArcadeLocationV1.EMPTY_LOCATION;
-			Log.d("LocationActions", "location was null; replaced with dummy empty location");
-		}
-
-		source = (DataSource) getIntent().getExtras().get("source");
-		if (source == null) {
-			source = Source.getFallback();
-			Log.d("LocationActions", "source was null; replaced with hard-coded fallback source");
-		}
-		
-		setTitle(location.getName());
-		adapter = new ActionListAdapter(this);
-		setListAdapter(adapter);
-	}
-	
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		final LatLng coordinates = location.getLocation();
-		switch ((int) adapter.getItemId(position)) {
-		case ActionListAdapter.ACTION_NAVIGATE:
-			final String label = location.getName()
-					.replace('(', '[').replace(')', ']');
-			startActivity(new Intent(Intent.ACTION_VIEW,
-					Uri.parse("geo:" + coordinates.latitude + "," +
-							coordinates.longitude + "?q=" + coordinates.latitude +
-							"," + coordinates.longitude + "(" + label + ")")));
-			break;
-		case ActionListAdapter.ACTION_MOREINFO:
-			startActivity(new Intent(Intent.ACTION_VIEW,
-					Uri.parse(calculateInfoURL(source, location))));
-			break;
-		case ActionListAdapter.ACTION_COPYGPS:
-			final ClipboardManager clipboard =
-				(ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-			clipboard.setPrimaryClip(ClipData.newPlainText("gps",
-					coordinates.latitude + ", " + coordinates.longitude));
-			Toast.makeText(this, R.string.copy_complete, Toast.LENGTH_SHORT).show();
-			break;
-		// This list item only exists when Sygic is installed
-		case ActionListAdapter.ACTION_SYGIC_DRIVE:
-			startActivity(new Intent(Intent.ACTION_VIEW,
-					Uri.parse("com.sygic.aura://coordinate|"
-							+ coordinates.longitude + "|" 
-							+ coordinates.latitude + "|drive")));
-			break;
-		// This list item only exists when Sygic is installed
-		case ActionListAdapter.ACTION_SYGIC_WALK:
-			startActivity(new Intent(Intent.ACTION_VIEW,
-					Uri.parse("com.sygic.aura://coordinate|"
-							+ coordinates.longitude + "|" 
-							+ coordinates.latitude + "|walk")));
-			break;
-		default:
-			super.onListItemClick(l, v, position, id);
-		}
-	}
-
-	private static String calculateInfoURL(DataSource source, ArcadeLocation location) {
-		return source.getInfoURL()
-				.replace("${id}", "" + location.getId())
-				.replace("${sid}", location.getSid());
-	}
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    /**
+     * Copy the location's GPS coordinates to the context clipboard.
+     * @param context The context which provides the clipboard service.
+     * @param display Optional message display provider, to show "Copied" message.
+     */
+    public void copyGps(@NonNull Context context, @Nullable MessageDisplay display) {
+        final LatLng coordinates = location.getLocation();
+        final ClipboardManager clipboard =
+                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard.setPrimaryClip(ClipData.newPlainText("gps",
+                coordinates.latitude + ", " + coordinates.longitude));
+        if (display != null) {
+            display.showMessage(R.string.copy_complete);
         }
+    }
+
+    /**
+     * Open a navigation intent with the location coordinates.
+     * @param context The context which provides the ability to start activities.
+     */
+    public void navigate(@NonNull Context context) {
+        final LatLng coordinates = location.getLocation();
+        final String label = location.getName()
+                .replace('(', '[').replace(')', ']');
+        context.startActivity(new Intent(Intent.ACTION_VIEW,
+                Uri.parse("geo:" + coordinates.latitude + "," +
+                        coordinates.longitude + "?q=" + coordinates.latitude +
+                        "," + coordinates.longitude + "(" + label + ")")));
+    }
+
+    /**
+     * Launches a web browser, pointed to the location's more information URL.
+     * @param context The context which provides the ability to start activities.
+     */
+    public void moreInfo(@NonNull Context context) {
+        final String infoURL = source.getInfoURL()
+                .replace("${id}", "" + location.getId())
+                .replace("${sid}", location.getSid());
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(infoURL)));
     }
 }
