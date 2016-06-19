@@ -135,13 +135,12 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
             hue = BitmapDescriptorFactory.HUE_AZURE;
         }
 
-        markers.put(
-                map.addMarker(
-                        new MarkerOptions()
-                                .position(loc.getLocation())
-                                .title(loc.getName())
-                                .snippet(loc.getCity())
-                                .icon(BitmapDescriptorFactory.defaultMarker(hue))),
-                loc);
+        final MarkerOptions markerOptions = new MarkerOptions()
+                .position(loc.getLocation())
+                .title(loc.getName())
+                .icon(BitmapDescriptorFactory.defaultMarker(hue));
+        if (!"".equals(loc.getCity())) markerOptions.snippet(loc.getCity());
+
+        markers.put(map.addMarker(markerOptions), loc);
     }
 }

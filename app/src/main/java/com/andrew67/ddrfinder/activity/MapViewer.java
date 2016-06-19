@@ -160,6 +160,7 @@ public class MapViewer extends FragmentActivity
 		});
 		mMap.setOnMarkerClickListener(actionModeEnabler);
 		mMap.setOnMapClickListener(actionModeDisabler);
+        mMap.setOnInfoWindowClickListener(moreInfoListener);
 	}
 
 	/**
@@ -462,5 +463,20 @@ public class MapViewer extends FragmentActivity
 		}
 
 	};
+
+    /**
+     * Info window click listener which triggers the "More Info" action.
+     */
+	private GoogleMap.OnInfoWindowClickListener moreInfoListener = new GoogleMap.OnInfoWindowClickListener() {
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            final ArcadeLocation selectedLocation = currentMarkers.get(selectedMarker);
+            if (selectedLocation != null) {
+                final LocationActions actions =
+                        new LocationActions(selectedLocation, getSource(selectedLocation));
+                actions.moreInfo(MapViewer.this);
+            }
+        }
+    };
 }
 

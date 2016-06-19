@@ -7,14 +7,14 @@
     <string name="error_zoom">Zoom in to load more locations</string>
     <string name="error_api">Error loading data</string>
     <string name="about_url">https://ddrfinder.andrew67.com/about.php?c=%1$s&amp;n=%2$s</string>
-    <string name="location_actions_navigate">Navigate</string>
-    <string name="location_actions_info">More Info</string>
+    <string name="location_actions_navigate">Open in Maps App</string>
+    <string name="location_actions_info">Details</string>
     <string name="location_actions_copy">Copy GPS Coordinates</string>
     <string name="copy_complete">Copied</string>
     <string name="error_perm_loc">Enable location permission in settings to detect current location</string>
     <string name="error_api_ver">Unsupported API version requested</string>
     <string name="error_datasrc">Server did not recognize the data source(s) requested</string>
-    <string name="error_api_unexpected">Unexpected API error</string>
+    <string name="error_api_unexpected">Unexpected connection error</string>
     <string name="area_no_results">No arcades found in this area</string>
 
     <!-- Preferences -->
