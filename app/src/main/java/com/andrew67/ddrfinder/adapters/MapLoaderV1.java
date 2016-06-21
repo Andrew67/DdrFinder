@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  * 
- * Copyright (c) 2013-2015 Andrés Cordero
+ * Copyright (c) 2013-2016 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.util.Log;
 
 import com.andrew67.ddrfinder.BuildConfig;
@@ -83,7 +84,8 @@ public class MapLoaderV1 extends MapLoader {
 
 			Log.d("api", "Request URL: " + requestURL);
 			final Request get = new Request.Builder()
-					.header("User-Agent", BuildConfig.APPLICATION_ID + " " + BuildConfig.VERSION_NAME)
+					.header("User-Agent", BuildConfig.APPLICATION_ID + " " + BuildConfig.VERSION_NAME
+							+ "/Android?SDK=" + Build.VERSION.SDK_INT)
 					.url(requestURL)
 					.build();
 
