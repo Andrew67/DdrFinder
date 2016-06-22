@@ -17,4 +17,10 @@
     <string name="settings_autoload_desc">マップを動かす際に、データが自動的にロードされます</string>
     <string name="error_perm_loc">現在位置を見つけられるために、「お客様の位置情報」設定がオンに変化してください</string>
     <string name="error_zoom">データがロード出来るために、マップをズームインしてください</string>
+    <string-array name="settings_src_entries">
+        <item>Zenius -I- vanisher.com (全世界)</item>
+        <item>DDR-Navi (日本のみ)</item>
+        <item>カスタム (Advanced)</item>
+        <item>全部</item>
+    </string-array>
 </resources>
