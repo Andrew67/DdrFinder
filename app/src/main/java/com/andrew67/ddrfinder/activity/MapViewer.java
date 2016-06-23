@@ -176,9 +176,19 @@ public class MapViewer extends FragmentActivity
 	 * @param force Whether to ignore already loaded areas and load them again
 	 */
 	private void updateMap(boolean force) {
-		final LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
+		LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
 		final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		if (force || !alreadyLoaded(box)) {
+			// Preload a slightly larger box area when zoomed in, for a smoother pan/zoom experience
+            // as network requests are reduced.
+            if (Math.abs(box.northeast.latitude - box.southwest.latitude) < 0.5
+                    && Math.abs(box.northeast.longitude - box.southwest.longitude) < 0.5) {
+                box = LatLngBounds.builder()
+                        .include(new LatLng(box.northeast.latitude + 0.125, box.northeast.longitude + 0.125))
+                        .include(new LatLng(box.southwest.latitude - 0.125, box.southwest.longitude - 0.125))
+                        .build();
+            }
+
             final int version = Integer.parseInt(
                     sharedPref.getString(SettingsActivity.KEY_PREF_API_VERSION, ""));
             switch (version) {
