@@ -7,7 +7,7 @@ See [DdrFinder-legacy](https://github.com/Andrew67/DdrFinder-legacy) for the old
 
 Live Demo
 ---------
-Download the APK that uses the database from the ddr-finder [Live Demo](http://ddrfinder.tk).
+Download the APK that uses the database from the ddr-finder [Live Demo](https://ddrfinder.andrew67.com/).
 
 License
 -------
