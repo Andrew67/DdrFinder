@@ -33,7 +33,7 @@
     </string-array>
     <string name="settings_src_default">ziv</string>
     <string name="settings_api_endpoint">API Endpoint (Advanced)</string>
-    <string name="settings_api_version">Client API Version (Advanced)</string>
+    <string name="settings_api_version">Client API (Advanced)</string>
     <string-array name="settings_api_version_entries">
         <item>1.1 (1.0 compatible)</item>
         <item>3.0</item>
