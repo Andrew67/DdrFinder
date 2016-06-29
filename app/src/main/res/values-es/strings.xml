@@ -24,4 +24,10 @@
     <string name="settings_api_version">Nivel de protocolo del cliente</string>
     <string name="settings_api_endpoint">Localización del API</string>
     <string name="error_api_ver">El servidor no reconoció el nivel de protocolo del cliente especificado</string>
+    <string-array name="settings_src_entries">
+        <item>Zenius -I- vanisher.com (Mundial)</item>
+        <item>DDR-Navi (Japón)</item>
+        <item>Personalizada (opción avanzada)</item>
+        <item>Todas</item>
+    </string-array>
 </resources>

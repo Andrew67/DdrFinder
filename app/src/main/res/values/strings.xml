@@ -20,12 +20,12 @@
     <!-- Preferences -->
     <string name="settings_src">Data Source</string>
     <string-array name="settings_src_entries">
-        <item>Zenius -I- vanisher.com</item>
-        <item>DDR-Navi</item>
+        <item>Zenius -I- vanisher.com (Worldwide)</item>
+        <item>DDR-Navi (Japan)</item>
         <item>Custom (Advanced)</item>
         <item>All Sources</item>
     </string-array>
-    <string-array name="settings_src_entryValues">
+    <string-array name="settings_src_entryValues" translatable="false">
         <item>ziv</item>
         <item>navi</item>
         <item>custom</item>
@@ -34,11 +34,11 @@
     <string name="settings_src_default" translatable="false">ziv</string>
     <string name="settings_api_endpoint">API Endpoint</string>
     <string name="settings_api_version">Client API Level</string>
-    <string-array name="settings_api_version_entries">
-        <item>1.1 (1.0 compatible)</item>
+    <string-array name="settings_api_version_entries" translatable="false">
+        <item>1.x</item>
         <item>3.0</item>
     </string-array>
-    <string-array name="settings_api_version_entryValues">
+    <string-array name="settings_api_version_entryValues" translatable="false">
         <item>11</item>
         <item>30</item>
     </string-array>
