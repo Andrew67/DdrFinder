@@ -8,19 +8,21 @@
     <string name="location_actions_info">詳しいこと</string>
     <string name="location_actions_navigate">マップアプリでオープン</string>
     <string name="action_about">アプリ情報</string>
-    <string name="area_no_results">このエリアにわたって、ゲームセンターが見つかりませんでした</string>
+    <string name="area_no_results">この範囲ではゲームセンターが見つかりませんでした</string>
     <string name="copy_complete">コピーされました</string>
-    <string name="error_api_unexpected">予想外な通信エラーが起こりました</string>
-    <string name="settings_src">データ送信装置</string>
-    <string name="error_api">予想外なデータエラーが起こりました</string>
+    <string name="error_api_unexpected">予想外の通信エラーが起こりました</string>
+    <string name="settings_src">データベース</string>
+    <string name="error_api">予想外のデータエラーが起こりました</string>
     <string name="settings_autoload">オートロード</string>
-    <string name="settings_autoload_desc">マップを動かす際に、データが自動的にロードされます</string>
+    <string name="settings_autoload_desc">マップを動かせばデータが自動的にロードされます</string>
     <string name="error_perm_loc">現在位置を見つけられるために、「お客様の位置情報」設定がオンに変化してください</string>
-    <string name="error_zoom">データがロード出来るために、マップをズームインしてください</string>
+    <string name="error_zoom">データがロード出来るようにはマップをズームしてください</string>
     <string-array name="settings_src_entries">
         <item>Zenius -I- vanisher.com (全世界)</item>
         <item>DDR-Navi (日本のみ)</item>
-        <item>カスタム (Advanced)</item>
-        <item>全部</item>
+        <item>カスタム (詳細設定)</item>
+        <item>全データベース</item>
     </string-array>
+    <string name="settings_category_advanced">詳細設定</string>
+    <string name="settings_category_basic">基本的</string>
 </resources>
