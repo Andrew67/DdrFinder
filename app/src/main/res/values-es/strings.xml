@@ -20,4 +20,8 @@
     <string name="about_url"><![CDATA[https://ddrfinder.andrew67.com/about.php?c=%1$s&n=%2$s&locale=es]]></string>
     <string name="settings_category_basic">Configuración básica</string>
     <string name="settings_category_advanced">Configuración avanzada</string>
+    <string name="settings_api_src">Fuente de datos personalizada</string>
+    <string name="settings_api_version">Nivel de protocolo del cliente</string>
+    <string name="settings_api_endpoint">Localización del API</string>
+    <string name="error_api_ver">El servidor no reconoció el nivel de protocolo del cliente especificado</string>
 </resources>

@@ -25,4 +25,9 @@
     </string-array>
     <string name="settings_category_advanced">詳細設定</string>
     <string name="settings_category_basic">基本的</string>
+    <string name="settings_api_src">カスタムのデータベース</string>
+    <string name="settings_api_endpoint">APIエンドポイント</string>
+    <string name="settings_api_version">クライアントAPIレベル</string>
+    <string name="error_datasrc">このサーバーは入力された「カスタムのデータベース」設定が理解できません</string>
+    <string name="error_api_ver">このサーバーは入力された「クライアントAPIレベル」設定が理解できません</string>
 </resources>

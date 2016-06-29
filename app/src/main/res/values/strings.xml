@@ -12,7 +12,7 @@
     <string name="location_actions_copy">Copy GPS Coordinates</string>
     <string name="copy_complete">Copied</string>
     <string name="error_perm_loc">Enable location permission in settings to detect current location</string>
-    <string name="error_api_ver">Unsupported API version requested</string>
+    <string name="error_api_ver">API level requested is not supported by this server</string>
     <string name="error_datasrc">Server did not recognize the data source(s) requested</string>
     <string name="error_api_unexpected">Unexpected connection error</string>
     <string name="area_no_results">No arcades found in this area</string>
@@ -33,7 +33,7 @@
     </string-array>
     <string name="settings_src_default" translatable="false">ziv</string>
     <string name="settings_api_endpoint">API Endpoint</string>
-    <string name="settings_api_version">Client API </string>
+    <string name="settings_api_version">Client API Level</string>
     <string-array name="settings_api_version_entries">
         <item>1.1 (1.0 compatible)</item>
         <item>3.0</item>
