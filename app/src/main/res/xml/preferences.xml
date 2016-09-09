@@ -11,11 +11,6 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_advanced">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="autoload"
-            android:title="@string/settings_autoload"
-            android:summary="@string/settings_autoload_desc"/>
         <EditTextPreference
             android:defaultValue="all"
             android:key="api_src_custom"

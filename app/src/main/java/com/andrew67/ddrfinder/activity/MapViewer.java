@@ -148,22 +148,12 @@ public class MapViewer extends FragmentActivity
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                if (isAutoloadEnabled()) {
-                    updateMap(false);
-                }
+                updateMap(false);
             }
         });
         mMap.setOnMarkerClickListener(actionModeEnabler);
         mMap.setOnMapClickListener(actionModeDisabler);
         mMap.setOnInfoWindowClickListener(moreInfoListener);
-    }
-
-    /**
-     * Whether the autoload flag is enabled for map scrolling.
-     */
-    private boolean isAutoloadEnabled() {
-        return PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean(SettingsActivity.KEY_PREF_AUTOLOAD, true);
     }
 
     /**
@@ -368,9 +358,7 @@ public class MapViewer extends FragmentActivity
         final Map<String, ?> currPrefs = PreferenceManager.getDefaultSharedPreferences(this).getAll();
         if (prevPrefs != null && !currPrefs.equals(prevPrefs)) {
             clearMap();
-            if (isAutoloadEnabled()) {
-                updateMap(false);
-            }
+            updateMap(false);
         }
     }
 

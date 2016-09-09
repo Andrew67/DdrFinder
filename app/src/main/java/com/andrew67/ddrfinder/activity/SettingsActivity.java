@@ -46,7 +46,6 @@ public class SettingsActivity extends Activity {
     public static final String KEY_PREF_API_SRC_CUSTOM = "api_src_custom";
     public static final String KEY_PREF_API_URL = "api_endpoint";
     public static final String KEY_PREF_API_VERSION = "api_version";
-    public static final String KEY_PREF_AUTOLOAD = "autoload";
 
     public static final int API_V11 = 11;
     public static final int API_V30 = 30;
