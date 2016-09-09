@@ -42,7 +42,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -65,7 +64,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.Toast;
 
 
@@ -94,14 +92,12 @@ public class MapViewer extends FragmentActivity
 
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.map_viewer);
 
 		progressBar = (CircleProgressBar) findViewById(R.id.progressBar);
 		onCreateSavedInstanceState = savedInstanceState;
 
-		((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-				.getMapAsync(this);
+		((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 	}
 
 	/**
@@ -149,10 +145,9 @@ public class MapViewer extends FragmentActivity
 			MapLoader.fillMap(mMap, currentMarkers, savedLoadedLocations);
 		}
 
-		mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-
+		mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
 			@Override
-			public void onCameraChange(CameraPosition position) {
+			public void onCameraIdle() {
 				if (isAutoloadEnabled()) {
 					updateMap(false);
 				}
