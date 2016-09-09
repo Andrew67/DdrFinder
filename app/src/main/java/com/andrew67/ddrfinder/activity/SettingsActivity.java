@@ -32,6 +32,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.annotation.NonNull;
 import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.R;
@@ -51,6 +52,10 @@ public class SettingsActivity extends Activity {
     public static final int API_V30 = 30;
 
     public static final String API_SRC_CUSTOM = "custom";
+
+    // Which preferences to hide when data source is not set to "Custom"
+    public static final String[] API_ADV_PREFS =
+            { KEY_PREF_API_SRC_CUSTOM, KEY_PREF_API_URL, KEY_PREF_API_VERSION };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +109,8 @@ public class SettingsActivity extends Activity {
             pref = findPreference(KEY_PREF_API_VERSION);
             pref.setSummary(getPrefSummary(R.array.settings_api_version_entryValues, R.array.settings_api_version_entries,
                     sharedPref.getString(KEY_PREF_API_VERSION, "")));
+
+            setAdvancedSettingsVisibility(sharedPref.getString(KEY_PREF_API_SRC, ""));
         }
 
         @Override
@@ -133,6 +140,7 @@ public class SettingsActivity extends Activity {
                     case KEY_PREF_API_SRC:
                         pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                                 sharedPref.getString(KEY_PREF_API_SRC, "")));
+                        setAdvancedSettingsVisibility(sharedPref.getString(KEY_PREF_API_SRC, ""));
                         break;
                     case KEY_PREF_API_VERSION:
                         pref.setSummary(getPrefSummary(R.array.settings_api_version_entryValues, R.array.settings_api_version_entries,
@@ -155,6 +163,18 @@ public class SettingsActivity extends Activity {
             int idx = Arrays.asList(keys_arr).indexOf(key);
             if (idx == -1) return key;
             else return values_arr[idx];
+        }
+
+        /**
+         * Toggle the appearance of the advanced API options, based on whether the data source is set to custom
+         */
+        private void setAdvancedSettingsVisibility(@NonNull String datasrc) {
+            final boolean shouldEnable = datasrc.equals(API_SRC_CUSTOM);
+
+            for (String prefKey : API_ADV_PREFS) {
+                final Preference pref = findPreference(prefKey);
+                pref.setEnabled(shouldEnable);
+            }
         }
     }
 }

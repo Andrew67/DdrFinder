@@ -23,13 +23,11 @@
         <item>Zenius -I- vanisher.com (Worldwide)</item>
         <item>DDR-Navi (Japan)</item>
         <item>Custom (Advanced)</item>
-        <item>All Sources</item>
     </string-array>
     <string-array name="settings_src_entryValues" translatable="false">
         <item>ziv</item>
         <item>navi</item>
         <item>custom</item>
-        <item>all</item>
     </string-array>
     <string name="settings_src_default" translatable="false">ziv</string>
     <string name="settings_api_endpoint">API Endpoint</string>
@@ -43,6 +41,7 @@
         <item>30</item>
     </string-array>
     <string name="settings_api_version_default" translatable="false">30</string>
+    <string name="settings_api_url_default" translatable="false">https://ddrfinder.andrew67.com/locate.php</string>
     <string name="settings_api_src">Custom Data Source</string>
     <string name="settings_autoload">Auto-load</string>
     <string name="settings_autoload_desc">Automatically download location data when moving map</string>

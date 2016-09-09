@@ -184,16 +184,24 @@ public class MapViewer extends FragmentActivity
                         .build();
             }
 
-            final int version = Integer.parseInt(
-                    sharedPref.getString(SettingsActivity.KEY_PREF_API_VERSION, ""));
+            int version = Integer.parseInt(getResources().
+                    getString(R.string.settings_api_version_default));
+            String apiUrl = getResources().getString(R.string.settings_api_url_default);
+            if (SettingsActivity.API_SRC_CUSTOM.equals(
+                    sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""))) {
+                version = Integer.parseInt(
+                        sharedPref.getString(SettingsActivity.KEY_PREF_API_VERSION, ""));
+                apiUrl = sharedPref.getString(SettingsActivity.KEY_PREF_API_URL, "");
+            }
+
             switch (version) {
                 case SettingsActivity.API_V11:
                     new MapLoaderV1(mMap, currentMarkers, this, this,
-                            loadedAreas, loadedSources, sharedPref).execute(box);
+                            loadedAreas, loadedSources, sharedPref, apiUrl).execute(box);
                     break;
                 case SettingsActivity.API_V30:
                     new MapLoaderV3(mMap, currentMarkers, this, this,
-                            loadedAreas, loadedSources, sharedPref).execute(box);
+                            loadedAreas, loadedSources, sharedPref, apiUrl).execute(box);
                     break;
                 default:
                     showMessage(R.string.error_api_ver);

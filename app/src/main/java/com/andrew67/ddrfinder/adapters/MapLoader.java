@@ -50,11 +50,12 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
     protected final List<LatLngBounds> areas;
     protected final Map<String,DataSource> sources;
     protected final SharedPreferences sharedPref;
+    protected final String apiUrl;
 
     public MapLoader(GoogleMap map, Map<Marker, ArcadeLocation> markers,
                      ProgressBarController pbc, MessageDisplay display,
                      List<LatLngBounds> areas, Map<String,DataSource> sources,
-                     SharedPreferences sharedPref) {
+                     SharedPreferences sharedPref, String apiUrl) {
         super();
         this.map = map;
         this.markers = markers;
@@ -63,6 +64,7 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
         this.areas = areas;
         this.sources = sources;
         this.sharedPref = sharedPref;
+        this.apiUrl = apiUrl;
 
         // Show indeterminate progress bar
         // Assumes this class is constructed followed by a call to execute()

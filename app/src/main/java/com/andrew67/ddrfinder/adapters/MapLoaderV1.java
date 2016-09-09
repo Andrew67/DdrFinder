@@ -60,8 +60,8 @@ public class MapLoaderV1 extends MapLoader {
 	public MapLoaderV1(GoogleMap map, Map<Marker, ArcadeLocation> markers,
 					 ProgressBarController pbc, MessageDisplay display,
 					 List<LatLngBounds> areas, Map<String,DataSource> sources,
-					 SharedPreferences sharedPref) {
-		super(map, markers, pbc, display, areas, sources, sharedPref);
+					 SharedPreferences sharedPref, String apiUrl) {
+		super(map, markers, pbc, display, areas, sources, sharedPref, apiUrl);
 	}
 
 	@Override
@@ -73,8 +73,7 @@ public class MapLoaderV1 extends MapLoader {
 			final LatLngBounds box = boxes[0];
 
 			final OkHttpClient client = new OkHttpClient();
-			final String LOADER_API_URL = sharedPref.getString(SettingsActivity.KEY_PREF_API_URL, "");
-			final HttpUrl requestURL = HttpUrl.parse(LOADER_API_URL).newBuilder()
+			final HttpUrl requestURL = HttpUrl.parse(apiUrl).newBuilder()
 					.addQueryParameter("source", "android")
 					.addQueryParameter("latupper", "" + box.northeast.latitude)
 					.addQueryParameter("longupper", "" + box.northeast.longitude)
