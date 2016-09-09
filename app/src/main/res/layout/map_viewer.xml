@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     class="com.google.android.gms.maps.SupportMapFragment"
     android:id="@+id/map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.google.android.gms.maps.MapFragment">
+    android:name="com.google.android.gms.maps.MapFragment"
+    map:uiZoomControls="true"
+    map:cameraTargetLat="36.2068047"
+    map:cameraTargetLng="-100.7467658"
+    map:cameraZoom="4">
     <com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/progressBar"
