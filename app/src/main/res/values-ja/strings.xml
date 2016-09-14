@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DDRファインダー</string>
+    <string name="app_name">DDR ファインダー</string>
     <string name="action_reload">リロード</string>
     <string name="action_settings">設定</string>
     <string name="about_url"><![CDATA[https://ddrfinder.andrew67.com/about.php?c=%1$s&n=%2$s&locale=ja]]></string>
