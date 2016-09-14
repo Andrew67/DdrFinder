@@ -42,6 +42,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -108,20 +109,6 @@ public class MapViewer extends FragmentActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Check for location permission, and request if disabled
-        // This permission allows the user to locate themselves on the map
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-            if (onCreateSavedInstanceState == null) {
-                zoomToCurrentLocation();
-            }
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_LOCATION);
-        }
-
         // Restore previously loaded areas locations, and sources if available
         // (and re-create the location markers)
         if (onCreateSavedInstanceState != null &&
@@ -145,15 +132,83 @@ public class MapViewer extends FragmentActivity
             MapLoader.fillMap(mMap, currentMarkers, savedLoadedLocations);
         }
 
-        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-                updateMap(false);
+        // Start the camera on the last known user-interacted view.
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(loadCameraFromState()));
+
+        // Check for location permission, and request if disabled.
+        // This permission allows the user to locate themselves on the map.
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            if (onCreateSavedInstanceState == null) {
+                zoomToCurrentLocation();
             }
-        });
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_LOCATION);
+        }
+
+        mMap.setOnCameraIdleListener(cameraMoveListener);
         mMap.setOnMarkerClickListener(actionModeEnabler);
         mMap.setOnMapClickListener(actionModeDisabler);
         mMap.setOnInfoWindowClickListener(moreInfoListener);
+    }
+
+    /**
+     * Listener class that stores the current map location and requests a map update.
+     */
+    private GoogleMap.OnCameraIdleListener cameraMoveListener = new GoogleMap.OnCameraIdleListener() {
+        @Override
+        public void onCameraIdle() {
+            // Store the last moved-to coordinates, to use as starting point on next app launch.
+            // This is especially relevant to those who have the location permission disabled.
+            final CameraPosition currentPosition = mMap.getCameraPosition();
+            saveCameraToState(currentPosition);
+
+            updateMap(false);
+        }
+    };
+
+    // Preference names for storing last known coordinates.
+    private final String PREF_STATE = "state";
+    private final String KEY_LATITUDE = "latitude";
+    private final String KEY_LONGITUDE = "longitude";
+    private final String KEY_ZOOM = "zoom";
+    private final double DEFAULT_LATITUDE = 36.2068047;
+    private final double DEFAULT_LONGITUDE = -100.7467658;
+    private final float DEFAULT_ZOOM = 4;
+
+    /**
+     * Save the given camera position to the current state.
+     * @param position The position to save.
+     */
+    private void saveCameraToState(CameraPosition position) {
+        final SharedPreferences state = getSharedPreferences(PREF_STATE, MODE_PRIVATE);
+
+        state.edit()
+                .putLong(KEY_LATITUDE, Double.doubleToRawLongBits(position.target.latitude))
+                .putLong(KEY_LONGITUDE, Double.doubleToRawLongBits(position.target.longitude))
+                .putFloat(KEY_ZOOM, position.zoom)
+                .apply();
+    }
+
+    /**
+     * Load the camera position from the last saved state, or use the defaults.
+     */
+    private CameraPosition loadCameraFromState() {
+        final SharedPreferences state = getSharedPreferences(PREF_STATE, MODE_PRIVATE);
+
+        Long rawLatitude = state.getLong(KEY_LATITUDE, Long.MIN_VALUE);
+        Long rawLongitude = state.getLong(KEY_LONGITUDE, Long.MIN_VALUE);
+        final float zoom = state.getFloat(KEY_ZOOM, DEFAULT_ZOOM);
+
+        final double latitude = (rawLatitude == Long.MIN_VALUE) ? DEFAULT_LATITUDE :
+                Double.longBitsToDouble(rawLatitude);
+        final double longitude = (rawLongitude == Long.MIN_VALUE) ? DEFAULT_LONGITUDE :
+                Double.longBitsToDouble(rawLongitude);
+
+        return new CameraPosition(new LatLng(latitude, longitude), zoom, 0, 0);
     }
 
     /**
@@ -386,7 +441,7 @@ public class MapViewer extends FragmentActivity
         @Override
         public boolean onMarkerClick(Marker marker) {
             if (actionMode == null) {
-                actionMode = MapViewer.this.startActionMode(actionModeCallback);
+                actionMode = startActionMode(actionModeCallback);
             }
             selectedMarker = marker;
             return false; // keep the default action of moving view and showing info window

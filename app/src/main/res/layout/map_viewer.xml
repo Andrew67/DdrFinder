@@ -6,10 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:name="com.google.android.gms.maps.MapFragment"
-    map:uiZoomControls="true"
-    map:cameraTargetLat="36.2068047"
-    map:cameraTargetLng="-100.7467658"
-    map:cameraZoom="4">
+    map:uiZoomControls="true">
     <com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/progressBar"
