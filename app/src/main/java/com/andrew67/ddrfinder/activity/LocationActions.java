@@ -38,6 +38,9 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * Helper class for location actions.
  */
@@ -77,12 +80,16 @@ public class LocationActions {
      */
     public void navigate(@NonNull Context context) {
         final LatLng coordinates = location.getLocation();
-        final String label = location.getName()
-                .replace('(', '[').replace(')', ']');
-        context.startActivity(new Intent(Intent.ACTION_VIEW,
-                Uri.parse("geo:" + coordinates.latitude + "," +
-                        coordinates.longitude + "?q=" + coordinates.latitude +
-                        "," + coordinates.longitude + "(" + label + ")")));
+        try {
+            final String label = URLEncoder.encode(location.getName(), "UTF-8");
+            context.startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("geo:" + coordinates.latitude + "," +
+                            coordinates.longitude + "?q=" + coordinates.latitude +
+                            "," + coordinates.longitude + "(" + label + ")")));
+        } catch (UnsupportedEncodingException e) {
+            // UTF-8 should always be a supported encoding
+            e.printStackTrace();
+        }
     }
 
     /**
