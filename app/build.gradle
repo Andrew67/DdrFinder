@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "24.0.3"
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
         versionCode 17
@@ -28,6 +28,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.google.code.gson:gson:2.4'
-    compile 'com.android.support:support-v4:24.2.0'
+    compile 'com.android.support:support-v4:24.2.1'
     compile 'com.lsjwzh:materialloadingprogressbar:0.5.8-RELEASE'
 }
