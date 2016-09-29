@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Andrés Cordero
+ * Copyright (c) 2015-2016 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -138,7 +138,7 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
         }
 
         final MarkerOptions markerOptions = new MarkerOptions()
-                .position(loc.getLocation())
+                .position(loc.getPosition())
                 .title(loc.getName())
                 .icon(BitmapDescriptorFactory.defaultMarker(hue));
         if (!"".equals(loc.getCity())) markerOptions.snippet(loc.getCity());

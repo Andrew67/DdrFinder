@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Andrés Cordero
+ * Copyright (c) 2015-2016 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -70,9 +70,10 @@ public class Location implements ArcadeLocation {
         return city;
     }
 
+    private LatLng position = null;
     @Override
-    public LatLng getLocation() {
-        return new LatLng(lat, lng);
+    public LatLng getPosition() {
+        return (position == null) ? position = new LatLng(lat, lng) : position;
     }
 
     @Override

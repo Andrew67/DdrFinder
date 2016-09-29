@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Andrés Cordero
+ * Copyright (c) 2015-2016 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,7 +24,7 @@ package com.andrew67.ddrfinder.interfaces;
 
 import android.os.Parcelable;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 
 import java.util.regex.Pattern;
 
@@ -34,13 +34,12 @@ import java.util.regex.Pattern;
  * For example, the model.v1 ArcadeLocationV1 class was extended to return static "ziv" source information.
  * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
  */
-public interface ArcadeLocation extends Parcelable {
+public interface ArcadeLocation extends Parcelable, ClusterItem {
     int getId();
     String getSrc();
     String getSid();
     String getName();
     String getCity();
-    LatLng getLocation();
     boolean hasDDR();
     boolean isClosed();
 

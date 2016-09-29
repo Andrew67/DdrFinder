@@ -64,7 +64,7 @@ public class LocationActions {
      * @param display Optional message display provider, to show "Copied" message.
      */
     public void copyGps(@NonNull Context context, @Nullable MessageDisplay display) {
-        final LatLng coordinates = location.getLocation();
+        final LatLng coordinates = location.getPosition();
         final ClipboardManager clipboard =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         clipboard.setPrimaryClip(ClipData.newPlainText("gps",
@@ -79,7 +79,7 @@ public class LocationActions {
      * @param context The context which provides the ability to start activities.
      */
     public void navigate(@NonNull Context context) {
-        final LatLng coordinates = location.getLocation();
+        final LatLng coordinates = location.getPosition();
         try {
             final String label = URLEncoder.encode(location.getName(), "UTF-8");
             context.startActivity(new Intent(Intent.ACTION_VIEW,
