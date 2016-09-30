@@ -65,6 +65,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -379,7 +380,7 @@ public class MapViewer extends FragmentActivity
     }
 
     // Keep toast references mapped by resource id, to prevent excessive repeated toasts.
-    private Map<Integer, Toast> toasts = new HashMap<>();
+    private SparseArray<Toast> toasts = new SparseArray<>();
     @Override
     public void showMessage(int resourceId) {
         final Toast oldToast = toasts.get(resourceId);
