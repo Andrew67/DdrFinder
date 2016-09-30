@@ -38,13 +38,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
-    protected final GoogleMap map;
-    protected final Map<Marker,ArcadeLocation> markers;
+    protected final ClusterManager<ArcadeLocation> clusterManager;
+    protected final List<ArcadeLocation> loadedLocations;
+    protected final Set<Integer> loadedArcadeIds;
     protected final ProgressBarController pbc;
     protected final MessageDisplay display;
     protected final List<LatLngBounds> areas;
@@ -52,13 +55,15 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
     protected final SharedPreferences sharedPref;
     protected final String apiUrl;
 
-    public MapLoader(GoogleMap map, Map<Marker, ArcadeLocation> markers,
+    public MapLoader(ClusterManager<ArcadeLocation> clusterManager,
+                     List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
                      ProgressBarController pbc, MessageDisplay display,
                      List<LatLngBounds> areas, Map<String,DataSource> sources,
                      SharedPreferences sharedPref, String apiUrl) {
         super();
-        this.map = map;
-        this.markers = markers;
+        this.clusterManager = clusterManager;
+        this.loadedLocations = loadedLocations;
+        this.loadedArcadeIds = loadedArcadeIds;
         this.pbc = pbc;
         this.display = display;
         this.areas = areas;
@@ -89,7 +94,7 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
                     display.showMessage(R.string.area_no_results);
                 }
 
-                fillMap(map, markers, result.getLocations());
+                fillMap(clusterManager, loadedLocations, loadedArcadeIds, result.getLocations());
                 areas.add(result.getBounds());
 
                 for (DataSource src : result.getSources()) {
@@ -110,39 +115,17 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
         }
     }
 
-    public static void fillMap(GoogleMap map,
-                               Map<Marker,ArcadeLocation> markers, List<ArcadeLocation> feed){
+    public static void fillMap(ClusterManager<ArcadeLocation> clusterManager, List<ArcadeLocation> loadedLocations,
+                               Set<Integer> loadedArcadeIds, List<ArcadeLocation> feed) {
         for (ArcadeLocation loc : feed)
         {
-            addMarker(map, markers, loc);
+            if (!loadedArcadeIds.contains(loc.getId())) {
+                clusterManager.addItem(loc);
+                loadedArcadeIds.add(loc.getId());
+                loadedLocations.add(loc);
+            }
         }
-    }
-
-    public static void addMarker(GoogleMap map,
-                                 Map<Marker,ArcadeLocation> markers, ArcadeLocation loc) {
-        // Set default marker color to red.
-        float hue = BitmapDescriptorFactory.HUE_RED;
-
-        // Set the default to purple on Material devices to match accent color.
-        if (Build.VERSION.SDK_INT >= 21) {
-            hue = BitmapDescriptorFactory.HUE_VIOLET;
-        }
-
-        // Has the location been tagged as closed? Mark orange.
-        if (loc.isClosed()) {
-            hue = BitmapDescriptorFactory.HUE_ORANGE;
-        }
-        // Does the location have a DDR machine? Mark blue.
-        else if (loc.hasDDR()) {
-            hue = BitmapDescriptorFactory.HUE_AZURE;
-        }
-
-        final MarkerOptions markerOptions = new MarkerOptions()
-                .position(loc.getPosition())
-                .title(loc.getName())
-                .icon(BitmapDescriptorFactory.defaultMarker(hue));
-        if (!"".equals(loc.getCity())) markerOptions.snippet(loc.getCity());
-
-        markers.put(map.addMarker(markerOptions), loc);
+        // Required to force a re-render.
+        clusterManager.cluster();
     }
 }

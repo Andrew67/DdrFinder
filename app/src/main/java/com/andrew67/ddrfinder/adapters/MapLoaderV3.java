@@ -35,10 +35,9 @@ import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.andrew67.ddrfinder.model.v3.Result;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
+import com.google.maps.android.clustering.ClusterManager;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -46,66 +45,69 @@ import com.squareup.okhttp.Response;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MapLoaderV3 extends MapLoader {
 
-	public MapLoaderV3(GoogleMap map, Map<Marker, ArcadeLocation> markers,
-					   ProgressBarController pbc, MessageDisplay display,
-					   List<LatLngBounds> areas, Map<String, DataSource> sources,
-					   SharedPreferences sharedPref, String apiUrl) {
-		super(map, markers, pbc, display, areas, sources, sharedPref, apiUrl);
-	}
+    public MapLoaderV3(ClusterManager<ArcadeLocation> clusterManager,
+                       List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
+                       ProgressBarController pbc, MessageDisplay display,
+                       List<LatLngBounds> areas, Map<String, DataSource> sources,
+                       SharedPreferences sharedPref, String apiUrl) {
+        super(clusterManager, loadedLocations, loadedArcadeIds, pbc, display, areas, sources, sharedPref, apiUrl);
+    }
 
-	@Override
-	protected ApiResult doInBackground(LatLngBounds... boxes) {
-		ApiResult result = null;
-		try {
-			if (boxes.length == 0) throw new IllegalArgumentException("No boxes passed to doInBackground");
-			final LatLngBounds box = boxes[0];
+    @Override
+    protected ApiResult doInBackground(LatLngBounds... boxes) {
+        ApiResult result = null;
+        try {
+            if (boxes.length == 0) throw new IllegalArgumentException("No boxes passed to doInBackground");
+            final LatLngBounds box = boxes[0];
 
             String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
             if (SettingsActivity.API_SRC_CUSTOM.equals(datasrc)) {
                 datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC_CUSTOM, "");
             }
 
-			final OkHttpClient client = new OkHttpClient();
-			final HttpUrl requestURL = HttpUrl.parse(apiUrl).newBuilder()
-					.addQueryParameter("version", "" + SettingsActivity.API_V30)
+            final OkHttpClient client = new OkHttpClient();
+            final HttpUrl requestURL = HttpUrl.parse(apiUrl).newBuilder()
+                    .addQueryParameter("version", "" + SettingsActivity.API_V30)
+                    .addQueryParameter("canHandleLargeDataset", "")
                     .addQueryParameter("datasrc", datasrc)
-					.addQueryParameter("latupper", "" + box.northeast.latitude)
-					.addQueryParameter("lngupper", "" + box.northeast.longitude)
-					.addQueryParameter("latlower", "" + box.southwest.latitude)
-					.addQueryParameter("lnglower", "" + box.southwest.longitude)
-					.build();
+                    .addQueryParameter("latupper", "" + box.northeast.latitude)
+                    .addQueryParameter("lngupper", "" + box.northeast.longitude)
+                    .addQueryParameter("latlower", "" + box.southwest.latitude)
+                    .addQueryParameter("lnglower", "" + box.southwest.longitude)
+                    .build();
 
-			Log.d("api", "Request URL: " + requestURL);
-			final Request get = new Request.Builder()
-					.header("User-Agent", BuildConfig.APPLICATION_ID + " " + BuildConfig.VERSION_NAME
+            Log.d("api", "Request URL: " + requestURL);
+            final Request get = new Request.Builder()
+                    .header("User-Agent", BuildConfig.APPLICATION_ID + " " + BuildConfig.VERSION_NAME
                             + "/Android?SDK=" + Build.VERSION.SDK_INT)
-					.url(requestURL)
-					.build();
+                    .url(requestURL)
+                    .build();
 
-			final Response response = client.newCall(get).execute();
-			final int statusCode = response.code();
-			Log.d("api", "Status code: " + statusCode);
+            final Response response = client.newCall(get).execute();
+            final int statusCode = response.code();
+            Log.d("api", "Status code: " + statusCode);
 
-			// Data/error loaded OK
-			if (statusCode == 200 || statusCode == 400) {
+            // Data/error loaded OK
+            if (statusCode == 200 || statusCode == 400) {
                 final Gson gson = new Gson();
                 result = gson.fromJson(response.body().charStream(), Result.class);
                 result.setBounds(box);
                 Log.d("api", "Raw API result: " + gson.toJson(result, Result.class));
-			}
-			// Unexpected error code
-			else {
-				throw new RuntimeException("Unexpected HTTP status code: " + statusCode);
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return result;
-	}
+            }
+            // Unexpected error code
+            else {
+                throw new RuntimeException("Unexpected HTTP status code: " + statusCode);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
 }

@@ -28,12 +28,16 @@ package com.andrew67.ddrfinder.activity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.MapLoader;
 import com.andrew67.ddrfinder.adapters.MapLoaderV1;
 import com.andrew67.ddrfinder.adapters.MapLoaderV3;
+import com.andrew67.ddrfinder.handlers.CustomClusterRenderer;
+import com.andrew67.ddrfinder.handlers.LocationActions;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
@@ -46,6 +50,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.clustering.ClusterManager;
 import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
 
 import android.content.Intent;
@@ -75,11 +80,14 @@ public class MapViewer extends FragmentActivity
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
     private GoogleMap mMap;
+    private ClusterManager<ArcadeLocation> mClusterManager;
+    private CustomClusterRenderer mClusterRenderer;
     private MenuItem reloadButton;
     private CircleProgressBar progressBar;
 
-    private final Map<Marker,ArcadeLocation> currentMarkers = new HashMap<>();
+    private final Set<Integer> loadedLocationIds = new HashSet<>();
     // Set as ArrayList instead of List due to Bundle packing
+    private final ArrayList<ArcadeLocation> loadedLocations = new ArrayList<>();
     private final ArrayList<LatLngBounds> loadedAreas =	new ArrayList<>();
 
     /**
@@ -108,6 +116,9 @@ public class MapViewer extends FragmentActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mClusterManager = new ClusterManager<>(this, mMap);
+        mClusterRenderer = new CustomClusterRenderer(this, mMap, mClusterManager);
+        mClusterManager.setRenderer(mClusterRenderer);
 
         // Restore previously loaded areas locations, and sources if available
         // (and re-create the location markers)
@@ -129,7 +140,7 @@ public class MapViewer extends FragmentActivity
                 }
             }
 
-            MapLoader.fillMap(mMap, currentMarkers, savedLoadedLocations);
+            MapLoader.fillMap(mClusterManager, loadedLocations, loadedLocationIds, savedLoadedLocations);
         }
 
         // Start the camera on the last known user-interacted view.
@@ -149,10 +160,13 @@ public class MapViewer extends FragmentActivity
                     PERMISSIONS_REQUEST_LOCATION);
         }
 
+        mClusterManager.setOnClusterItemClickListener(actionModeEnabler);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(moreInfoListener);
+
         mMap.setOnCameraIdleListener(cameraMoveListener);
-        mMap.setOnMarkerClickListener(actionModeEnabler);
         mMap.setOnMapClickListener(actionModeDisabler);
-        mMap.setOnInfoWindowClickListener(moreInfoListener);
+        mMap.setOnMarkerClickListener(mClusterManager);
+        mMap.setOnInfoWindowClickListener(mClusterManager);
     }
 
     /**
@@ -166,6 +180,7 @@ public class MapViewer extends FragmentActivity
             final CameraPosition currentPosition = mMap.getCameraPosition();
             saveCameraToState(currentPosition);
 
+            mClusterManager.onCameraIdle();
             updateMap(false);
         }
     };
@@ -241,11 +256,11 @@ public class MapViewer extends FragmentActivity
 
             switch (version) {
                 case SettingsActivity.API_V11:
-                    new MapLoaderV1(mMap, currentMarkers, this, this,
+                    new MapLoaderV1(mClusterManager, loadedLocations, loadedLocationIds, this, this,
                             loadedAreas, loadedSources, sharedPref, apiUrl).execute(box);
                     break;
                 case SettingsActivity.API_V30:
-                    new MapLoaderV3(mMap, currentMarkers, this, this,
+                    new MapLoaderV3(mClusterManager, loadedLocations, loadedLocationIds, this, this,
                             loadedAreas, loadedSources, sharedPref, apiUrl).execute(box);
                     break;
                 default:
@@ -292,8 +307,9 @@ public class MapViewer extends FragmentActivity
      * Clears map of all markers, and internal data structures of all loaded areas.
      */
     private void clearMap() {
-        mMap.clear();
-        currentMarkers.clear();
+        mClusterManager.clearItems();
+        loadedLocationIds.clear();
+        loadedLocations.clear();
         loadedAreas.clear();
     }
 
@@ -337,8 +353,6 @@ public class MapViewer extends FragmentActivity
 
         // Save the list of currently loaded map areas and locations
         outState.putParcelableArrayList("loadedAreas", loadedAreas);
-        final ArrayList<ArcadeLocation> loadedLocations = new ArrayList<>(currentMarkers.size());
-        loadedLocations.addAll(currentMarkers.values());
         outState.putParcelableArrayList("loadedLocations", loadedLocations);
 
         // Save the map of currently loaded sources, as a list
@@ -437,13 +451,14 @@ public class MapViewer extends FragmentActivity
     /**
      * Listener class that activates the action bar on marker click.
      */
-    private GoogleMap.OnMarkerClickListener actionModeEnabler = new GoogleMap.OnMarkerClickListener() {
+    private ClusterManager.OnClusterItemClickListener<ArcadeLocation> actionModeEnabler =
+            new ClusterManager.OnClusterItemClickListener<ArcadeLocation>() {
         @Override
-        public boolean onMarkerClick(Marker marker) {
+        public boolean onClusterItemClick(ArcadeLocation location) {
             if (actionMode == null) {
                 actionMode = startActionMode(actionModeCallback);
             }
-            selectedMarker = marker;
+            selectedLocation = location;
             return false; // keep the default action of moving view and showing info window
         }
     };
@@ -465,7 +480,7 @@ public class MapViewer extends FragmentActivity
      * Template: https://developer.android.com/guide/topics/ui/menus.html#CAB
      */
     private ActionMode actionMode = null;
-    private Marker selectedMarker = null;
+    private ArcadeLocation selectedLocation = null;
     private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
         // Called when the action mode is created; startActionMode() was called
         @Override
@@ -486,9 +501,6 @@ public class MapViewer extends FragmentActivity
         // Called when the user selects a contextual menu item
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            if (selectedMarker == null) return false;
-
-            final ArcadeLocation selectedLocation = currentMarkers.get(selectedMarker);
             if (selectedLocation == null) return false;
 
             final LocationActions actions =
@@ -513,8 +525,11 @@ public class MapViewer extends FragmentActivity
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             actionMode = null;
-            if (selectedMarker != null) {
-                selectedMarker.hideInfoWindow();
+            if (selectedLocation != null) {
+                final Marker selectedMarker = mClusterRenderer.getMarker(selectedLocation);
+                if (selectedMarker != null) {
+                    selectedMarker.hideInfoWindow();
+                }
             }
         }
 
@@ -523,15 +538,12 @@ public class MapViewer extends FragmentActivity
     /**
      * Info window click listener which triggers the "More Info" action.
      */
-    private GoogleMap.OnInfoWindowClickListener moreInfoListener = new GoogleMap.OnInfoWindowClickListener() {
+    private ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation> moreInfoListener =
+            new ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation>() {
         @Override
-        public void onInfoWindowClick(Marker marker) {
-            final ArcadeLocation selectedLocation = currentMarkers.get(selectedMarker);
-            if (selectedLocation != null) {
-                final LocationActions actions =
-                        new LocationActions(selectedLocation, getSource(selectedLocation));
+        public void onClusterItemInfoWindowClick(ArcadeLocation location) {
+                final LocationActions actions = new LocationActions(location, getSource(location));
                 actions.moreInfo(MapViewer.this);
-            }
         }
     };
 }

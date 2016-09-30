@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder.activity;
+package com.andrew67.ddrfinder.handlers;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
