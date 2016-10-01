@@ -30,6 +30,7 @@ import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.model.v3.Source;
 import com.google.android.gms.maps.model.LatLng;
 
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -89,6 +90,10 @@ public class LocationActions {
         } catch (UnsupportedEncodingException e) {
             // UTF-8 should always be a supported encoding
             e.printStackTrace();
+        } catch (ActivityNotFoundException e) {
+            // Thrown when user has no installed map applications that handle geo: URIs
+            context.startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=com.google.android.apps.maps")));
         }
     }
 
