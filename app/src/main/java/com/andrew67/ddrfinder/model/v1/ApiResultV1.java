@@ -39,107 +39,100 @@ import com.google.android.gms.maps.model.LatLngBounds;
  * Provides more information than a mere list (such as errors).
  */
 public class ApiResultV1 implements ApiResult {
-	/** Arcade locations returned by the query. */
-	private final List<com.andrew67.ddrfinder.interfaces.ArcadeLocation> locations;
-	/** Geographical boundary covered by the query. */
-	private LatLngBounds bounds;
-	
-	private final int errorCode;
-	/** Everything is OK; can use the locations list. */
-	public static final int ERROR_NONE = 0;
-	/** An unexpected API error has occurred. */
-	public static final int ERROR_API = 1;
-	/** The user has zoomed out past the valid API boundary box values. */
-	public static final int ERROR_ZOOM = 2;
-	
-	public ApiResultV1(List<ArcadeLocation> locations, LatLngBounds bounds) {
-		this.locations = locations;
-		this.bounds = bounds;
-		this.errorCode = ERROR_NONE;
-	}
-	
-	public ApiResultV1(int errorCode) {
-		this.locations = null;
-		this.bounds = null;
-		this.errorCode = errorCode;
-	}
+    /** Arcade locations returned by the query. */
+    private final List<com.andrew67.ddrfinder.interfaces.ArcadeLocation> locations;
+    /** Geographical boundary covered by the query. */
+    private LatLngBounds bounds;
 
-	public List<ArcadeLocation> getLocations() {
-		return locations;
-	}
+    private final int errorCode;
+    /** An unexpected API error has occurred. */
+    public static final int ERROR_API = 1;
+    /** The user has zoomed out past the valid API boundary box values. */
+    public static final int ERROR_ZOOM = 2;
 
-	public int getErrorCode() {
-		switch (errorCode) {
-			case ERROR_API:
-				return ERROR_UNEXPECTED;
-			case ERROR_ZOOM:
-				return ERROR_OVERSIZED_BOX;
-			case ERROR_NONE:
-			default:
-				return ERROR_OK;
-		}
-	}
+    public ApiResultV1(List<ArcadeLocation> locations, LatLngBounds bounds) {
+        this.locations = locations;
+        this.bounds = bounds;
+        this.errorCode = 0;
+    }
 
-	public int getV1ErrorCode() {
-		return errorCode;
-	}
-	
-	public LatLngBounds getBounds() {
-		return bounds;
-	}
+    public ApiResultV1(int errorCode) {
+        this.locations = null;
+        this.bounds = null;
+        this.errorCode = errorCode;
+    }
 
-	public void setBounds(LatLngBounds bounds) {
-		this.bounds = bounds;
-	}
+    public List<ArcadeLocation> getLocations() {
+        return locations;
+    }
 
-	public List<DataSource> getSources() {
-		return Collections.<DataSource>singletonList(new ZivSource());
-	}
+    public int getErrorCode() {
+        switch (errorCode) {
+            case ERROR_API:
+                return ERROR_UNEXPECTED;
+            case ERROR_ZOOM:
+                return ERROR_OVERSIZED_BOX;
+            default:
+                return ERROR_OK;
+        }
+    }
 
-	/**
-	 * Custom class for returning a hardcoded data source, since V1 used Ziv exclusively.
-	 */
-	private static class ZivSource implements DataSource {
+    public LatLngBounds getBounds() {
+        return bounds;
+    }
 
-		@Override
-		public String getShortName() {
-			return "ziv";
-		}
+    public void setBounds(LatLngBounds bounds) {
+        this.bounds = bounds;
+    }
 
-		@Override
-		public String getName() {
-			return "Zenius -I- vanisher.com";
-		}
+	private static final List<DataSource> sources = Collections.<DataSource>singletonList(ZivSource.INSTANCE);
+    public List<DataSource> getSources() {
+        return sources;
+    }
 
-		@Override
-		public String getInfoURL() {
-			return "http://m.zenius-i-vanisher.com/arcadelocations_viewarcade.php?locationid=${sid}";
-		}
+    /**
+     * Custom class for returning a hardcoded data source, since V1 used Ziv exclusively.
+     */
+    private static class ZivSource implements DataSource {
+		static final ZivSource INSTANCE = new ZivSource();
 
-		@Override
-		public boolean hasDDR() {
-			return false;
-		}
+        @Override
+        public String getShortName() {
+            return "ziv";
+        }
 
-		@Override
-		public int describeContents() {
-			return 0;
-		}
+        @Override
+        public String getName() {
+            return "Zenius -I- vanisher.com";
+        }
 
-		@Override
-		public void writeToParcel(Parcel dest, int flags) {
+        @Override
+        public String getInfoURL() {
+            return "http://m.zenius-i-vanisher.com/arcadelocations_viewarcade.php?locationid=${sid}";
+        }
 
-		}
+        @Override
+        public boolean hasDDR() {
+            return false;
+        }
 
-		public static final Parcelable.Creator<ZivSource> CREATOR
-				= new Parcelable.Creator<ZivSource>() {
-			public ZivSource createFromParcel(Parcel in) {
-				return new ZivSource();
-			}
+        @Override
+        public int describeContents() {
+            return 0;
+        }
 
-			public ZivSource[] newArray(int size) {
-				return new ZivSource[size];
-			}
-		};
-	}
+        @Override
+        public void writeToParcel(Parcel dest, int flags) { }
+
+        public static final Parcelable.Creator<ZivSource> CREATOR
+                = new Parcelable.Creator<ZivSource>() {
+            public ZivSource createFromParcel(Parcel in) {
+                return INSTANCE;
+            }
+
+            public ZivSource[] newArray(int size) {
+                return new ZivSource[size];
+            }
+        };
+    }
 }

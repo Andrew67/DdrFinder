@@ -29,15 +29,15 @@ package com.andrew67.ddrfinder.interfaces;
 public interface MessageDisplay {
 	/**
 	 * Display the specified message.
-	 * @param message
+	 * @param message The message to display.
 	 */
-	public void showMessage(String message);
+	void showMessage(String message);
 	
 	/**
 	 * Display the specified message resource.
 	 * If the class does not have a way of loading resources,
 	 * it should throw an exception.
-	 * @param resourceId
+	 * @param resourceId The resource ID of the message to display.
 	 */
-	public void showMessage(int resourceId) throws RuntimeException;
+	void showMessage(int resourceId) throws RuntimeException;
 }

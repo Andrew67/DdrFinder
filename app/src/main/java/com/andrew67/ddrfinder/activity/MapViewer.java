@@ -77,7 +77,7 @@ import android.widget.Toast;
 public class MapViewer extends FragmentActivity
     implements ProgressBarController, MessageDisplay, OnMapReadyCallback {
 
-    public static final int BASE_ZOOM = 12;
+    private static final int BASE_ZOOM = 12;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
     private GoogleMap mMap;
@@ -173,7 +173,7 @@ public class MapViewer extends FragmentActivity
     /**
      * Listener class that stores the current map location and requests a map update.
      */
-    private GoogleMap.OnCameraIdleListener cameraMoveListener = new GoogleMap.OnCameraIdleListener() {
+    private final GoogleMap.OnCameraIdleListener cameraMoveListener = new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
             // Store the last moved-to coordinates, to use as starting point on next app launch.
@@ -380,7 +380,7 @@ public class MapViewer extends FragmentActivity
     }
 
     // Keep toast references mapped by resource id, to prevent excessive repeated toasts.
-    private SparseArray<Toast> toasts = new SparseArray<>();
+    private final SparseArray<Toast> toasts = new SparseArray<>();
     @Override
     public void showMessage(int resourceId) {
         final Toast oldToast = toasts.get(resourceId);
@@ -452,7 +452,7 @@ public class MapViewer extends FragmentActivity
     /**
      * Listener class that activates the action bar on marker click.
      */
-    private ClusterManager.OnClusterItemClickListener<ArcadeLocation> actionModeEnabler =
+    private final ClusterManager.OnClusterItemClickListener<ArcadeLocation> actionModeEnabler =
             new ClusterManager.OnClusterItemClickListener<ArcadeLocation>() {
         @Override
         public boolean onClusterItemClick(ArcadeLocation location) {
@@ -467,7 +467,7 @@ public class MapViewer extends FragmentActivity
     /**
      * Listener class that de-activates the action bar on clicking elsewhere.
      */
-    private GoogleMap.OnMapClickListener actionModeDisabler = new GoogleMap.OnMapClickListener() {
+    private final GoogleMap.OnMapClickListener actionModeDisabler = new GoogleMap.OnMapClickListener() {
         @Override
         public void onMapClick(LatLng coords) {
             if (actionMode != null) {
@@ -482,7 +482,7 @@ public class MapViewer extends FragmentActivity
      */
     private ActionMode actionMode = null;
     private ArcadeLocation selectedLocation = null;
-    private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+    private final ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
         // Called when the action mode is created; startActionMode() was called
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -539,7 +539,7 @@ public class MapViewer extends FragmentActivity
     /**
      * Info window click listener which triggers the "More Info" action.
      */
-    private ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation> moreInfoListener =
+    private final ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation> moreInfoListener =
             new ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation>() {
         @Override
         public void onClusterItemInfoWindowClick(ArcadeLocation location) {

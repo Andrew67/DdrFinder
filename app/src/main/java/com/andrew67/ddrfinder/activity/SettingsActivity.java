@@ -53,7 +53,7 @@ public class SettingsActivity extends Activity {
     public static final String API_SRC_CUSTOM = "custom";
 
     // Which preferences to hide when data source is not set to "Custom"
-    public static final String[] API_ADV_PREFS =
+    private static final String[] API_ADV_PREFS =
             { KEY_PREF_API_SRC_CUSTOM, KEY_PREF_API_URL, KEY_PREF_API_VERSION };
 
     @Override

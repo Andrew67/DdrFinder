@@ -1,8 +1,10 @@
 apply plugin: 'com.android.application'
 
+//noinspection GroovyMissingReturnStatement
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
+    //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
         versionCode 17

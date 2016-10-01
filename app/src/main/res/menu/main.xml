@@ -1,21 +1,25 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
         android:id="@+id/action_reload"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:icon="@drawable/dark_navigation_refresh"
-        android:title="@string/action_reload"/>
+        android:title="@string/action_reload"
+        tools:ignore="AppCompatResource" />
     
     <item
         android:id="@+id/action_settings"
         android:showAsAction="never"
         android:icon="@drawable/dark_action_settings"
-        android:title="@string/action_settings"/>
+        android:title="@string/action_settings"
+        tools:ignore="AppCompatResource" />
     
     <item
         android:id="@+id/action_about"
         android:showAsAction="never"
         android:icon="@drawable/dark_action_about"
-        android:title="@string/action_about"/>
+        android:title="@string/action_about"
+        tools:ignore="AppCompatResource" />
 
 </menu>

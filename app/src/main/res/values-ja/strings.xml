@@ -3,7 +3,7 @@
     <string name="app_name">DDR ファインダー</string>
     <string name="action_reload">リロード</string>
     <string name="action_settings">設定</string>
-    <string name="about_url"><![CDATA[https://ddrfinder.andrew67.com/about.php?c=%1$s&n=%2$s&locale=ja]]></string>
+    <string name="about_url"><![CDATA[https://ddrfinder.andrew67.com/about.php?c=%1$d&n=%2$s&locale=ja]]></string>
     <string name="location_actions_copy">GPS座標をコピー</string>
     <string name="location_actions_info">詳しいこと</string>
     <string name="location_actions_navigate">マップアプリでオープン</string>

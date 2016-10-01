@@ -6,7 +6,7 @@
     <string name="action_about">About</string>
     <string name="error_zoom">Zoom in to load more locations</string>
     <string name="error_api">Error loading data</string>
-    <string name="about_url">https://ddrfinder.andrew67.com/about.php?c=%1$s&amp;n=%2$s</string>
+    <string name="about_url">https://ddrfinder.andrew67.com/about.php?c=%1$d&amp;n=%2$s</string>
     <string name="location_actions_navigate">Open in Maps App</string>
     <string name="location_actions_info">Details</string>
     <string name="location_actions_copy">Copy GPS Coordinates</string>
