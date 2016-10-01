@@ -36,7 +36,7 @@ import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.MapLoader;
 import com.andrew67.ddrfinder.adapters.MapLoaderV1;
 import com.andrew67.ddrfinder.adapters.MapLoaderV3;
-import com.andrew67.ddrfinder.handlers.CustomClusterRenderer;
+import com.andrew67.ddrfinder.handlers.LocationClusterRenderer;
 import com.andrew67.ddrfinder.handlers.LocationActions;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
@@ -82,7 +82,7 @@ public class MapViewer extends FragmentActivity
 
     private GoogleMap mMap;
     private ClusterManager<ArcadeLocation> mClusterManager;
-    private CustomClusterRenderer mClusterRenderer;
+    private LocationClusterRenderer mClusterRenderer;
     private MenuItem reloadButton;
     private CircleProgressBar progressBar;
 
@@ -118,7 +118,7 @@ public class MapViewer extends FragmentActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mClusterManager = new ClusterManager<>(this, mMap);
-        mClusterRenderer = new CustomClusterRenderer(this, mMap, mClusterManager);
+        mClusterRenderer = new LocationClusterRenderer(this, mMap, mClusterManager);
         mClusterManager.setRenderer(mClusterRenderer);
 
         // Restore previously loaded areas locations, and sources if available

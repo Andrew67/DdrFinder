@@ -36,9 +36,9 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 /**
  * Custom ClusterRenderer class for arcade locations to handle setting up marker color, info window, etc.
  */
-public class CustomClusterRenderer extends DefaultClusterRenderer<ArcadeLocation> {
+public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocation> {
 
-    public CustomClusterRenderer(Context context, GoogleMap map, ClusterManager<ArcadeLocation> clusterManager) {
+    public LocationClusterRenderer(Context context, GoogleMap map, ClusterManager<ArcadeLocation> clusterManager) {
         super(context, map, clusterManager);
     }
 
