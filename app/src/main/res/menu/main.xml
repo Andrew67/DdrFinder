@@ -4,21 +4,21 @@
     <item
         android:id="@+id/action_reload"
         android:showAsAction="ifRoom"
-        android:icon="@drawable/dark_navigation_refresh"
+        android:icon="@drawable/ic_refresh_white_24dp"
         android:title="@string/action_reload"
         tools:ignore="AppCompatResource" />
     
     <item
         android:id="@+id/action_settings"
         android:showAsAction="never"
-        android:icon="@drawable/dark_action_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
         android:title="@string/action_settings"
         tools:ignore="AppCompatResource" />
     
     <item
         android:id="@+id/action_about"
         android:showAsAction="never"
-        android:icon="@drawable/dark_action_about"
+        android:icon="@drawable/ic_info_outline_white_24dp"
         android:title="@string/action_about"
         tools:ignore="AppCompatResource" />
 
