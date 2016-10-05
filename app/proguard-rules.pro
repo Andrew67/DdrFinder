@@ -1,6 +1,9 @@
 -dontwarn com.squareup.**
 -dontwarn okio.**
 
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+
 # https://github.com/google/gson/blob/master/examples/android-proguard-example/proguard.cfg
 ##---------------Begin: proguard configuration for Gson  ----------
 # Gson uses generic type information stored in a class file when working with fields. Proguard

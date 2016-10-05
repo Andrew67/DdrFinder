@@ -73,6 +73,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import org.piwik.sdk.PiwikApplication;
+import org.piwik.sdk.TrackHelper;
+import org.piwik.sdk.Tracker;
+
 
 public class MapViewer extends FragmentActivity
     implements ProgressBarController, MessageDisplay, OnMapReadyCallback {
@@ -108,6 +112,9 @@ public class MapViewer extends FragmentActivity
         onCreateSavedInstanceState = savedInstanceState;
 
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
+
+        Tracker tracker = ((PiwikApplication) getApplication()).getTracker();
+        TrackHelper.track().screen("/map_viewer").title("Map Viewer").with(tracker);
     }
 
     /**
