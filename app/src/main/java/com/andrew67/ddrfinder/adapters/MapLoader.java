@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Andrés Cordero
+ * Copyright (c) 2015-2017 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +23,6 @@
 
 package com.andrew67.ddrfinder.adapters;
 
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import com.andrew67.ddrfinder.R;
@@ -40,21 +39,21 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
-    protected final ClusterManager<ArcadeLocation> clusterManager;
-    protected final List<ArcadeLocation> loadedLocations;
-    protected final Set<Integer> loadedArcadeIds;
-    protected final ProgressBarController pbc;
-    protected final MessageDisplay display;
-    protected final List<LatLngBounds> areas;
-    protected final Map<String,DataSource> sources;
-    protected final SharedPreferences sharedPref;
-    protected final String apiUrl;
+    private final ClusterManager<ArcadeLocation> clusterManager;
+    private final List<ArcadeLocation> loadedLocations;
+    private final Set<Integer> loadedArcadeIds;
+    private final ProgressBarController pbc;
+    private final MessageDisplay display;
+    private final List<LatLngBounds> areas;
+    private final Map<String,DataSource> sources;
+    final String apiUrl;
+    final String datasrc;
 
-    public MapLoader(ClusterManager<ArcadeLocation> clusterManager,
-                     List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
-                     ProgressBarController pbc, MessageDisplay display,
-                     List<LatLngBounds> areas, Map<String,DataSource> sources,
-                     SharedPreferences sharedPref, String apiUrl) {
+    MapLoader(ClusterManager<ArcadeLocation> clusterManager,
+                 List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
+                 ProgressBarController pbc, MessageDisplay display,
+                 List<LatLngBounds> areas, Map<String,DataSource> sources,
+                 String apiUrl, String datasrc) {
         super();
         this.clusterManager = clusterManager;
         this.loadedLocations = loadedLocations;
@@ -63,8 +62,8 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
         this.display = display;
         this.areas = areas;
         this.sources = sources;
-        this.sharedPref = sharedPref;
         this.apiUrl = apiUrl;
+        this.datasrc = datasrc;
 
         // Show indeterminate progress bar
         // Assumes this class is constructed followed by a call to execute()

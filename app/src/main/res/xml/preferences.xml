@@ -11,19 +11,5 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_advanced">
-        <EditTextPreference
-            android:defaultValue="all"
-            android:key="api_src_custom"
-            android:title="@string/settings_api_src"/>
-        <EditTextPreference
-            android:defaultValue="@string/settings_api_url_default"
-            android:key="api_endpoint"
-            android:title="@string/settings_api_endpoint"/>
-        <ListPreference
-            android:defaultValue="@string/settings_api_version_default"
-            android:key="api_version"
-            android:title="@string/settings_api_version"
-            android:entries="@array/settings_api_version_entries"
-            android:entryValues="@array/settings_api_version_entryValues"/>
     </PreferenceCategory>
 </PreferenceScreen>

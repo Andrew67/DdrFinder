@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2015-2016 Andrés Cordero
+ * Copyright (c) 2015-2017 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -43,18 +43,7 @@ import java.util.Arrays;
 public class SettingsActivity extends Activity {
 
     public static final String KEY_PREF_API_SRC = "api_src";
-    public static final String KEY_PREF_API_SRC_CUSTOM = "api_src_custom";
-    public static final String KEY_PREF_API_URL = "api_endpoint";
-    public static final String KEY_PREF_API_VERSION = "api_version";
-
-    public static final int API_V11 = 11;
-    public static final int API_V30 = 30;
-
     public static final String API_SRC_CUSTOM = "custom";
-
-    // Which preferences to hide when data source is not set to "Custom"
-    private static final String[] API_ADV_PREFS =
-            { KEY_PREF_API_SRC_CUSTOM, KEY_PREF_API_URL, KEY_PREF_API_VERSION };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,22 +83,11 @@ public class SettingsActivity extends Activity {
 
             // Set preference summaries to current values
             final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
-
-            Preference pref = findPreference(KEY_PREF_API_URL);
-            pref.setSummary(sharedPref.getString(KEY_PREF_API_URL, ""));
-
-            pref = findPreference(KEY_PREF_API_SRC_CUSTOM);
-            pref.setSummary(sharedPref.getString(KEY_PREF_API_SRC_CUSTOM, ""));
+            Preference pref;
 
             pref = findPreference(KEY_PREF_API_SRC);
             pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                     sharedPref.getString(KEY_PREF_API_SRC, "")));
-
-            pref = findPreference(KEY_PREF_API_VERSION);
-            pref.setSummary(getPrefSummary(R.array.settings_api_version_entryValues, R.array.settings_api_version_entries,
-                    sharedPref.getString(KEY_PREF_API_VERSION, "")));
-
-            setAdvancedSettingsVisibility(sharedPref.getString(KEY_PREF_API_SRC, ""));
         }
 
         @Override
@@ -131,19 +109,9 @@ public class SettingsActivity extends Activity {
             final Preference pref = findPreference(key);
             if (pref != null) {
                 switch (key) {
-                    case KEY_PREF_API_SRC_CUSTOM:
-                    case KEY_PREF_API_URL:
-                        // Set summary to be the selected value
-                        pref.setSummary(sharedPref.getString(key, ""));
-                        break;
                     case KEY_PREF_API_SRC:
                         pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                                 sharedPref.getString(KEY_PREF_API_SRC, "")));
-                        setAdvancedSettingsVisibility(sharedPref.getString(KEY_PREF_API_SRC, ""));
-                        break;
-                    case KEY_PREF_API_VERSION:
-                        pref.setSummary(getPrefSummary(R.array.settings_api_version_entryValues, R.array.settings_api_version_entries,
-                                sharedPref.getString(KEY_PREF_API_VERSION, "")));
                         break;
                 }
             }
@@ -162,18 +130,6 @@ public class SettingsActivity extends Activity {
             int idx = Arrays.asList(keys_arr).indexOf(key);
             if (idx == -1) return key;
             else return values_arr[idx];
-        }
-
-        /**
-         * Toggle the appearance of the advanced API options, based on whether the data source is set to custom
-         */
-        private void setAdvancedSettingsVisibility(@NonNull String datasrc) {
-            final boolean shouldEnable = datasrc.equals(API_SRC_CUSTOM);
-
-            for (String prefKey : API_ADV_PREFS) {
-                final Preference pref = findPreference(prefKey);
-                pref.setEnabled(shouldEnable);
-            }
         }
     }
 }

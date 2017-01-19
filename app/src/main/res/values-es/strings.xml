@@ -12,21 +12,15 @@
     <string name="location_actions_copy">Copiar coordenadas de GPS</string>
     <string name="location_actions_info">Detalles</string>
     <string name="location_actions_navigate">Abrir en aplicación de mapas</string>
-    <string name="settings_autoload">Descarga automática</string>
-    <string name="settings_autoload_desc">Automáticamente cargar data sobre localizaciones en el área al mover el mapa</string>
     <string name="settings_src">Fuente de datos</string>
     <string name="copy_complete">Copiado</string>
     <string name="error_zoom">Acerque al mapa para cargar más localizaciones</string>
     <string name="about_url"><![CDATA[https://ddrfinder.andrew67.com/about.php?c=%1$d&n=%2$s&locale=es]]></string>
     <string name="settings_category_basic">Configuración básica</string>
     <string name="settings_category_advanced">Configuración avanzada</string>
-    <string name="settings_api_src">Fuente de datos personalizada</string>
-    <string name="settings_api_version">Nivel de protocolo del cliente</string>
-    <string name="settings_api_endpoint">Localización del API</string>
-    <string name="error_api_ver">El servidor no reconoció el nivel de protocolo del cliente especificado</string>
+    <string name="error_api_ver">El servidor no reconoció el nivel de protocolo del cliente</string>
     <string-array name="settings_src_entries">
         <item>Zenius -I- vanisher.com (Mundial)</item>
         <item>DDR-Navi (Japón)</item>
-        <item>Personalizada (opción avanzada)</item>
     </string-array>
 </resources>

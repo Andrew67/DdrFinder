@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Andrés Cordero
+ * Copyright (c) 2015-2017 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,12 +23,10 @@
 
 package com.andrew67.ddrfinder.adapters;
 
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
 import com.andrew67.ddrfinder.BuildConfig;
-import com.andrew67.ddrfinder.activity.SettingsActivity;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
@@ -53,8 +51,8 @@ public class MapLoaderV3 extends MapLoader {
                        List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
                        ProgressBarController pbc, MessageDisplay display,
                        List<LatLngBounds> areas, Map<String, DataSource> sources,
-                       SharedPreferences sharedPref, String apiUrl) {
-        super(clusterManager, loadedLocations, loadedArcadeIds, pbc, display, areas, sources, sharedPref, apiUrl);
+                       String apiUrl, String datasrc) {
+        super(clusterManager, loadedLocations, loadedArcadeIds, pbc, display, areas, sources, apiUrl, datasrc);
     }
 
     @Override
@@ -64,14 +62,9 @@ public class MapLoaderV3 extends MapLoader {
             if (boxes.length == 0) throw new IllegalArgumentException("No boxes passed to doInBackground");
             final LatLngBounds box = boxes[0];
 
-            String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
-            if (SettingsActivity.API_SRC_CUSTOM.equals(datasrc)) {
-                datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC_CUSTOM, "");
-            }
-
             final OkHttpClient client = new OkHttpClient();
             final HttpUrl requestURL = HttpUrl.parse(apiUrl).newBuilder()
-                    .addQueryParameter("version", "" + SettingsActivity.API_V30)
+                    .addQueryParameter("version", "30")
                     .addQueryParameter("canHandleLargeDataset", "")
                     .addQueryParameter("datasrc", datasrc)
                     .addQueryParameter("latupper", "" + box.northeast.latitude)

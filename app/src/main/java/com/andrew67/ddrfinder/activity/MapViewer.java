@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  * 
- * Copyright (c) 2013-2016 Andrés Cordero
+ * Copyright (c) 2013-2017 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,7 +34,6 @@ import java.util.Set;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.MapLoader;
-import com.andrew67.ddrfinder.adapters.MapLoaderV1;
 import com.andrew67.ddrfinder.adapters.MapLoaderV3;
 import com.andrew67.ddrfinder.handlers.LocationClusterRenderer;
 import com.andrew67.ddrfinder.handlers.LocationActions;
@@ -252,31 +251,17 @@ public class MapViewer extends FragmentActivity
                         .build();
             }
 
-            int version = Integer.parseInt(getResources().
-                    getString(R.string.settings_api_version_default));
-            String apiUrl = getResources().getString(R.string.settings_api_url_default);
-            if (SettingsActivity.API_SRC_CUSTOM.equals(
-                    sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""))) {
-                version = Integer.parseInt(
-                        sharedPref.getString(SettingsActivity.KEY_PREF_API_VERSION, ""));
-                apiUrl = sharedPref.getString(SettingsActivity.KEY_PREF_API_URL, "");
+            final String apiUrl = getResources().getString(R.string.api_url);
+            String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
+
+            // For clients upgrading from <= 3.0.5/17 that had the now-removed "Custom" option selected, move to default.
+            if (SettingsActivity.API_SRC_CUSTOM.equals(datasrc)) {
+                datasrc = getResources().getString(R.string.settings_src_default);
+                sharedPref.edit().putString(SettingsActivity.KEY_PREF_API_SRC, datasrc).apply();
             }
 
-            switch (version) {
-                case SettingsActivity.API_V11:
-                    new MapLoaderV1(mClusterManager, loadedLocations, loadedLocationIds, this, this,
-                            loadedAreas, loadedSources, sharedPref, apiUrl).execute(box);
-                    break;
-                case SettingsActivity.API_V30:
-                    new MapLoaderV3(mClusterManager, loadedLocations, loadedLocationIds, this, this,
-                            loadedAreas, loadedSources, sharedPref, apiUrl).execute(box);
-                    break;
-                default:
-                    showMessage(R.string.error_api_ver);
-                    Log.d("MapViewer", "unsupported API version requested: " + version);
-                    break;
-            }
-
+            new MapLoaderV3(mClusterManager, loadedLocations, loadedLocationIds, this, this,
+                    loadedAreas, loadedSources, apiUrl, datasrc).execute(box);
         }
     }
 

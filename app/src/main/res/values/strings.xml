@@ -6,6 +6,7 @@
     <string name="action_about">About</string>
     <string name="error_zoom">Zoom in to load more locations</string>
     <string name="error_api">Error loading data</string>
+    <string name="api_url" translatable="false">https://ddrfinder.andrew67.com/locate.php</string>
     <string name="about_url">https://ddrfinder.andrew67.com/about.php?c=%1$d&amp;n=%2$s</string>
     <string name="location_actions_navigate">Open in Maps App</string>
     <string name="location_actions_info">Details</string>
@@ -22,29 +23,12 @@
     <string-array name="settings_src_entries">
         <item>Zenius -I- vanisher.com (Worldwide)</item>
         <item>DDR-Navi (Japan)</item>
-        <item>Custom (Advanced)</item>
     </string-array>
     <string-array name="settings_src_entryValues" translatable="false">
         <item>ziv</item>
         <item>navi</item>
-        <item>custom</item>
     </string-array>
     <string name="settings_src_default" translatable="false">ziv</string>
-    <string name="settings_api_endpoint">API Endpoint</string>
-    <string name="settings_api_version">Client API Level</string>
-    <string-array name="settings_api_version_entries" translatable="false">
-        <item>1.x</item>
-        <item>3.0</item>
-    </string-array>
-    <string-array name="settings_api_version_entryValues" translatable="false">
-        <item>11</item>
-        <item>30</item>
-    </string-array>
-    <string name="settings_api_version_default" translatable="false">30</string>
-    <string name="settings_api_url_default" translatable="false">https://ddrfinder.andrew67.com/locate.php</string>
-    <string name="settings_api_src">Custom Data Source</string>
-    <string name="settings_autoload">Auto-load</string>
-    <string name="settings_autoload_desc">Automatically download location data when moving map</string>
     <string name="settings_category_basic">Basic</string>
     <string name="settings_category_advanced">Advanced</string>
 </resources>
