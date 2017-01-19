@@ -7,8 +7,8 @@ android {
     //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
-        versionCode 17
-        versionName "3.0.5"
+        versionCode 18
+        versionName "3.0.6"
         minSdkVersion 15
         targetSdkVersion 24
         resConfigs "en", "es", "ja"
