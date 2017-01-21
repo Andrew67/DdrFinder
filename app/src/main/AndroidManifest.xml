@@ -49,6 +49,7 @@
     		android:value="AIzaSyCd56mJAgfzpvF4yL-YXj9S8JsQyCd84tc"/>
         <activity android:name=".activity.About"/>
         <activity android:name=".activity.SettingsActivity"/>
+        <activity android:name=".activity.BrowserActivity"/>
 
         <meta-data android:name="com.lge.support.SPLIT_WINDOW" android:value="true" />
         <uses-library android:required="false" android:name="com.sec.android.app.multiwindow" />

@@ -24,6 +24,7 @@
 package com.andrew67.ddrfinder.handlers;
 
 import com.andrew67.ddrfinder.R;
+import com.andrew67.ddrfinder.activity.BrowserActivity;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
@@ -38,6 +39,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -105,6 +107,15 @@ public class LocationActions {
         final String infoURL = source.getInfoURL()
                 .replace("${id}", "" + location.getId())
                 .replace("${sid}", location.getSid());
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(infoURL)));
+
+        try {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(infoURL)));
+        } catch (Exception e) {
+            // Launch built-in WebView browser if there's an exception thrown attempting to launch a regular browser activity.
+            Log.e("LocationActions", "Error launching Intent for HTTP(S) link; using built-in browser.", e);
+            context.startActivity(new Intent(context, BrowserActivity.class)
+                    .putExtra("url", infoURL)
+                    .putExtra("title", location.getName()));
+        }
     }
 }

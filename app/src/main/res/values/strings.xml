@@ -11,6 +11,7 @@
     <string name="location_actions_navigate">Open in Maps App</string>
     <string name="location_actions_info">Details</string>
     <string name="location_actions_copy">Copy GPS Coordinates</string>
+    <string name="browser_actions_copy">Copy link</string>
     <string name="copy_complete">Copied</string>
     <string name="error_perm_loc">Enable location permission in settings to detect current location</string>
     <string name="error_api_ver">API level requested is not supported by this server</string>

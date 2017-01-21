@@ -23,4 +23,5 @@
         <item>Zenius -I- vanisher.com (Mundial)</item>
         <item>DDR-Navi (Japón)</item>
     </string-array>
+    <string name="browser_actions_copy">Copiar enlace</string>
 </resources>

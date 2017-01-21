@@ -114,6 +114,13 @@ public class MapViewer extends FragmentActivity
 
         Tracker tracker = ((PiwikApplication) getApplication()).getTracker();
         TrackHelper.track().screen("/map_viewer").title("Map Viewer").with(tracker);
+
+        // For clients upgrading from <= 3.0.5/17 that had the now-removed "Custom" option selected, move to default.
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if (SettingsActivity.API_SRC_CUSTOM.equals(sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""))) {
+            sharedPref.edit().putString(SettingsActivity.KEY_PREF_API_SRC,
+                    getResources().getString(R.string.settings_src_default)).apply();
+        }
     }
 
     /**
@@ -252,13 +259,7 @@ public class MapViewer extends FragmentActivity
             }
 
             final String apiUrl = getResources().getString(R.string.api_url);
-            String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
-
-            // For clients upgrading from <= 3.0.5/17 that had the now-removed "Custom" option selected, move to default.
-            if (SettingsActivity.API_SRC_CUSTOM.equals(datasrc)) {
-                datasrc = getResources().getString(R.string.settings_src_default);
-                sharedPref.edit().putString(SettingsActivity.KEY_PREF_API_SRC, datasrc).apply();
-            }
+            final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
 
             new MapLoaderV3(mClusterManager, loadedLocations, loadedLocationIds, this, this,
                     loadedAreas, loadedSources, apiUrl, datasrc).execute(box);
