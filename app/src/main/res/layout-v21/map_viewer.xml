@@ -14,6 +14,6 @@
         android:layout_height="60dp"
         android:layout_gravity="center"
         app:mlpb_progress_stoke_width="3dp"
-        app:mlpb_progress_color="@android:color/holo_red_light"
+        app:mlpb_progress_color="?android:colorAccent"
         android:visibility="invisible"/>
 </fragment>

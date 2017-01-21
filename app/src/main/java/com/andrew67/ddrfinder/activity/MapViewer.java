@@ -55,8 +55,10 @@ import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -65,6 +67,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -482,6 +485,12 @@ public class MapViewer extends FragmentActivity
             // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.context_menu, menu);
+
+            // Set status bar color to match action mode background color.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(getThemeColor(R.attr.actionModeStatusBarColor));
+            }
+
             return true;
         }
 
@@ -525,6 +534,12 @@ public class MapViewer extends FragmentActivity
                     selectedMarker.hideInfoWindow();
                 }
             }
+
+            // Set status bar color back to default app color.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(getThemeColor(android.R.attr.colorPrimaryDark));
+            }
+
         }
 
     };
@@ -540,5 +555,17 @@ public class MapViewer extends FragmentActivity
                 actions.moreInfo(MapViewer.this);
         }
     };
+
+    /**
+     * Gets a color from the current theme.
+     * Source: http://stackoverflow.com/questions/17277618/get-color-value-programmatically-when-its-a-reference-theme/17277714#17277714
+     * @param attr Reference to the color name, from R.attr
+     */
+    private int getThemeColor(int attr) {
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = getTheme();
+        theme.resolveAttribute(attr, typedValue, true);
+        return typedValue.data;
+    }
 }
 
