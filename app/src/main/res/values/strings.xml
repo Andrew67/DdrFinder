@@ -32,4 +32,6 @@
     <string name="settings_src_default" translatable="false">ziv</string>
     <string name="settings_category_basic">Basic</string>
     <string name="settings_category_advanced">Advanced</string>
+    <string name="settings_analytics">Analytics</string>
+    <string name="settings_analytics_summary">Share anonymous usage statistics to help improve the app.</string>
 </resources>

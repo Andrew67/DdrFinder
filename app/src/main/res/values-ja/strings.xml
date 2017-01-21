@@ -24,4 +24,6 @@
     <string name="error_datasrc">サーバーは選ばれた「データベース」の設定が理解できませんでした</string>
     <string name="error_api_ver">サーバーはこのアプリのAPIレベルが理解できませんでした</string>
     <string name="browser_actions_copy">リンクをコピー</string>
+    <string name="settings_analytics">アナリティクス</string>
+    <string name="settings_analytics_summary">アプリをもっとよくように匿名の使用データをシェアします。</string>
 </resources>

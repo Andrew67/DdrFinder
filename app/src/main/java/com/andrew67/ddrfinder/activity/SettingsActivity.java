@@ -32,10 +32,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.annotation.NonNull;
 import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.R;
+
+import org.piwik.sdk.Piwik;
+import org.piwik.sdk.PiwikApplication;
+import org.piwik.sdk.TrackHelper;
+import org.piwik.sdk.Tracker;
 
 import java.util.Arrays;
 
@@ -44,6 +48,8 @@ public class SettingsActivity extends Activity {
 
     public static final String KEY_PREF_API_SRC = "api_src";
     public static final String API_SRC_CUSTOM = "custom";
+
+    public static final String KEY_ANALYTICS = "analyticsEnabled";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,9 @@ public class SettingsActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
+
+        Tracker tracker = ((PiwikApplication) getApplication()).getTracker();
+        TrackHelper.track().screen("/settings").title("Settings").with(tracker);
     }
 
     @Override
@@ -88,6 +97,24 @@ public class SettingsActivity extends Activity {
             pref = findPreference(KEY_PREF_API_SRC);
             pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                     sharedPref.getString(KEY_PREF_API_SRC, "")));
+
+            // Set analytics option to match opt-out / dry-run status
+            final Piwik piwik = ((PiwikApplication) getActivity().getApplication()).getPiwik();
+            final Preference analyticsPref = findPreference(KEY_ANALYTICS);
+            analyticsPref.setDefaultValue(!piwik.isOptOut() && !piwik.isDryRun());
+
+            // Disable analytics option toggle if dry-run is overriding opt-out
+            analyticsPref.setEnabled(!piwik.isDryRun());
+
+            // Set changes to analytics option to set piwik persistent opt-out flag
+            analyticsPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    boolean enableAnalytics = (boolean) newValue;
+                    piwik.setOptOut(!enableAnalytics);
+                    return true;
+                }
+            });
         }
 
         @Override

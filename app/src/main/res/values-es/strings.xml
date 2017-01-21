@@ -24,4 +24,6 @@
         <item>DDR-Navi (Japón)</item>
     </string-array>
     <string name="browser_actions_copy">Copiar enlace</string>
+    <string name="settings_analytics">Analítica</string>
+    <string name="settings_analytics_summary">Compartir estadísticas de uso anónimas para ayudar a mejorar la aplicación.</string>
 </resources>
