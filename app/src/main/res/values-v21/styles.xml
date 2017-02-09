@@ -11,6 +11,7 @@
         <item name="android:colorPrimaryDark">@android:color/holo_blue_dark</item>
 
         <item name="android:colorAccent">@android:color/holo_purple</item>
+        <item name="mColorAccent">?android:colorAccent</item>
         <item name="android:actionModeBackground">@color/holo_purple_darker</item>
         <item name="actionModeStatusBarColor">@color/holo_purple_darkest_darkness</item>
     </style>
