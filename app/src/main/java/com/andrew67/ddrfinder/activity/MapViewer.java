@@ -44,7 +44,7 @@ import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -52,6 +52,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.ClusterManager;
 import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -63,7 +64,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseArray;
@@ -80,7 +80,7 @@ import org.piwik.sdk.TrackHelper;
 import org.piwik.sdk.Tracker;
 
 
-public class MapViewer extends FragmentActivity
+public class MapViewer extends Activity
     implements ProgressBarController, MessageDisplay, OnMapReadyCallback {
 
     private static final int BASE_ZOOM = 12;
@@ -113,7 +113,7 @@ public class MapViewer extends FragmentActivity
         progressBar = (CircleProgressBar) findViewById(R.id.progressBar);
         onCreateSavedInstanceState = savedInstanceState;
 
-        ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
+        ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 
         Tracker tracker = ((PiwikApplication) getApplication()).getTracker();
         TrackHelper.track().screen("/map_viewer").title("Map Viewer").with(tracker);
