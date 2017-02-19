@@ -35,34 +35,41 @@ import android.webkit.WebView;
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 
+import org.piwik.sdk.PiwikApplication;
+import org.piwik.sdk.TrackHelper;
+import org.piwik.sdk.Tracker;
+
 public class About extends Activity {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		final WebView webview = new WebView(this);
-		setContentView(webview);
-		setTitle(R.string.action_about);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        final WebView webview = new WebView(this);
+        setContentView(webview);
+        setTitle(R.string.action_about);
 
-		final ActionBar actionBar = getActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
-		
-		final int versionCode = BuildConfig.VERSION_CODE;
-		final String versionName = BuildConfig.VERSION_NAME;
-		
-		webview.loadUrl(String.format(getString(R.string.about_url),
-				versionCode, versionName));
-	}
+        final ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
+        final int versionCode = BuildConfig.VERSION_CODE;
+        final String versionName = BuildConfig.VERSION_NAME;
+
+        webview.loadUrl(String.format(getString(R.string.about_url),
+                versionCode, versionName));
+
+        Tracker tracker = ((PiwikApplication) getApplication()).getTracker();
+        TrackHelper.track().screen("/about").title("About").with(tracker);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
