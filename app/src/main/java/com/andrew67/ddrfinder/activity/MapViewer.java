@@ -41,6 +41,7 @@ import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
+import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -56,7 +57,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -67,7 +67,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -91,6 +90,7 @@ public class MapViewer extends Activity
     private LocationClusterRenderer mClusterRenderer;
     private MenuItem reloadButton;
     private CircleProgressBar progressBar;
+    private Tracker tracker;
 
     private final Set<Integer> loadedLocationIds = new HashSet<>();
     // Set as ArrayList instead of List due to Bundle packing
@@ -115,7 +115,7 @@ public class MapViewer extends Activity
 
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 
-        Tracker tracker = ((PiwikApplication) getApplication()).getTracker();
+        tracker = ((PiwikApplication) getApplication()).getTracker();
         TrackHelper.track().screen("/map_viewer").title("Map Viewer").with(tracker);
 
         // For clients upgrading from <= 3.0.5/17 that had the now-removed "Custom" option selected, move to default.
@@ -488,7 +488,8 @@ public class MapViewer extends Activity
 
             // Set status bar color to match action mode background color.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(getThemeColor(R.attr.actionModeStatusBarColor));
+                getWindow().setStatusBarColor(
+                        ThemeUtil.getThemeColor(getTheme(), R.attr.actionModeStatusBarColor));
             }
 
             return true;
@@ -507,7 +508,7 @@ public class MapViewer extends Activity
             if (selectedLocation == null) return false;
 
             final LocationActions actions =
-                    new LocationActions(selectedLocation, getSource(selectedLocation));
+                    new LocationActions(selectedLocation, getSource(selectedLocation), tracker);
 
             switch (item.getItemId()) {
                 case R.id.action_navigate:
@@ -537,7 +538,8 @@ public class MapViewer extends Activity
 
             // Set status bar color back to default app color.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(getThemeColor(android.R.attr.colorPrimaryDark));
+                getWindow().setStatusBarColor(
+                        ThemeUtil.getThemeColor(getTheme(), android.R.attr.colorPrimaryDark));
             }
 
         }
@@ -551,21 +553,9 @@ public class MapViewer extends Activity
             new ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation>() {
         @Override
         public void onClusterItemInfoWindowClick(ArcadeLocation location) {
-                final LocationActions actions = new LocationActions(location, getSource(location));
+                final LocationActions actions = new LocationActions(location, getSource(location), tracker);
                 actions.moreInfo(MapViewer.this);
         }
     };
-
-    /**
-     * Gets a color from the current theme.
-     * Source: http://stackoverflow.com/questions/17277618/get-color-value-programmatically-when-its-a-reference-theme/17277714#17277714
-     * @param attr Reference to the color name, from R.attr
-     */
-    private int getThemeColor(int attr) {
-        TypedValue typedValue = new TypedValue();
-        Resources.Theme theme = getTheme();
-        theme.resolveAttribute(attr, typedValue, true);
-        return typedValue.data;
-    }
 }
 

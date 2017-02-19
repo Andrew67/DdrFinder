@@ -2,4 +2,5 @@
 <resources>
     <attr name="actionModeStatusBarColor" format="reference"/>
     <attr name="mColorAccent" format="reference"/>
+    <attr name="pinColorHasDDR" format="reference"/>
 </resources>

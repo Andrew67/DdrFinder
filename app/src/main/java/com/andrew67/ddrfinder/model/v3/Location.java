@@ -82,11 +82,6 @@ public class Location implements ArcadeLocation {
     }
 
     @Override
-    public boolean isClosed() {
-        return CLOSED.matcher(name).matches();
-    }
-
-    @Override
     public int describeContents() {
         return 0;
     }

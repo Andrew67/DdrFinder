@@ -24,9 +24,11 @@
 package com.andrew67.ddrfinder.handlers;
 
 import android.content.Context;
-import android.os.Build;
+import android.content.res.Resources;
 
+import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
+import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -38,27 +40,21 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
  */
 public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocation> {
 
+    private final Resources.Theme theme;
+
     public LocationClusterRenderer(Context context, GoogleMap map, ClusterManager<ArcadeLocation> clusterManager) {
         super(context, map, clusterManager);
+        this.theme = context.getTheme();
     }
 
     @Override
     protected void onBeforeClusterItemRendered(ArcadeLocation loc, MarkerOptions markerOptions) {
-        // Set default marker color to red.
-        float hue = BitmapDescriptorFactory.HUE_RED;
+        // Set default marker color to accent color.
+        float hue = ThemeUtil.getThemeColorHue(theme, R.attr.mColorAccent);
 
-        // Set the default to purple on Material devices to match accent color.
-        if (Build.VERSION.SDK_INT >= 21) {
-            hue = BitmapDescriptorFactory.HUE_VIOLET;
-        }
-
-        // Has the location been tagged as closed? Mark orange.
-        if (loc.isClosed()) {
-            hue = BitmapDescriptorFactory.HUE_ORANGE;
-        }
-        // Does the location have a DDR machine? Mark blue.
-        else if (loc.hasDDR()) {
-            hue = BitmapDescriptorFactory.HUE_AZURE;
+        // Does the location have a DDR machine?
+        if (loc.hasDDR()) {
+            hue = ThemeUtil.getThemeColorHue(theme, R.attr.pinColorHasDDR);
         }
 
         markerOptions.title(loc.getName())

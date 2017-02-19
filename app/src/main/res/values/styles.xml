@@ -10,12 +10,13 @@
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
-        <item name="mColorAccent">@color/pin_orangered</item>
+        <item name="mColorAccent">@color/orangered</item>
     </style>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="pinColorHasDDR">@android:color/holo_blue_light</item>
     </style>
 
 </resources>

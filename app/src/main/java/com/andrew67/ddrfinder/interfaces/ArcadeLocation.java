@@ -41,7 +41,4 @@ public interface ArcadeLocation extends Parcelable, ClusterItem {
     String getName();
     String getCity();
     boolean hasDDR();
-    boolean isClosed();
-
-    Pattern CLOSED = Pattern.compile(".*(?i:closed).*");
 }
