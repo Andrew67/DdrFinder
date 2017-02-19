@@ -24,7 +24,6 @@
 package com.andrew67.ddrfinder.handlers;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
@@ -40,22 +39,19 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
  */
 public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocation> {
 
-    private final Resources.Theme theme;
+    private final float defaultPinColor;
+    private final float hasDDRPinColor;
 
     public LocationClusterRenderer(Context context, GoogleMap map, ClusterManager<ArcadeLocation> clusterManager) {
         super(context, map, clusterManager);
-        this.theme = context.getTheme();
+        defaultPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.mColorAccent);
+        hasDDRPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.pinColorHasDDR);
     }
 
     @Override
     protected void onBeforeClusterItemRendered(ArcadeLocation loc, MarkerOptions markerOptions) {
-        // Set default marker color to accent color.
-        float hue = ThemeUtil.getThemeColorHue(theme, R.attr.mColorAccent);
-
-        // Does the location have a DDR machine?
-        if (loc.hasDDR()) {
-            hue = ThemeUtil.getThemeColorHue(theme, R.attr.pinColorHasDDR);
-        }
+        // Set marker color to accent color or DDR location color.
+        float hue = loc.hasDDR() ? hasDDRPinColor : defaultPinColor;
 
         markerOptions.title(loc.getName())
                 .icon(BitmapDescriptorFactory.defaultMarker(hue));
