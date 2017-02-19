@@ -34,4 +34,8 @@
     <string name="settings_category_advanced">Advanced</string>
     <string name="settings_analytics">Analytics</string>
     <string name="settings_analytics_summary">Share anonymous usage statistics to help improve the app.</string>
+    <string name="settings_location">Enable Current Location</string>
+    <string name="settings_location_dialog_message">To enable current location, tap Settings, then Permissions, then turn on the "Your location" switch.</string>
+    <string name="settings_location_dialog_positive">Settings</string>
+    <string name="settings_location_dialog_negative">Cancel</string>
 </resources>

@@ -28,10 +28,19 @@ package com.andrew67.ddrfinder.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.R;
@@ -49,7 +58,8 @@ public class SettingsActivity extends Activity {
     public static final String KEY_PREF_API_SRC = "api_src";
     public static final String API_SRC_CUSTOM = "custom";
 
-    public static final String KEY_ANALYTICS = "analyticsEnabled";
+    public static final String KEY_PREF_ANALYTICS = "analyticsEnabled";
+    public static final String KEY_PREF_LOCATION = "location";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +91,41 @@ public class SettingsActivity extends Activity {
         }
     }
 
+    public static class EnableLocationDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // From https://developer.android.com/guide/topics/ui/dialogs.html#DialogFragment
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            final Tracker tracker = ((PiwikApplication) getActivity().getApplication()).getTracker();
+
+            builder.setMessage(R.string.settings_location_dialog_message)
+                    .setTitle(R.string.settings_location)
+                    .setPositiveButton(R.string.settings_location_dialog_positive, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Recipe from http://stackoverflow.com/a/32983128
+                            Intent i = new Intent();
+                            i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            i.setData(Uri.fromParts("package", getActivity().getPackageName(), null));
+                            startActivity(i);
+                            TrackHelper.track().event("EnableLocationDialog", "clickedSettings").with(tracker);
+                        }
+                    })
+                    .setNegativeButton(R.string.settings_location_dialog_negative, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                            TrackHelper.track().event("EnableLocationDialog", "cancelled").with(tracker);
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
     public static class SettingsFragment extends PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
+        Tracker tracker;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -92,15 +135,33 @@ public class SettingsActivity extends Activity {
 
             // Set preference summaries to current values
             final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
-            Preference pref;
 
-            pref = findPreference(KEY_PREF_API_SRC);
-            pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
-                    sharedPref.getString(KEY_PREF_API_SRC, "")));
+            findPreference(KEY_PREF_API_SRC).setSummary(
+                    getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
+                        sharedPref.getString(KEY_PREF_API_SRC, "")));
+
+            // Disable the "Enable Current Location" option if we already have the permission
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                findPreference(KEY_PREF_LOCATION).setEnabled(false);
+            }
+            else {
+                // Set up dialog for "Enable Current Location" option
+                findPreference(KEY_PREF_LOCATION).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        new EnableLocationDialogFragment().show(getFragmentManager(), "dialog");
+                        TrackHelper.track().event("Settings", "clickedEnableLocation").with(tracker);
+                        return false;
+                    }
+                });
+            }
+
 
             // Set analytics option to match opt-out / dry-run status
             final Piwik piwik = ((PiwikApplication) getActivity().getApplication()).getPiwik();
-            final Preference analyticsPref = findPreference(KEY_ANALYTICS);
+            tracker = ((PiwikApplication) getActivity().getApplication()).getTracker();
+            final Preference analyticsPref = findPreference(KEY_PREF_ANALYTICS);
             analyticsPref.setDefaultValue(!piwik.isOptOut() && !piwik.isDryRun());
 
             // Disable analytics option toggle if dry-run is overriding opt-out
@@ -137,8 +198,12 @@ public class SettingsActivity extends Activity {
             if (pref != null) {
                 switch (key) {
                     case KEY_PREF_API_SRC:
+                        String newSrc = sharedPref.getString(KEY_PREF_API_SRC, "");
                         pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
-                                sharedPref.getString(KEY_PREF_API_SRC, "")));
+                                newSrc));
+
+                        TrackHelper.track().event("Settings", "changedDataSource")
+                                .name(newSrc).with(tracker);
                         break;
                 }
             }

@@ -26,4 +26,8 @@
     <string name="browser_actions_copy">Copiar enlace</string>
     <string name="settings_analytics">Analítica</string>
     <string name="settings_analytics_summary">Compartir estadísticas de uso anónimas para ayudar a mejorar la aplicación.</string>
+    <string name="settings_location">Habilitar localización actual</string>
+    <string name="settings_location_dialog_message">Para habilitar el uso de su localización actual, toque Ajustes, luego Permisos, y finalmente active \"Su ubicación\".</string>
+    <string name="settings_location_dialog_negative">Cancelar</string>
+    <string name="settings_location_dialog_positive">Ajustes</string>
 </resources>

@@ -26,4 +26,8 @@
     <string name="browser_actions_copy">リンクをコピー</string>
     <string name="settings_analytics">アナリティクス</string>
     <string name="settings_analytics_summary">アプリをもっとよくように匿名の使用データをシェアします。</string>
+    <string name="settings_location_dialog_positive">設定</string>
+    <string name="settings_location_dialog_negative">キャンセル</string>
+    <string name="settings_location">現在位置を使用</string>
+    <string name="settings_location_dialog_message">現在位置を使用できるために、設定→許可→「お客様の位置情報」設定をオンにしてください。</string>
 </resources>
