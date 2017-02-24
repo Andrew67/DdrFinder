@@ -456,6 +456,7 @@ public class MapViewer extends Activity
                 actionMode = startActionMode(actionModeCallback);
             }
             selectedLocation = location;
+            TrackHelper.track().event("MapViewer", "markerClick").with(tracker);
             return false; // keep the default action of moving view and showing info window
         }
     };
@@ -469,6 +470,7 @@ public class MapViewer extends Activity
             if (actionMode != null) {
                 actionMode.finish();
             }
+            TrackHelper.track().event("MapViewer", "mapClick").with(tracker);
         }
     };
 
@@ -554,6 +556,7 @@ public class MapViewer extends Activity
         @Override
         public void onClusterItemInfoWindowClick(ArcadeLocation location) {
                 final LocationActions actions = new LocationActions(location, getSource(location), tracker);
+                TrackHelper.track().event("MapViewer", "infoWindowClicked").with(tracker);
                 actions.moreInfo(MapViewer.this);
         }
     };
