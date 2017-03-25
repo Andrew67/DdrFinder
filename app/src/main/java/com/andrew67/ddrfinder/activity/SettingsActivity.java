@@ -141,24 +141,6 @@ public class SettingsActivity extends Activity {
                     getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                         sharedPref.getString(KEY_PREF_API_SRC, "")));
 
-            // Disable the "Enable Current Location" option if we already have the permission
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                findPreference(KEY_PREF_LOCATION).setEnabled(false);
-            }
-            else {
-                // Set up dialog for "Enable Current Location" option
-                findPreference(KEY_PREF_LOCATION).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        new EnableLocationDialogFragment().show(getFragmentManager(), "dialog");
-                        TrackHelper.track().event("Settings", "clickedEnableLocation").with(tracker);
-                        return false;
-                    }
-                });
-            }
-
-
             // Set analytics option to match opt-out / dry-run status
             final Piwik piwik = ((PiwikApplication) getActivity().getApplication()).getPiwik();
             tracker = ((PiwikApplication) getActivity().getApplication()).getTracker();
@@ -184,6 +166,23 @@ public class SettingsActivity extends Activity {
             super.onResume();
             getPreferenceScreen().getSharedPreferences()
                     .registerOnSharedPreferenceChangeListener(this);
+
+            // Disable the "Enable Current Location" option if we already have the permission
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                findPreference(KEY_PREF_LOCATION).setEnabled(false);
+            }
+            else {
+                // Set up dialog for "Enable Current Location" option
+                findPreference(KEY_PREF_LOCATION).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        new EnableLocationDialogFragment().show(getFragmentManager(), "dialog");
+                        TrackHelper.track().event("Settings", "clickedEnableLocation").with(tracker);
+                        return false;
+                    }
+                });
+            }
         }
 
         @Override
