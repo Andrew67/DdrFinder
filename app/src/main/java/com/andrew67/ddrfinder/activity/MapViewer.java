@@ -517,7 +517,11 @@ public class MapViewer extends Activity
                     actions.navigate(MapViewer.this);
                     return true;
                 case R.id.action_moreinfo:
-                    actions.moreInfo(MapViewer.this);
+                    final SharedPreferences sharedPref = PreferenceManager
+                            .getDefaultSharedPreferences(MapViewer.this);
+                    final boolean useCustomTabs = sharedPref
+                            .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
+                    actions.moreInfo(MapViewer.this, useCustomTabs);
                     return true;
                 case R.id.action_copygps:
                     actions.copyGps(MapViewer.this, MapViewer.this);
@@ -555,9 +559,13 @@ public class MapViewer extends Activity
             new ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation>() {
         @Override
         public void onClusterItemInfoWindowClick(ArcadeLocation location) {
-                final LocationActions actions = new LocationActions(location, getSource(location), tracker);
-                TrackHelper.track().event("MapViewer", "infoWindowClicked").with(tracker);
-                actions.moreInfo(MapViewer.this);
+            final LocationActions actions = new LocationActions(location, getSource(location), tracker);
+            TrackHelper.track().event("MapViewer", "infoWindowClicked").with(tracker);
+            final SharedPreferences sharedPref = PreferenceManager
+                    .getDefaultSharedPreferences(MapViewer.this);
+            final boolean useCustomTabs = sharedPref
+                    .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
+            actions.moreInfo(MapViewer.this, useCustomTabs);
         }
     };
 }

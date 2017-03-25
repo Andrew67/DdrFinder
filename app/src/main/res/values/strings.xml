@@ -38,4 +38,5 @@
     <string name="settings_location_dialog_message">To enable current location, tap Settings, then Permissions, then turn on the "Your location" switch.</string>
     <string name="settings_location_dialog_positive">Settings</string>
     <string name="settings_location_dialog_negative">Cancel</string>
+    <string name="settings_custom_tabs">Use Chrome Custom Tabs</string>
 </resources>

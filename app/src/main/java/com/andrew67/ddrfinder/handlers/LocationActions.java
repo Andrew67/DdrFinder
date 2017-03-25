@@ -29,6 +29,7 @@ import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.model.v3.Source;
+import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.content.ActivityNotFoundException;
@@ -36,9 +37,14 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
 import android.util.Log;
 
 import org.piwik.sdk.TrackHelper;
@@ -46,6 +52,7 @@ import org.piwik.sdk.Tracker;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * Helper class for location actions.
@@ -121,14 +128,48 @@ public class LocationActions {
     /**
      * Launches a web browser, pointed to the location's more information URL.
      * @param context The context which provides the ability to start activities.
+     * @param useCustomTabs Whether to attempt to use a Chrome Custom Tab intent.
      */
-    public void moreInfo(@NonNull Context context) {
+    public void moreInfo(@NonNull Context context, boolean useCustomTabs) {
         final String infoURL = source.getInfoURL()
                 .replace("${id}", "" + location.getId())
                 .replace("${sid}", location.getSid());
 
         try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(infoURL)));
+            final Uri infoURI = Uri.parse(infoURL);
+
+            if (!useCustomTabs) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, infoURI));
+            } else {
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    builder.setToolbarColor(ThemeUtil.getThemeColor(context.getTheme(), android.R.attr.actionModeBackground));
+                }
+                builder.setShowTitle(true)
+                        .addDefaultShareMenuItem()
+                        .setCloseButtonIcon(BitmapFactory.decodeResource(context.getResources(),
+                                R.drawable.ic_arrow_back_white_24dp))
+                        .setStartAnimations(context, R.anim.slide_in_right, R.anim.slide_out_left)
+                        .setExitAnimations(context, R.anim.slide_in_left, R.anim.slide_out_right);
+                CustomTabsIntent customTabsIntent = builder.build();
+
+                // Chrome detection recipe based on http://stackoverflow.com/a/32656019
+                // Otherwise, setPackage is not called, and falls back to user-selected browser.
+                final String CHROME_PACKAGE_NAME = "com.android.chrome";
+                customTabsIntent.intent.setData(infoURI);
+                PackageManager packageManager = context.getPackageManager();
+                List<ResolveInfo> resolveInfoList = packageManager.queryIntentActivities(
+                        customTabsIntent.intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+                for (ResolveInfo resolveInfo : resolveInfoList) {
+                    if (CHROME_PACKAGE_NAME.equals(resolveInfo.activityInfo.packageName)) {
+                        customTabsIntent.intent.setPackage(CHROME_PACKAGE_NAME);
+                        break;
+                    }
+                }
+
+                customTabsIntent.launchUrl(context, infoURI);
+            }
 
             if (tracker != null) {
                 TrackHelper.track().event("LocationActions", "moreInfo").name("success").with(tracker);

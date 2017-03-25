@@ -30,4 +30,5 @@
     <string name="settings_location_dialog_negative">キャンセル</string>
     <string name="settings_location">現在位置を使用</string>
     <string name="settings_location_dialog_message">現在位置を使用できるために、設定→許可→「お客様の位置情報」設定をオンにしてください。</string>
+    <string name="settings_custom_tabs">Chrome Custom Tabsを使用</string>
 </resources>

@@ -12,6 +12,10 @@
             android:key="location"
             android:title="@string/settings_location"
             android:persistent="false"/>
+        <SwitchPreference
+            android:key="customtabs"
+            android:defaultValue="true"
+            android:title="@string/settings_custom_tabs"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_advanced">

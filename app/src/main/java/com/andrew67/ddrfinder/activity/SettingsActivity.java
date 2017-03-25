@@ -60,6 +60,7 @@ public class SettingsActivity extends Activity {
 
     public static final String KEY_PREF_ANALYTICS = "analyticsEnabled";
     public static final String KEY_PREF_LOCATION = "location";
+    public static final String KEY_PREF_CUSTOMTABS = "customtabs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
