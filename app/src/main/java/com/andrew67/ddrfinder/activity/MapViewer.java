@@ -85,7 +85,7 @@ public class MapViewer extends Activity
     private static final int BASE_ZOOM = 12;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
-    private GoogleMap mMap;
+    private GoogleMap mMap = null;
     private ClusterManager<ArcadeLocation> mClusterManager;
     private LocationClusterRenderer mClusterRenderer;
     private MenuItem reloadButton;
@@ -407,8 +407,9 @@ public class MapViewer extends Activity
             startActivity(new Intent(this, About.class));
             return true;
         case R.id.action_settings:
-            // Store current preferences for future comparison in onResume.
-            prevPrefs = PreferenceManager.getDefaultSharedPreferences(this).getAll();
+            // Store current data source preference for future comparison in onResume.
+            prevDatasrc = PreferenceManager.getDefaultSharedPreferences(this)
+                    .getString(SettingsActivity.KEY_PREF_API_SRC, "");
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         default:
@@ -416,15 +417,24 @@ public class MapViewer extends Activity
         }
     }
 
-    private Map<String, ?> prevPrefs = null;
+    private String prevDatasrc = null;
     @Override
     protected void onResume() {
         super.onResume();
-        // Clear all markers and reload current view when a preference changed.
-        final Map<String, ?> currPrefs = PreferenceManager.getDefaultSharedPreferences(this).getAll();
-        if (prevPrefs != null && !currPrefs.equals(prevPrefs)) {
+        // Clear all markers and reload current view when a relevant preference changed.
+        // After app simplification for 3.0.6, only data source is relevant.
+        final String currDatasrc = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(SettingsActivity.KEY_PREF_API_SRC, "");
+        if (prevDatasrc != null && !currDatasrc.equals(prevDatasrc)) {
             clearMap();
             updateMap(false);
+        }
+
+        // Enable "My Location" if resuming activity with location permission enabled.
+        // i.e. User goes to Settings to enable, then comes back.
+        if (mMap != null && ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
         }
     }
 

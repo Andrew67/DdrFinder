@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 //noinspection GroovyMissingReturnStatement
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.3"
+    buildToolsVersion "25.0.3"
     //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
@@ -27,12 +27,13 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services-maps:10.0.1'
+    compile 'com.google.android.gms:play-services-maps:10.2.4'
     compile 'com.google.maps.android:android-maps-utils:0.4.4'
-    compile 'com.android.support:support-v4:25.1.1'
-    compile 'com.android.support:customtabs:25.1.1'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:customtabs:25.3.1'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.google.code.gson:gson:2.7'
     compile 'com.lsjwzh:materialloadingprogressbar:0.5.8-RELEASE'
     compile 'org.piwik.sdk:piwik-sdk:1.0.2'
 }

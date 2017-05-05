@@ -21,8 +21,8 @@
         android:title="@string/settings_category_advanced">
         <CheckBoxPreference
             android:key="analyticsEnabled"
+            android:defaultValue="true"
             android:title="@string/settings_analytics"
-            android:summary="@string/settings_analytics_summary"
-            android:persistent="false"/>
+            android:summary="@string/settings_analytics_summary"/>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -141,14 +141,11 @@ public class SettingsActivity extends Activity {
                     getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                         sharedPref.getString(KEY_PREF_API_SRC, "")));
 
-            // Set analytics option to match opt-out / dry-run status
+            // Set analytics option to match opt-out status
             final Piwik piwik = ((PiwikApplication) getActivity().getApplication()).getPiwik();
             tracker = ((PiwikApplication) getActivity().getApplication()).getTracker();
             final Preference analyticsPref = findPreference(KEY_PREF_ANALYTICS);
-            analyticsPref.setDefaultValue(!piwik.isOptOut() && !piwik.isDryRun());
-
-            // Disable analytics option toggle if dry-run is overriding opt-out
-            analyticsPref.setEnabled(!piwik.isDryRun());
+            analyticsPref.getEditor().putBoolean(KEY_PREF_ANALYTICS, !piwik.isOptOut()).apply();
 
             // Set changes to analytics option to set piwik persistent opt-out flag
             analyticsPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
