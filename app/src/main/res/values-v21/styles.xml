@@ -7,12 +7,17 @@
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
-        <item name="android:colorPrimary">@android:color/holo_blue_light</item>
-        <item name="android:colorPrimaryDark">@android:color/holo_blue_dark</item>
 
-        <item name="android:colorAccent">@android:color/holo_purple</item>
+        <!-- Base Theme: inspired by DDR (2013) White Cabinet color scheme; updated to use Material Palette -->
+        <item name="android:colorPrimary">@color/material_blue_700</item>
+        <item name="android:colorPrimaryDark">@color/material_blue_700_dark</item>
+
+        <item name="android:colorAccent">@color/material_purple_500</item>
         <item name="mColorAccent">?android:colorAccent</item>
-        <item name="android:actionModeBackground">@color/holo_purple_darker</item>
-        <item name="actionModeStatusBarColor">@color/holo_purple_darkest_darkness</item>
+        <item name="android:actionModeBackground">?android:colorAccent</item>
+        <item name="actionModeStatusBarColor">@color/material_purple_500_dark</item>
+
+        <item name="pinColor">@color/material_purple_500_light</item>
+        <item name="pinColorHasDDR">@color/material_blue_700_light</item>
     </style>
 </resources>

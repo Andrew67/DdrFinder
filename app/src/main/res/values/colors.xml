@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="holo_purple_darker">#623a75</color>
-    <color name="holo_purple_darkest_darkness">#3d2449</color>
+    <!-- From the Material Design Color Tool: https://material.io/color/ -->
+    <color name="material_blue_700">#1976d2</color>
+    <color name="material_blue_700_light">#63a4ff</color>
+    <color name="material_blue_700_dark">#004ba0</color>
 
-    <color name="orangered">#e65100</color>
+    <color name="material_purple_500">#9c27b0</color>
+    <color name="material_purple_500_light">#d05ce3</color>
+    <color name="material_purple_500_dark">#6a0080</color>
 </resources>

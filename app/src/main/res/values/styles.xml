@@ -10,13 +10,16 @@
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
-        <item name="mColorAccent">@color/orangered</item>
+
+        <!-- Base Theme for Android 4.0, fallback to Holo colors -->
+        <item name="mColorAccent">@android:color/holo_orange_dark</item>
+        <item name="pinColor">@android:color/holo_red_light</item>
+        <item name="pinColorHasDDR">@android:color/holo_blue_light</item>
     </style>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-        <item name="pinColorHasDDR">@android:color/holo_blue_light</item>
     </style>
 
 </resources>

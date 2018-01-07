@@ -44,7 +44,7 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
 
     public LocationClusterRenderer(Context context, GoogleMap map, ClusterManager<ArcadeLocation> clusterManager) {
         super(context, map, clusterManager);
-        defaultPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.mColorAccent);
+        defaultPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.pinColor);
         hasDDRPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.pinColorHasDDR);
     }
 
