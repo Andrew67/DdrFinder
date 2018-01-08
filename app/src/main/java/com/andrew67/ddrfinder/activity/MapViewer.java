@@ -49,6 +49,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -56,6 +57,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -133,6 +135,14 @@ public class MapViewer extends Activity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        // Load custom "Icy Blue" style.
+        try {
+            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_icy_blue));
+        } catch (Resources.NotFoundException e) {
+            // Do nothing; default map style is used.
+        }
+
         mClusterManager = new ClusterManager<>(this, mMap);
         mClusterRenderer = new LocationClusterRenderer(this, mMap, mClusterManager);
         mClusterManager.setRenderer(mClusterRenderer);
