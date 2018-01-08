@@ -207,9 +207,11 @@ public class MapViewer extends Activity
     private final String KEY_LATITUDE = "latitude";
     private final String KEY_LONGITUDE = "longitude";
     private final String KEY_ZOOM = "zoom";
-    private final double DEFAULT_LATITUDE = 36.2068047;
-    private final double DEFAULT_LONGITUDE = -100.7467658;
-    private final float DEFAULT_ZOOM = 4;
+
+    // Dallas, TX, US; zoomed-out default causes too much CPU stress on slower devices
+    private final double DEFAULT_LATITUDE = 32.7157;
+    private final double DEFAULT_LONGITUDE = -96.8088;
+    private final float DEFAULT_ZOOM = 9;
 
     /**
      * Save the given camera position to the current state.
