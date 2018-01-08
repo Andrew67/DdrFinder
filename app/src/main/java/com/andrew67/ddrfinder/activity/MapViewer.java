@@ -51,7 +51,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.ClusterManager;
-import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -72,6 +71,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.piwik.sdk.PiwikApplication;
@@ -89,7 +89,7 @@ public class MapViewer extends Activity
     private ClusterManager<ArcadeLocation> mClusterManager;
     private LocationClusterRenderer mClusterRenderer;
     private MenuItem reloadButton;
-    private CircleProgressBar progressBar;
+    private ProgressBar progressBar;
     private Tracker tracker;
 
     private final Set<Integer> loadedLocationIds = new HashSet<>();
@@ -110,7 +110,7 @@ public class MapViewer extends Activity
 
         setContentView(R.layout.map_viewer);
 
-        progressBar = (CircleProgressBar) findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
         onCreateSavedInstanceState = savedInstanceState;
 
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
