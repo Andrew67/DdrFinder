@@ -30,5 +30,5 @@
     <string name="settings_location_dialog_message">Para habilitar el uso de su localización actual, toque Ajustes, luego Permisos, y finalmente active \"Su ubicación\".</string>
     <string name="settings_location_dialog_negative">Cancelar</string>
     <string name="settings_location_dialog_positive">Ajustes</string>
-    <string name="settings_custom_tabs">Utilizar Chrome Custom Tabs</string>
+    <string name="settings_custom_tabs">Abrir páginas web dentro de la aplicación</string>
 </resources>
