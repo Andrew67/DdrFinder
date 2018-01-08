@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 //noinspection GroovyMissingReturnStatement
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
-        versionCode 18
-        versionName "3.0.6"
+        versionCode 19
+        versionName "3.0.7"
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 26
         resConfigs "en", "es", "ja"
     }
     buildTypes {
@@ -28,9 +28,9 @@ android {
 dependencies {
     compile 'com.google.android.gms:play-services-maps:11.8.0'
     compile 'com.google.maps.android:android-maps-utils:0.4.4'
-    compile 'com.android.support:support-v4:25.4.0'
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:customtabs:25.4.0'
+    compile 'com.android.support:support-v4:26.1.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:customtabs:26.1.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.lsjwzh:materialloadingprogressbar:0.5.8-RELEASE'
