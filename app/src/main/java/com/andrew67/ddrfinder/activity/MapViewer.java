@@ -329,18 +329,19 @@ public class MapViewer extends Activity
      */
     private void zoomToCurrentLocation() {
         final LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        Location lastKnown = null;
-        try {
-            lastKnown = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        } catch (SecurityException e) {
-            showMessage(R.string.error_perm_loc);
-        }
-        if (lastKnown != null) {
-            mMap.animateCamera(
-                    CameraUpdateFactory.newLatLngZoom(
-                            new LatLng(lastKnown.getLatitude(),
-                                    lastKnown.getLongitude()),
-                            BASE_ZOOM));
+        if (locationManager != null) {
+            try {
+                Location lastKnown = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (lastKnown != null) {
+                    mMap.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(lastKnown.getLatitude(),
+                                            lastKnown.getLongitude()),
+                                    BASE_ZOOM));
+                }
+            } catch (SecurityException e) {
+                showMessage(R.string.error_perm_loc);
+            }
         }
     }
 
