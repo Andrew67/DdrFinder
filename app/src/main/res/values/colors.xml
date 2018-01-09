@@ -8,4 +8,8 @@
     <color name="material_purple_500">#9c27b0</color>
     <color name="material_purple_500_light">#d05ce3</color>
     <color name="material_purple_500_dark">#6a0080</color>
+
+    <color name="material_yellow_600">#fdd835</color>
+    <color name="material_yellow_600_light">#ffff6b</color>
+    <color name="material_yellow_600_dark">#c6a700</color>
 </resources>

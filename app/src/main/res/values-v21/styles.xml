@@ -18,6 +18,6 @@
         <item name="actionModeStatusBarColor">@color/material_purple_500_dark</item>
 
         <item name="pinColor">@color/material_purple_500_light</item>
-        <item name="pinColorHasDDR">@color/material_blue_700_light</item>
+        <item name="pinColorHasDDR">@color/material_yellow_600</item>
     </style>
 </resources>
