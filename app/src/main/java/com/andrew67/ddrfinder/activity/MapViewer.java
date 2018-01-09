@@ -136,11 +136,13 @@ public class MapViewer extends Activity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Load custom "Icy Blue" style.
-        try {
-            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_icy_blue));
-        } catch (Resources.NotFoundException e) {
-            // Do nothing; default map style is used.
+        // Load custom "Icy Blue" style on Material Style devices
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            try {
+                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_icy_blue));
+            } catch (Resources.NotFoundException e) {
+                // Do nothing; default map style is used.
+            }
         }
 
         mClusterManager = new ClusterManager<>(this, mMap);
