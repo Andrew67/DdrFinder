@@ -40,8 +40,6 @@
                     android:pathPrefix="/ng"/>
                 <data android:scheme="https" android:host="ddrfinder.andrew67.com"
                     android:pathPrefix="/ng"/>
-                <data android:scheme="content" android:host="com.andrew67.ddrfinder"
-                    android:path="/view"/>
                 <data android:scheme="http" android:host="ddrfinder.andrew67.com"
                     android:pathPrefix="/app"/>
                 <data android:scheme="https" android:host="ddrfinder.andrew67.com"
