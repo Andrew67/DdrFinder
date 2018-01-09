@@ -39,9 +39,11 @@ public class AttributionGenerator {
         final StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (DataSource source : sources) {
-            if (first) first = false;
-            else sb.append(" ");
-            if (!source.getShortName().equals("fallback")) sb.append("© ").append(source.getName());
+            if (!source.getShortName().equals("fallback")) {
+                if (first) first = false;
+                else sb.append(" ");
+                sb.append("© ").append(source.getName());
+            }
         }
         return sb.toString();
     }
