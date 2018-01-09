@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="white_opacity_70">#b3ffffff</color>
+
     <!-- From the Material Design Color Tool: https://material.io/color/ -->
     <color name="material_blue_700">#1976d2</color>
     <color name="material_blue_700_light">#63a4ff</color>
@@ -12,4 +14,8 @@
     <color name="material_yellow_600">#fdd835</color>
     <color name="material_yellow_600_light">#ffff6b</color>
     <color name="material_yellow_600_dark">#c6a700</color>
+
+    <color name="material_blue_grey_900_">#263238</color>
+    <color name="material_blue_grey_900_light">#4f5b62</color>
+    <color name="material_blue_grey_900_dark">#000a12</color>
 </resources>

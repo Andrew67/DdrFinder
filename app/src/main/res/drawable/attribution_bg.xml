@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Solution from https://stackoverflow.com/a/17252203 for TextView background color. -->
+    <item>
+        <shape>
+            <solid android:color="@color/white_opacity_70"/>
+        </shape>
+    </item><!-- default -->
+</selector>

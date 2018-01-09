@@ -4,4 +4,6 @@
     <attr name="mColorAccent" format="reference"/>
     <attr name="pinColor" format="reference"/>
     <attr name="pinColorHasDDR" format="reference"/>
+    <attr name="attributionTextColor" format="reference"/>
+    <attr name="attributionBgColor" format="reference"/>
 </resources>
