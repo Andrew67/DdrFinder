@@ -74,6 +74,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.piwik.sdk.PiwikApplication;
@@ -103,6 +104,7 @@ public class MapViewer extends Activity
      * Loaded data sources, keyed by source name
      */
     private final Map<String,DataSource> loadedSources = new HashMap<>();
+    private TextView attributionText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +114,7 @@ public class MapViewer extends Activity
 
         setContentView(R.layout.map_viewer);
 
+        attributionText = findViewById(R.id.attribution);
         progressBar = findViewById(R.id.progressBar);
         onCreateSavedInstanceState = savedInstanceState;
 
@@ -279,7 +282,7 @@ public class MapViewer extends Activity
             final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
 
             new MapLoaderV3(mClusterManager, loadedLocations, loadedLocationIds, this, this,
-                    loadedAreas, loadedSources, apiUrl, datasrc).execute(box);
+                    attributionText, loadedAreas, loadedSources, apiUrl, datasrc).execute(box);
         }
     }
 

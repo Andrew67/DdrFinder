@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017 Andrés Cordero
+ * Copyright (c) 2015-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,6 +25,7 @@ package com.andrew67.ddrfinder.adapters;
 
 import android.os.Build;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
@@ -49,10 +50,10 @@ public class MapLoaderV3 extends MapLoader {
 
     public MapLoaderV3(ClusterManager<ArcadeLocation> clusterManager,
                        List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
-                       ProgressBarController pbc, MessageDisplay display,
+                       ProgressBarController pbc, MessageDisplay display, TextView attributionText,
                        List<LatLngBounds> areas, Map<String, DataSource> sources,
                        String apiUrl, String datasrc) {
-        super(clusterManager, loadedLocations, loadedArcadeIds, pbc, display, areas, sources, apiUrl, datasrc);
+        super(clusterManager, loadedLocations, loadedArcadeIds, pbc, display, attributionText, areas, sources, apiUrl, datasrc);
     }
 
     @Override

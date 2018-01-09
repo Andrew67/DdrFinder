@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017 Andrés Cordero
+ * Copyright (c) 2015-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,6 +24,7 @@
 package com.andrew67.ddrfinder.adapters;
 
 import android.os.AsyncTask;
+import android.widget.TextView;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
@@ -31,6 +32,7 @@ import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
+import com.andrew67.ddrfinder.util.AttributionGenerator;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -44,6 +46,7 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
     private final Set<Integer> loadedArcadeIds;
     private final ProgressBarController pbc;
     private final MessageDisplay display;
+    private final TextView attributionText;
     private final List<LatLngBounds> areas;
     private final Map<String,DataSource> sources;
     final String apiUrl;
@@ -51,7 +54,7 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
 
     MapLoader(ClusterManager<ArcadeLocation> clusterManager,
                  List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
-                 ProgressBarController pbc, MessageDisplay display,
+                 ProgressBarController pbc, MessageDisplay display, TextView attributionText,
                  List<LatLngBounds> areas, Map<String,DataSource> sources,
                  String apiUrl, String datasrc) {
         super();
@@ -60,6 +63,7 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
         this.loadedArcadeIds = loadedArcadeIds;
         this.pbc = pbc;
         this.display = display;
+        this.attributionText = attributionText;
         this.areas = areas;
         this.sources = sources;
         this.apiUrl = apiUrl;
@@ -94,6 +98,7 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
                 for (DataSource src : result.getSources()) {
                     sources.put(src.getShortName(), src);
                 }
+                attributionText.setText(AttributionGenerator.fromSources(result.getSources()));
 
                 break;
             case ApiResult.ERROR_OVERSIZED_BOX:
