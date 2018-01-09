@@ -157,7 +157,8 @@ public class MapViewer extends Activity
         if (onCreateSavedInstanceState != null &&
                 onCreateSavedInstanceState.containsKey("loadedAreas") &&
                 onCreateSavedInstanceState.containsKey("loadedLocations") &&
-                onCreateSavedInstanceState.containsKey("loadedSources")) {
+                onCreateSavedInstanceState.containsKey("loadedSources") &&
+                onCreateSavedInstanceState.containsKey("attributionText")) {
             final ArrayList<LatLngBounds> savedLoadedAreas =
                     onCreateSavedInstanceState.getParcelableArrayList("loadedAreas");
             if (savedLoadedAreas != null) loadedAreas.addAll(savedLoadedAreas);
@@ -173,6 +174,9 @@ public class MapViewer extends Activity
             }
 
             MapLoader.fillMap(mClusterManager, loadedLocations, loadedLocationIds, savedLoadedLocations);
+
+            // Restore the attribution text.
+            attributionText.setText(onCreateSavedInstanceState.getCharSequence("attributionText"));
         }
 
         // Start the camera on the last known user-interacted view.
@@ -374,6 +378,9 @@ public class MapViewer extends Activity
         final ArrayList<DataSource> currSources = new ArrayList<>(loadedSources.size());
         currSources.addAll(loadedSources.values());
         outState.putParcelableArrayList("loadedSources", currSources);
+
+        // Save the current attribution text
+        outState.putCharSequence("attributionText", attributionText.getText());
     }
 
     @Override
