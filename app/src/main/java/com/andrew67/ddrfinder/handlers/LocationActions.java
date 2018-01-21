@@ -77,10 +77,12 @@ public class LocationActions {
         final LatLng coordinates = location.getPosition();
         final ClipboardManager clipboard =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.setPrimaryClip(ClipData.newPlainText("gps",
-                coordinates.latitude + ", " + coordinates.longitude));
-        if (display != null) {
-            display.showMessage(R.string.copy_complete);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(ClipData.newPlainText("gps",
+                    coordinates.latitude + ", " + coordinates.longitude));
+            if (display != null) {
+                display.showMessage(R.string.copy_complete);
+            }
         }
 
         // TODO: Track Copy GPS action
