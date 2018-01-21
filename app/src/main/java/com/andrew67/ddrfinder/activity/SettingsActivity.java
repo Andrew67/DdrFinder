@@ -44,6 +44,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Arrays;
 
@@ -131,16 +132,13 @@ public class SettingsActivity extends Activity {
                     getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                         sharedPref.getString(KEY_PREF_API_SRC, "")));
 
-            // TODO: Set analytics option to match opt-out status
-            final Preference analyticsPref = findPreference(KEY_PREF_ANALYTICS);
-            analyticsPref.getEditor().putBoolean(KEY_PREF_ANALYTICS, false).apply();
-
             // Set changes to analytics option to set persistent opt-out flag
+            final Preference analyticsPref = findPreference(KEY_PREF_ANALYTICS);
             analyticsPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     boolean enableAnalytics = (boolean) newValue;
-                    // TODO: Set analytics opt-out status
+                    FirebaseAnalytics.getInstance(getActivity()).setAnalyticsCollectionEnabled(enableAnalytics);
                     return true;
                 }
             });
