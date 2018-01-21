@@ -33,5 +33,4 @@ dependencies {
     compile 'com.android.support:customtabs:26.1.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.piwik.sdk:piwik-sdk:1.0.2'
 }

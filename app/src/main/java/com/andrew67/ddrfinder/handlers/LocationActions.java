@@ -47,9 +47,6 @@ import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.util.Log;
 
-import org.piwik.sdk.TrackHelper;
-import org.piwik.sdk.Tracker;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -60,19 +57,15 @@ import java.util.List;
 public class LocationActions {
 	private final @NonNull ArcadeLocation location;
 	private final @NonNull DataSource source;
-    private final @Nullable Tracker tracker;
 
     /**
      * Set up a new location action helper.
      * @param location Location to act upon.
      * @param source Source metadata for location. Pass null to use fallback.
-     * @param tracker Piwik tracker object. Pass null to skip event tracking.
      */
-    public LocationActions(@NonNull ArcadeLocation location, @Nullable DataSource source,
-                           @Nullable Tracker tracker) {
+    public LocationActions(@NonNull ArcadeLocation location, @Nullable DataSource source) {
         this.location = location;
         this.source = (source != null) ? source : Source.getFallback();
-        this.tracker = tracker;
     }
 
     /**
@@ -90,9 +83,7 @@ public class LocationActions {
             display.showMessage(R.string.copy_complete);
         }
 
-        if (tracker != null) {
-            TrackHelper.track().event("LocationActions", "copyGPS").with(tracker);
-        }
+        // TODO: Track Copy GPS action
     }
 
     /**
@@ -108,9 +99,7 @@ public class LocationActions {
                             coordinates.longitude + "?q=" + coordinates.latitude +
                             "," + coordinates.longitude + "(" + label + ")")));
 
-            if (tracker != null) {
-                TrackHelper.track().event("LocationActions", "navigate").name("success").with(tracker);
-            }
+            // TODO: Track Navigate action
         } catch (UnsupportedEncodingException e) {
             // UTF-8 should always be a supported encoding
             e.printStackTrace();
@@ -119,9 +108,7 @@ public class LocationActions {
             context.startActivity(new Intent(Intent.ACTION_VIEW,
                     Uri.parse("market://details?id=com.google.android.apps.maps")));
 
-            if (tracker != null) {
-                TrackHelper.track().event("LocationActions", "navigate").name("ActivityNotFoundException").with(tracker);
-            }
+            // TODO: Track exception during Navigate action
         }
     }
 
@@ -171,9 +158,7 @@ public class LocationActions {
                 customTabsIntent.launchUrl(context, infoURI);
             }
 
-            if (tracker != null) {
-                TrackHelper.track().event("LocationActions", "moreInfo").name("success").with(tracker);
-            }
+            // TODO: Track More Info action
         } catch (Exception e) {
             // Launch built-in WebView browser if there's an exception thrown attempting to launch a regular browser activity.
             Log.e("LocationActions", "Error launching Intent for HTTP(S) link; using built-in browser.", e);
@@ -181,9 +166,7 @@ public class LocationActions {
                     .putExtra("url", infoURL)
                     .putExtra("title", location.getName()));
 
-            if (tracker != null) {
-                TrackHelper.track().event("LocationActions", "moreInfo").name(e.getClass().getName()).with(tracker);
-            }
+            // TODO: Track exception during More Info action
         }
     }
 }

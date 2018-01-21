@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2015-2017 Andrés Cordero
+ * Copyright (c) 2015-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -45,11 +45,6 @@ import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.R;
 
-import org.piwik.sdk.Piwik;
-import org.piwik.sdk.PiwikApplication;
-import org.piwik.sdk.TrackHelper;
-import org.piwik.sdk.Tracker;
-
 import java.util.Arrays;
 
 // Based on https://developer.android.com/guide/topics/ui/settings.html#Fragment
@@ -77,8 +72,7 @@ public class SettingsActivity extends Activity {
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
 
-        Tracker tracker = ((PiwikApplication) getApplication()).getTracker();
-        TrackHelper.track().screen("/settings").title("Settings").with(tracker);
+        // TODO: Track Settings activity opened
     }
 
     @Override
@@ -98,7 +92,6 @@ public class SettingsActivity extends Activity {
             // From https://developer.android.com/guide/topics/ui/dialogs.html#DialogFragment
             // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            final Tracker tracker = ((PiwikApplication) getActivity().getApplication()).getTracker();
 
             builder.setMessage(R.string.settings_location_dialog_message)
                     .setTitle(R.string.settings_location)
@@ -109,13 +102,13 @@ public class SettingsActivity extends Activity {
                             i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                             i.setData(Uri.fromParts("package", getActivity().getPackageName(), null));
                             startActivity(i);
-                            TrackHelper.track().event("EnableLocationDialog", "clickedSettings").with(tracker);
+                            // TODO: Track Enable Location OK clicked
                         }
                     })
                     .setNegativeButton(R.string.settings_location_dialog_negative, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
-                            TrackHelper.track().event("EnableLocationDialog", "cancelled").with(tracker);
+                            // TODO: Track Enable Location dismissed
                         }
                     });
             // Create the AlertDialog object and return it
@@ -125,7 +118,6 @@ public class SettingsActivity extends Activity {
 
     public static class SettingsFragment extends PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
-        Tracker tracker;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -141,18 +133,16 @@ public class SettingsActivity extends Activity {
                     getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                         sharedPref.getString(KEY_PREF_API_SRC, "")));
 
-            // Set analytics option to match opt-out status
-            final Piwik piwik = ((PiwikApplication) getActivity().getApplication()).getPiwik();
-            tracker = ((PiwikApplication) getActivity().getApplication()).getTracker();
+            // TODO: Set analytics option to match opt-out status
             final Preference analyticsPref = findPreference(KEY_PREF_ANALYTICS);
-            analyticsPref.getEditor().putBoolean(KEY_PREF_ANALYTICS, !piwik.isOptOut()).apply();
+            analyticsPref.getEditor().putBoolean(KEY_PREF_ANALYTICS, false).apply();
 
-            // Set changes to analytics option to set piwik persistent opt-out flag
+            // Set changes to analytics option to set persistent opt-out flag
             analyticsPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     boolean enableAnalytics = (boolean) newValue;
-                    piwik.setOptOut(!enableAnalytics);
+                    // TODO: Set analytics opt-out status
                     return true;
                 }
             });
@@ -175,7 +165,7 @@ public class SettingsActivity extends Activity {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
                         new EnableLocationDialogFragment().show(getFragmentManager(), "dialog");
-                        TrackHelper.track().event("Settings", "clickedEnableLocation").with(tracker);
+                        // TODO: Track clicked Enable Location
                         return false;
                     }
                 });
@@ -199,8 +189,7 @@ public class SettingsActivity extends Activity {
                         pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                                 newSrc));
 
-                        TrackHelper.track().event("Settings", "changedDataSource")
-                                .name(newSrc).with(tracker);
+                        // TODO: Track changed data source
                         break;
                 }
             }

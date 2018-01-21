@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2013-2016 Andrés Cordero
+ * Copyright (c) 2013-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,10 +35,6 @@ import android.webkit.WebView;
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 
-import org.piwik.sdk.PiwikApplication;
-import org.piwik.sdk.TrackHelper;
-import org.piwik.sdk.Tracker;
-
 public class About extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +54,7 @@ public class About extends Activity {
         webview.loadUrl(String.format(getString(R.string.about_url),
                 versionCode, versionName));
 
-        Tracker tracker = ((PiwikApplication) getApplication()).getTracker();
-        TrackHelper.track().screen("/about").title("About").with(tracker);
+        // TODO: Track About page opened
     }
 
     @Override

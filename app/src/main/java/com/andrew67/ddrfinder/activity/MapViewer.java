@@ -77,11 +77,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.piwik.sdk.PiwikApplication;
-import org.piwik.sdk.TrackHelper;
-import org.piwik.sdk.Tracker;
-
-
 public class MapViewer extends Activity
     implements ProgressBarController, MessageDisplay, OnMapReadyCallback {
 
@@ -93,7 +88,6 @@ public class MapViewer extends Activity
     private LocationClusterRenderer mClusterRenderer;
     private MenuItem reloadButton;
     private ProgressBar progressBar;
-    private Tracker tracker;
 
     private final Set<Integer> loadedLocationIds = new HashSet<>();
     // Set as ArrayList instead of List due to Bundle packing
@@ -120,8 +114,7 @@ public class MapViewer extends Activity
 
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 
-        tracker = ((PiwikApplication) getApplication()).getTracker();
-        TrackHelper.track().screen("/map_viewer").title("Map Viewer").with(tracker);
+        // TODO: Track Activity view
 
         // For clients upgrading from <= 3.0.5/17 that had the now-removed "Custom" option selected, move to default.
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -491,7 +484,7 @@ public class MapViewer extends Activity
                 actionMode = startActionMode(actionModeCallback);
             }
             selectedLocation = location;
-            TrackHelper.track().event("MapViewer", "markerClick").with(tracker);
+            // TODO: Track marker click event
             return false; // keep the default action of moving view and showing info window
         }
     };
@@ -505,7 +498,7 @@ public class MapViewer extends Activity
             if (actionMode != null) {
                 actionMode.finish();
             }
-            TrackHelper.track().event("MapViewer", "mapClick").with(tracker);
+            // TODO: Track map click event
         }
     };
 
@@ -545,7 +538,7 @@ public class MapViewer extends Activity
             if (selectedLocation == null) return false;
 
             final LocationActions actions =
-                    new LocationActions(selectedLocation, getSource(selectedLocation), tracker);
+                    new LocationActions(selectedLocation, getSource(selectedLocation));
 
             switch (item.getItemId()) {
                 case R.id.action_navigate:
@@ -594,8 +587,8 @@ public class MapViewer extends Activity
             new ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation>() {
         @Override
         public void onClusterItemInfoWindowClick(ArcadeLocation location) {
-            final LocationActions actions = new LocationActions(location, getSource(location), tracker);
-            TrackHelper.track().event("MapViewer", "infoWindowClicked").with(tracker);
+            final LocationActions actions = new LocationActions(location, getSource(location));
+            // TODO: Track info window clicked
             final SharedPreferences sharedPref = PreferenceManager
                     .getDefaultSharedPreferences(MapViewer.this);
             final boolean useCustomTabs = sharedPref

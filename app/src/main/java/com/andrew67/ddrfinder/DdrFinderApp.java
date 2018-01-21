@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Andrés Cordero
+ * Copyright (c) 2016-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,40 +22,15 @@
  */
 package com.andrew67.ddrfinder;
 
-import org.piwik.sdk.DownloadTracker;
-import org.piwik.sdk.PiwikApplication;
-import org.piwik.sdk.TrackHelper;
+import android.app.Application;
 
-import timber.log.Timber;
+public class DdrFinderApp extends Application {
 
-public class DdrFinderApp extends PiwikApplication {
-    @Override
-    public String getTrackerUrl() {
-        return "https://analytics.andrew67.com/piwik/piwik.php";
-    }
-
-    @Override
-    public Integer getSiteId() {
-        return 3;
-    }
-
-    // From demo at https://github.com/piwik/piwik-sdk-android/blob/master/exampleapp/src/main/java/com/piwik/demo/DemoApp.java
     @Override
     public void onCreate() {
         super.onCreate();
-        initPiwik();
-    }
-
-
-    private void initPiwik() {
-        // Print debug output when working on an app.
-        Timber.plant(new Timber.DebugTree());
-
-        // When working on an app we don't want to skew tracking results.
-        getPiwik().setDryRun(BuildConfig.DEBUG);
-
-        // Track this app install, this will only trigger once per app version.
-        // i.e. "http://com.piwik.demo:1/185DECB5CFE28FDB2F45887022D668B4"
-        TrackHelper.track().download().identifier(DownloadTracker.Extra.APK_CHECKSUM).with(getTracker());
+        // TODO: Analytics debug printing
+        // TODO: Set Analytics to dry run on debug version using BuildConfig.DEBUG
+        // TODO: Track app first-time install
     }
 }
