@@ -53,8 +53,6 @@ public class About extends Activity {
 
         webview.loadUrl(String.format(getString(R.string.about_url),
                 versionCode, versionName));
-
-        // TODO: Track About page opened
     }
 
     @Override

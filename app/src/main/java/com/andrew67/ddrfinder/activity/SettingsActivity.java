@@ -71,8 +71,6 @@ public class SettingsActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
-
-        // TODO: Track Settings activity opened
     }
 
     @Override

@@ -114,8 +114,6 @@ public class MapViewer extends Activity
 
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 
-        // TODO: Track Activity view
-
         // For clients upgrading from <= 3.0.5/17 that had the now-removed "Custom" option selected, move to default.
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (SettingsActivity.API_SRC_CUSTOM.equals(sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""))) {

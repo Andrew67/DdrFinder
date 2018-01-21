@@ -26,11 +26,4 @@ import android.app.Application;
 
 public class DdrFinderApp extends Application {
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        // TODO: Analytics debug printing
-        // TODO: Set Analytics to dry run on debug version using BuildConfig.DEBUG
-        // TODO: Track app first-time install
-    }
 }

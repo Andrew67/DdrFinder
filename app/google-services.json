@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "908908238003",
+    "firebase_url": "https://andrew67-com-api-project-908908238003.firebaseio.com",
+    "project_id": "andrew67.com:api-project-908908238003",
+    "storage_bucket": "andrew67.com:api-project-908908238003.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908908238003:android:ad9336618438904f",
+        "android_client_info": {
+          "package_name": "com.andrew67.ddrfinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "908908238003-27ht38qhb58hjeuan6urgb2vsi5ml4of.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andrew67.ddrfinder",
+            "certificate_hash": "2d04c94a5d581f9630239e5ecad4ee9ceda2115c"
+          }
+        },
+        {
+          "client_id": "908908238003-vud2k05fecd811ghpebn4n68c862nqcs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg1zZmVtt2PZhYOXA8520kflYCCIWOOe0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908908238003-vud2k05fecd811ghpebn4n68c862nqcs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
