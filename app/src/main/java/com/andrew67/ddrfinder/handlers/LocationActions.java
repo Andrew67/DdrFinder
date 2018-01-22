@@ -29,8 +29,10 @@ import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.model.v3.Source;
+import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
@@ -42,6 +44,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
@@ -84,8 +87,7 @@ public class LocationActions {
                 display.showMessage(R.string.copy_complete);
             }
         }
-
-        // TODO: Track Copy GPS action
+        trackLocationAction(context, "copy_gps");
     }
 
     /**
@@ -100,8 +102,7 @@ public class LocationActions {
                     Uri.parse("geo:" + coordinates.latitude + "," +
                             coordinates.longitude + "?q=" + coordinates.latitude +
                             "," + coordinates.longitude + "(" + label + ")")));
-
-            // TODO: Track Navigate action
+            trackLocationAction(context, "navigate");
         } catch (UnsupportedEncodingException e) {
             // UTF-8 should always be a supported encoding
             e.printStackTrace();
@@ -109,8 +110,6 @@ public class LocationActions {
             // Thrown when user has no installed map applications that handle geo: URIs
             context.startActivity(new Intent(Intent.ACTION_VIEW,
                     Uri.parse("market://details?id=com.google.android.apps.maps")));
-
-            // TODO: Track exception during Navigate action
         }
     }
 
@@ -160,7 +159,7 @@ public class LocationActions {
                 customTabsIntent.launchUrl(context, infoURI);
             }
 
-            // TODO: Track More Info action
+            trackLocationAction(context, "moreinfo");
         } catch (Exception e) {
             // Launch built-in WebView browser if there's an exception thrown attempting to launch a regular browser activity.
             Log.e("LocationActions", "Error launching Intent for HTTP(S) link; using built-in browser.", e);
@@ -168,7 +167,18 @@ public class LocationActions {
                     .putExtra("url", infoURL)
                     .putExtra("title", location.getName()));
 
-            // TODO: Track exception during More Info action
+            Bundle params = new Bundle();
+            params.putString(Analytics.Param.ACTION_TYPE, "moreinfo_exception");
+            params.putString(Analytics.Param.ACTIVE_DATASRC, source.getShortName());
+            params.putString(Analytics.Param.EXCEPTION_MESSAGE, e.getMessage());
+            FirebaseAnalytics.getInstance(context).logEvent(Analytics.Event.LOCATION_ACTION, params);
         }
+    }
+
+    private void trackLocationAction(@NonNull Context context, @NonNull String actionType) {
+        Bundle params = new Bundle();
+        params.putString(Analytics.Param.ACTION_TYPE, actionType);
+        params.putString(Analytics.Param.ACTIVE_DATASRC, source.getShortName());
+        FirebaseAnalytics.getInstance(context).logEvent(Analytics.Event.LOCATION_ACTION, params);
     }
 }

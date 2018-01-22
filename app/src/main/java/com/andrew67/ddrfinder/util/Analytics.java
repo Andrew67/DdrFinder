@@ -47,6 +47,7 @@ public class Analytics {
          * Tracking this can help segment user actions by data source.
          */
         public static final String ACTIVE_DATASRC = "active_datasrc";
+        public static final String EXCEPTION_MESSAGE = "exception_message";
     }
 
 }
