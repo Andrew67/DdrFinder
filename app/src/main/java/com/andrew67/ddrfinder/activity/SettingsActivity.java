@@ -40,6 +40,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.MenuItem;
 
@@ -59,8 +60,6 @@ public class SettingsActivity extends Activity {
     public static final String KEY_PREF_LOCATION = "location";
     public static final String KEY_PREF_CUSTOMTABS = "customtabs";
 
-    private FirebaseAnalytics firebaseAnalytics;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,8 +74,6 @@ public class SettingsActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
-
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     @Override
@@ -134,22 +131,11 @@ public class SettingsActivity extends Activity {
 
             // Set preference summaries to current values
             final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
-
-            firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
             findPreference(KEY_PREF_API_SRC).setSummary(
                     getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                             sharedPref.getString(KEY_PREF_API_SRC, "")));
 
-
-            // Set changes to analytics option to set persistent opt-out flag
-            final Preference analyticsPref = findPreference(KEY_PREF_ANALYTICS);
-            analyticsPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    firebaseAnalytics.setAnalyticsCollectionEnabled((boolean) newValue);
-                    return true;
-                }
-            });
+            firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
         }
 
         @Override
@@ -189,14 +175,19 @@ public class SettingsActivity extends Activity {
             if (pref != null) {
                 switch (key) {
                     case KEY_PREF_API_SRC:
-                        String newSrc = sharedPref.getString(KEY_PREF_API_SRC, "");
+                        String newSrc = sharedPref.getString(key, "");
                         pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                                 newSrc));
-
-                        // Track Data Source changed
-                        Bundle params = new Bundle();
-                        params.putString(Analytics.Param.DATASRC, newSrc);
-                        firebaseAnalytics.logEvent(Analytics.Event.SET_DATASRC, params);
+                        trackPreferenceChanged(key, newSrc);
+                        break;
+                    case KEY_PREF_CUSTOMTABS:
+                        boolean customTabsEnabled = sharedPref.getBoolean(key, true);
+                        trackPreferenceChanged(key, Boolean.toString(customTabsEnabled));
+                        break;
+                    case KEY_PREF_ANALYTICS:
+                        // Set changes to analytics option to set persistent opt-out flag in Firebase
+                        boolean analyticsEnabled = sharedPref.getBoolean(key, true);
+                        firebaseAnalytics.setAnalyticsCollectionEnabled(analyticsEnabled);
                         break;
                 }
             }
@@ -215,6 +206,18 @@ public class SettingsActivity extends Activity {
             int idx = Arrays.asList(keys_arr).indexOf(key);
             if (idx == -1) return key;
             else return values_arr[idx];
+        }
+
+        /**
+         * Track a preference change in Firebase Analytics (when analytics are on).
+         * @param key Preference key (use one of the constants).
+         * @param value String value (may require casting).
+         */
+        private void trackPreferenceChanged(@NonNull String key, @NonNull String value) {
+            Bundle params = new Bundle();
+            params.putString(Analytics.Param.PREFERENCE_KEY, key);
+            params.putString(Analytics.Param.PREFERENCE_VALUE, value);
+            firebaseAnalytics.logEvent(Analytics.Event.SET_PREFERENCE, params);
         }
     }
 }

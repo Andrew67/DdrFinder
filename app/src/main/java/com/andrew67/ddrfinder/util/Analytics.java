@@ -30,11 +30,13 @@ package com.andrew67.ddrfinder.util;
 public class Analytics {
 
     public static class Event {
-        public static final String SET_DATASRC = "set_datasrc";
+        /** The user has changed a preference in the Settings dialog. */
+        public static final String SET_PREFERENCE = "set_preference";
     }
 
     public static class Param {
-        public static final String DATASRC = "datasrc";
+        public static final String PREFERENCE_KEY = "preference_key";
+        public static final String PREFERENCE_VALUE = "preference_value";
     }
 
 }
