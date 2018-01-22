@@ -44,6 +44,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.R;
+import com.andrew67.ddrfinder.util.Analytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Arrays;
@@ -57,6 +58,8 @@ public class SettingsActivity extends Activity {
     public static final String KEY_PREF_ANALYTICS = "analyticsEnabled";
     public static final String KEY_PREF_LOCATION = "location";
     public static final String KEY_PREF_CUSTOMTABS = "customtabs";
+
+    private FirebaseAnalytics firebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,8 @@ public class SettingsActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     @Override
@@ -118,6 +123,8 @@ public class SettingsActivity extends Activity {
     public static class SettingsFragment extends PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+        private FirebaseAnalytics firebaseAnalytics;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -128,17 +135,18 @@ public class SettingsActivity extends Activity {
             // Set preference summaries to current values
             final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
 
+            firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
             findPreference(KEY_PREF_API_SRC).setSummary(
                     getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
-                        sharedPref.getString(KEY_PREF_API_SRC, "")));
+                            sharedPref.getString(KEY_PREF_API_SRC, "")));
+
 
             // Set changes to analytics option to set persistent opt-out flag
             final Preference analyticsPref = findPreference(KEY_PREF_ANALYTICS);
             analyticsPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    boolean enableAnalytics = (boolean) newValue;
-                    FirebaseAnalytics.getInstance(getActivity()).setAnalyticsCollectionEnabled(enableAnalytics);
+                    firebaseAnalytics.setAnalyticsCollectionEnabled((boolean) newValue);
                     return true;
                 }
             });
@@ -185,7 +193,10 @@ public class SettingsActivity extends Activity {
                         pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                                 newSrc));
 
-                        // TODO: Track changed data source
+                        // Track Data Source changed
+                        Bundle params = new Bundle();
+                        params.putString(Analytics.Param.DATASRC, newSrc);
+                        firebaseAnalytics.logEvent(Analytics.Event.SET_DATASRC, params);
                         break;
                 }
             }
