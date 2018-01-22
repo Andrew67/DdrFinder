@@ -103,12 +103,14 @@ public class MapViewer extends Activity
     private TextView attributionText;
 
     private FirebaseAnalytics firebaseAnalytics;
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         setContentView(R.layout.map_viewer);
 
@@ -119,7 +121,6 @@ public class MapViewer extends Activity
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 
         // For clients upgrading from <= 3.0.5/17 that had the now-removed "Custom" option selected, move to default.
-        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (SettingsActivity.API_SRC_CUSTOM.equals(sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""))) {
             sharedPref.edit().putString(SettingsActivity.KEY_PREF_API_SRC,
                     getResources().getString(R.string.settings_src_default)).apply();
@@ -267,7 +268,6 @@ public class MapViewer extends Activity
      */
     private void updateMap(boolean force) {
         LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
-        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (force || !alreadyLoaded(box)) {
             // Preload a slightly larger box area when zoomed in, for a smoother pan/zoom experience
             // as network requests are reduced.
@@ -433,8 +433,7 @@ public class MapViewer extends Activity
             return true;
         case R.id.action_settings:
             // Store current data source preference for future comparison in onResume.
-            prevDatasrc = PreferenceManager.getDefaultSharedPreferences(this)
-                    .getString(SettingsActivity.KEY_PREF_API_SRC, "");
+            prevDatasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         default:
@@ -448,8 +447,7 @@ public class MapViewer extends Activity
         super.onResume();
         // Clear all markers and reload current view when a relevant preference changed.
         // After app simplification for 3.0.6, only data source is relevant.
-        final String currDatasrc = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(SettingsActivity.KEY_PREF_API_SRC, "");
+        final String currDatasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
         if (prevDatasrc != null && !currDatasrc.equals(prevDatasrc)) {
             clearMap();
             updateMap(false);
@@ -551,8 +549,6 @@ public class MapViewer extends Activity
                     actions.navigate(MapViewer.this);
                     return true;
                 case R.id.action_moreinfo:
-                    final SharedPreferences sharedPref = PreferenceManager
-                            .getDefaultSharedPreferences(MapViewer.this);
                     final boolean useCustomTabs = sharedPref
                             .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
                     actions.moreInfo(MapViewer.this, useCustomTabs);
@@ -596,8 +592,6 @@ public class MapViewer extends Activity
             final DataSource source = getSource(location);
             final LocationActions actions = new LocationActions(location, source);
             trackMapAction("marker_infowindow_clicked", source);
-            final SharedPreferences sharedPref = PreferenceManager
-                    .getDefaultSharedPreferences(MapViewer.this);
             final boolean useCustomTabs = sharedPref
                     .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
             actions.moreInfo(MapViewer.this, useCustomTabs);
