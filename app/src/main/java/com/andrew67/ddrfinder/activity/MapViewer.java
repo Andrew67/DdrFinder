@@ -41,6 +41,7 @@ import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
+import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -51,6 +52,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
 import android.app.Activity;
@@ -100,6 +102,8 @@ public class MapViewer extends Activity
     private final Map<String,DataSource> loadedSources = new HashMap<>();
     private TextView attributionText;
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +124,8 @@ public class MapViewer extends Activity
             sharedPref.edit().putString(SettingsActivity.KEY_PREF_API_SRC,
                     getResources().getString(R.string.settings_src_default)).apply();
         }
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     /**
@@ -190,7 +196,7 @@ public class MapViewer extends Activity
         mClusterManager.setOnClusterItemClickListener(actionModeEnabler);
         mClusterManager.setOnClusterItemInfoWindowClickListener(moreInfoListener);
 
-        mMap.setOnCameraIdleListener(cameraMoveListener);
+        mMap.setOnCameraIdleListener(cameraIdleListener);
         mMap.setOnMapClickListener(actionModeDisabler);
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(mClusterManager);
@@ -199,7 +205,7 @@ public class MapViewer extends Activity
     /**
      * Listener class that stores the current map location and requests a map update.
      */
-    private final GoogleMap.OnCameraIdleListener cameraMoveListener = new GoogleMap.OnCameraIdleListener() {
+    private final GoogleMap.OnCameraIdleListener cameraIdleListener = new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
             // Store the last moved-to coordinates, to use as starting point on next app launch.
@@ -278,6 +284,9 @@ public class MapViewer extends Activity
 
             new MapLoaderV3(mClusterManager, loadedLocations, loadedLocationIds, this, this,
                     attributionText, loadedAreas, loadedSources, apiUrl, datasrc).execute(box);
+
+            // Track forced refreshes by data source.
+            trackMapAction("forced_refresh", datasrc);
         }
     }
 
@@ -482,7 +491,7 @@ public class MapViewer extends Activity
                 actionMode = startActionMode(actionModeCallback);
             }
             selectedLocation = location;
-            // TODO: Track marker click event
+            trackMapAction("marker_selected", getSource(location));
             return false; // keep the default action of moving view and showing info window
         }
     };
@@ -496,7 +505,6 @@ public class MapViewer extends Activity
             if (actionMode != null) {
                 actionMode.finish();
             }
-            // TODO: Track map click event
         }
     };
 
@@ -566,6 +574,7 @@ public class MapViewer extends Activity
                 if (selectedMarker != null) {
                     selectedMarker.hideInfoWindow();
                 }
+                trackMapAction("marker_deselected", getSource(selectedLocation));
             }
 
             // Set status bar color back to default app color.
@@ -573,7 +582,6 @@ public class MapViewer extends Activity
                 getWindow().setStatusBarColor(
                         ThemeUtil.getThemeColor(getTheme(), android.R.attr.colorPrimaryDark));
             }
-
         }
 
     };
@@ -585,8 +593,9 @@ public class MapViewer extends Activity
             new ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation>() {
         @Override
         public void onClusterItemInfoWindowClick(ArcadeLocation location) {
-            final LocationActions actions = new LocationActions(location, getSource(location));
-            // TODO: Track info window clicked
+            final DataSource source = getSource(location);
+            final LocationActions actions = new LocationActions(location, source);
+            trackMapAction("marker_infowindow_clicked", source);
             final SharedPreferences sharedPref = PreferenceManager
                     .getDefaultSharedPreferences(MapViewer.this);
             final boolean useCustomTabs = sharedPref
@@ -594,5 +603,17 @@ public class MapViewer extends Activity
             actions.moreInfo(MapViewer.this, useCustomTabs);
         }
     };
+
+    /** Track a user-initiated map action with the given active data source. */
+    private void trackMapAction(@NonNull String actionType, @NonNull String activeSource) {
+        Bundle params = new Bundle();
+        params.putString(Analytics.Param.ACTION_TYPE, actionType);
+        params.putString(Analytics.Param.ACTIVE_DATASRC, activeSource);
+        firebaseAnalytics.logEvent(Analytics.Event.MAP_ACTION, params);
+    }
+    /** Track a user-initiated map action with the given active data source. */
+    private void trackMapAction(@NonNull String actionType, @NonNull DataSource activeSource) {
+        trackMapAction(actionType, activeSource.getShortName());
+    }
 }
 

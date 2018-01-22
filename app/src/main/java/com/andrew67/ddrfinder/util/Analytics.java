@@ -32,11 +32,21 @@ public class Analytics {
     public static class Event {
         /** The user has changed a preference in the Settings dialog. */
         public static final String SET_PREFERENCE = "set_preference";
+        /** The user has performed an action on the map. */
+        public static final String MAP_ACTION = "map_action";
+        /** The user has triggered an action on a location. */
+        public static final String LOCATION_ACTION = "location_action";
     }
 
     public static class Param {
         public static final String PREFERENCE_KEY = "preference_key";
         public static final String PREFERENCE_VALUE = "preference_value";
+        public static final String ACTION_TYPE = "action_type";
+        /**
+         * Data source active while performing a map/location action.
+         * Tracking this can help segment user actions by data source.
+         */
+        public static final String ACTIVE_DATASRC = "active_datasrc";
     }
 
 }
