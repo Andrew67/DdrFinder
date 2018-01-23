@@ -286,7 +286,7 @@ public class MapViewer extends Activity
                     attributionText, loadedAreas, loadedSources, apiUrl, datasrc).execute(box);
 
             // Track forced refreshes by data source.
-            trackMapAction("forced_refresh", datasrc);
+            if (force) trackMapAction("forced_refresh", datasrc);
         }
     }
 
