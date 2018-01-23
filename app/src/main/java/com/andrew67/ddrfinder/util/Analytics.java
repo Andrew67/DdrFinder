@@ -36,6 +36,8 @@ public class Analytics {
         public static final String MAP_ACTION = "map_action";
         /** The user has triggered an action on a location. */
         public static final String LOCATION_ACTION = "location_action";
+        /** The user has performed an action related to the location permission. */
+        public static final String LOCATION_PERMISSION_ACTION = "location_permission";
     }
 
     public static class Param {

@@ -93,6 +93,7 @@ public class SettingsActivity extends Activity {
             // From https://developer.android.com/guide/topics/ui/dialogs.html#DialogFragment
             // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            final FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
 
             builder.setMessage(R.string.settings_location_dialog_message)
                     .setTitle(R.string.settings_location)
@@ -103,13 +104,17 @@ public class SettingsActivity extends Activity {
                             i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                             i.setData(Uri.fromParts("package", getActivity().getPackageName(), null));
                             startActivity(i);
-                            // TODO: Track Enable Location OK clicked
+                            Bundle params = new Bundle();
+                            params.putString(Analytics.Param.ACTION_TYPE, "enable_accepted");
+                            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_ACTION, params);
                         }
                     })
                     .setNegativeButton(R.string.settings_location_dialog_negative, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
-                            // TODO: Track Enable Location dismissed
+                            Bundle params = new Bundle();
+                            params.putString(Analytics.Param.ACTION_TYPE, "enable_dismissed");
+                            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_ACTION, params);
                         }
                     });
             // Create the AlertDialog object and return it
@@ -155,7 +160,9 @@ public class SettingsActivity extends Activity {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
                         new EnableLocationDialogFragment().show(getFragmentManager(), "dialog");
-                        // TODO: Track clicked Enable Location
+                        Bundle params = new Bundle();
+                        params.putString(Analytics.Param.ACTION_TYPE, "enable_clicked");
+                        firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_ACTION, params);
                         return false;
                     }
                 });
