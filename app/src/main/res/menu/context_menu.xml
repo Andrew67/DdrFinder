@@ -2,7 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/action_navigate"
         android:icon="@drawable/ic_navigation_white_24dp"
-        android:tint="?attr/actionBarIconColor"
         android:title="@string/location_actions_navigate" />
     <item android:id="@+id/action_moreinfo"
         android:icon="@drawable/ic_info_white_24dp"
