@@ -8,9 +8,9 @@
     <string name="error_api">Error loading data</string>
     <string name="api_url" translatable="false">https://ddrfinder.andrew67.com/locate.php</string>
     <string name="about_url"><![CDATA[https://ddrfinder.andrew67.com/about.php?c=%1$d&n=%2$s]]></string>
-    <string name="location_actions_navigate">Open in Maps App</string>
-    <string name="location_actions_info">Details</string>
-    <string name="location_actions_copy">Copy GPS Coordinates</string>
+    <string name="location_actions_navigate">Navigate</string>
+    <string name="location_actions_info">More info</string>
+    <string name="location_actions_copy">Copy GPS coordinates</string>
     <string name="browser_actions_copy">Copy link</string>
     <string name="copy_complete">Copied</string>
     <string name="error_perm_loc">Enable location permission in settings to detect current location</string>
@@ -33,9 +33,9 @@
     <string name="settings_category_basic">Basic</string>
     <string name="settings_category_advanced">Advanced</string>
     <string name="settings_analytics">Analytics</string>
-    <string name="settings_analytics_summary">Share anonymous usage statistics to help improve the app.</string>
+    <string name="settings_analytics_summary">Share anonymous usage statistics to help improve the app</string>
     <string name="settings_location">Enable Current Location</string>
-    <string name="settings_location_dialog_message">To enable current location, tap Settings, then Permissions, then turn on the "Your location" switch.</string>
+    <string name="settings_location_dialog_message">To enable current location, tap Settings, then Permissions, then turn on the \"Your Location\" switch</string>
     <string name="settings_location_dialog_positive">Settings</string>
     <string name="settings_location_dialog_negative">Cancel</string>
     <string name="settings_custom_tabs">Open web pages in app</string>

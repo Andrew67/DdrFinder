@@ -5,8 +5,7 @@
     <string name="action_settings">設定</string>
     <string name="about_url"><![CDATA[https://ddrfinder.andrew67.com/about.php?c=%1$d&n=%2$s&locale=ja]]></string>
     <string name="location_actions_copy">GPS座標をコピー</string>
-    <string name="location_actions_info">詳しいこと</string>
-    <string name="location_actions_navigate">マップアプリで開く</string>
+    <string name="location_actions_info">もっと詳しく</string>
     <string name="action_about">アプリ情報</string>
     <string name="area_no_results">この範囲ではゲームセンターが見つかりませんでした</string>
     <string name="copy_complete">コピーされました</string>
@@ -29,6 +28,7 @@
     <string name="settings_location_dialog_positive">設定</string>
     <string name="settings_location_dialog_negative">キャンセル</string>
     <string name="settings_location">現在位置を使用</string>
-    <string name="settings_location_dialog_message">現在位置を使用できるために、設定→許可→「お客様の位置情報」設定をオンにしてください。</string>
+    <string name="settings_location_dialog_message">現在位置を使用できるために、設定→許可→「お客様の位置情報」設定をオンにしてください</string>
     <string name="settings_custom_tabs">このアプリでウェブサイトを開く</string>
+    <string name="location_actions_navigate">ナビ</string>
 </resources>

@@ -10,8 +10,8 @@
     <string name="error_datasrc">El servidor no reconoció la(s) fuente(s) de datos especificadas</string>
     <string name="error_perm_loc">Habilite el permiso de ubicación en la configuración de su teléfono para poder detectar su localización actual</string>
     <string name="location_actions_copy">Copiar coordenadas de GPS</string>
-    <string name="location_actions_info">Detalles</string>
-    <string name="location_actions_navigate">Abrir en aplicación de mapas</string>
+    <string name="location_actions_info">Más información</string>
+    <string name="location_actions_navigate">Navegar</string>
     <string name="settings_src">Fuente de datos</string>
     <string name="copy_complete">Copiado</string>
     <string name="error_zoom">Acerque al mapa para cargar más localizaciones</string>
@@ -27,7 +27,7 @@
     <string name="settings_analytics">Analítica</string>
     <string name="settings_analytics_summary">Compartir estadísticas de uso anónimas para ayudar a mejorar la aplicación.</string>
     <string name="settings_location">Habilitar localización actual</string>
-    <string name="settings_location_dialog_message">Para habilitar el uso de su localización actual, toque Ajustes, luego Permisos, y finalmente active \"Su ubicación\".</string>
+    <string name="settings_location_dialog_message">Para habilitar el uso de su localización actual, toque Ajustes, luego Permisos, y finalmente active \"Su ubicación\"</string>
     <string name="settings_location_dialog_negative">Cancelar</string>
     <string name="settings_location_dialog_positive">Ajustes</string>
     <string name="settings_custom_tabs">Abrir páginas web dentro de la aplicación</string>

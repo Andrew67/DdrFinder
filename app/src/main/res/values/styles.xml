@@ -15,6 +15,7 @@
         <item name="mColorAccent">@android:color/holo_orange_dark</item>
         <item name="pinColor">@android:color/holo_red_light</item>
         <item name="pinColorHasDDR">@android:color/holo_blue_light</item>
+        <item name="actionBarIconColor">@android:color/white</item>
     </style>
 
     <!-- Application theme. -->
