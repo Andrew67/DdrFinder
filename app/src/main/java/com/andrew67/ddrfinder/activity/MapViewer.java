@@ -42,6 +42,8 @@ import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.andrew67.ddrfinder.util.Analytics;
+import com.andrew67.ddrfinder.util.AppUrlParser;
+import com.andrew67.ddrfinder.util.ParsedAppUrl;
 import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -85,6 +87,9 @@ public class MapViewer extends Activity
     private static final int BASE_ZOOM = 12;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
+    /** Contains requested initial map state, if opened by app link. */
+    private ParsedAppUrl appLink;
+
     private GoogleMap mMap = null;
     private ClusterManager<ArcadeLocation> mClusterManager;
     private LocationClusterRenderer mClusterRenderer;
@@ -117,6 +122,9 @@ public class MapViewer extends Activity
         attributionText = findViewById(R.id.attribution);
         progressBar = findViewById(R.id.progressBar);
         onCreateSavedInstanceState = savedInstanceState;
+
+        // Parse out location/zoom from a passed in app link.
+        appLink = AppUrlParser.parse(getIntent().getData());
 
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 
@@ -177,15 +185,23 @@ public class MapViewer extends Activity
             attributionText.setText(onCreateSavedInstanceState.getCharSequence("attributionText"));
         }
 
-        // Start the camera on the last known user-interacted view.
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(loadCameraFromState()));
+        // Start the camera from the app link lat/lng/zoom (if specified and initial launch).
+        // Otherwise, start the camera on the last known user-interacted view.
+        if (onCreateSavedInstanceState == null &&
+                appLink.getPosition() != null && appLink.getZoom() != null) {
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(
+                    new CameraPosition(appLink.getPosition(), appLink.getZoom(), 0, 0)
+            ));
+        } else {
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(loadCameraFromState()));
+        }
 
         // Check for location permission, and request if disabled.
         // This permission allows the user to locate themselves on the map.
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
-            if (onCreateSavedInstanceState == null) {
+            if (onCreateSavedInstanceState == null && appLink.getPosition() == null) {
                 zoomToCurrentLocation();
             }
         } else {
@@ -471,7 +487,7 @@ public class MapViewer extends Activity
                     try {
                         mMap.setMyLocationEnabled(true);
                     } catch (SecurityException e) { /* Satisfy linter; it should be granted */ }
-                    zoomToCurrentLocation();
+                    if (appLink.getPosition() == null) zoomToCurrentLocation();
                 } else {
                     showMessage(R.string.error_perm_loc);
                 }
