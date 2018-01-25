@@ -28,6 +28,9 @@ import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 /**
  * Represents an app link (e.g. for positioning the map on app launch which can be shared).
  */
@@ -36,12 +39,12 @@ public class AppLink {
     private static String BASE_URL = "https://ddrfinder.andrew67.com/app";
 
     private final LatLng position;
-    private final Integer zoom;
+    private final Float zoom;
 
     /**
      * Build the AppLink. Cannot be called directly.
      */
-    private AppLink(@Nullable LatLng position, @Nullable Integer zoom) {
+    private AppLink(@Nullable LatLng position, @Nullable Float zoom) {
         this.position = position;
         this.zoom = zoom;
     }
@@ -60,7 +63,7 @@ public class AppLink {
      * @return Zoom level, or null if not specified.
      */
     @Nullable
-    public Integer getZoom() {
+    public Float getZoom() {
         return zoom;
     }
 
@@ -92,7 +95,7 @@ public class AppLink {
                 }
                 String z = url.getQueryParameter("z");
                 if (z != null) {
-                    appLink.zoom(Integer.valueOf(z));
+                    appLink.zoom(Float.valueOf(z));
                 }
             } catch (NumberFormatException e) {
                 // This exception is to be expected given user input.
@@ -111,12 +114,16 @@ public class AppLink {
         url.append("/map"); // Append activity; currently only map is available.
         // Append coordinates as "/@{lat},{long},{zoom}z".
         if (position != null && zoom != null) {
+            NumberFormat sixDigitsFormatter = NumberFormat.getInstance(Locale.US);
+            sixDigitsFormatter.setMinimumFractionDigits(0);
+            sixDigitsFormatter.setMaximumFractionDigits(6);
+
             url.append("/@");
-            url.append(position.latitude);
+            url.append(sixDigitsFormatter.format(position.latitude));
             url.append(',');
-            url.append(position.longitude);
+            url.append(sixDigitsFormatter.format(position.longitude));
             url.append(',');
-            url.append(zoom);
+            url.append(zoom.intValue());
             url.append('z');
         }
         return url.toString();
@@ -127,14 +134,14 @@ public class AppLink {
      */
     public static class Builder {
         private LatLng position = null;
-        private Integer zoom = null;
+        private Float zoom = null;
 
         public Builder position(@Nullable LatLng position) {
             this.position = position;
             return this;
         }
 
-        public Builder zoom(@Nullable Integer zoom) {
+        public Builder zoom(@Nullable Float zoom) {
             this.zoom = zoom;
             return this;
         }
