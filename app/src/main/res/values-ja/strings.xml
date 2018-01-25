@@ -31,4 +31,5 @@
     <string name="settings_location_dialog_message">現在位置を使用できるために、設定→許可→「お客様の位置情報」設定をオンにしてください</string>
     <string name="settings_custom_tabs">このアプリでウェブサイトを開く</string>
     <string name="location_actions_navigate">ナビ</string>
+    <string name="action_share">シェア</string>
 </resources>

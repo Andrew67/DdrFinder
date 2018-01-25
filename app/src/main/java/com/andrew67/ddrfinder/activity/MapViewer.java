@@ -88,6 +88,8 @@ public class MapViewer extends Activity
 
     /** Contains requested initial map state, if opened by app link. */
     private AppLink appLink;
+    /** Contains mutable map state that can be built into a shareable AppLink. */
+    private AppLink.Builder currentAppLink;
 
     private GoogleMap mMap = null;
     private ClusterManager<ArcadeLocation> mClusterManager;
@@ -124,6 +126,8 @@ public class MapViewer extends Activity
 
         // Parse out location/zoom from a passed in app link.
         appLink = AppLink.parse(getIntent().getData());
+        // Initialize a mutable AppLink builder based on the initial AppLink, for sharing.
+        currentAppLink = appLink.buildUpon();
 
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 
@@ -234,6 +238,24 @@ public class MapViewer extends Activity
         }
     };
 
+    /**
+     * Pops open the share chooser populated with an AppLink that represents the current state.
+     */
+    private void shareCurrentAppLink() {
+        // Log share event for analytics.
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "map");
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, "redacted");
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, params);
+
+        // Prepare and start share intent.
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, currentAppLink.build().toString());
+        shareIntent.setType("text/plain");
+        startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.action_share)));
+    }
+
     // Preference names for storing last known coordinates.
     private final String PREF_STATE = "state";
     private final String KEY_LATITUDE = "latitude";
@@ -257,6 +279,9 @@ public class MapViewer extends Activity
                 .putLong(KEY_LONGITUDE, Double.doubleToRawLongBits(position.target.longitude))
                 .putFloat(KEY_ZOOM, position.zoom)
                 .apply();
+
+        // Update current AppLink that would be shared from the share icon.
+        currentAppLink.position(position.target).zoom(position.zoom);
     }
 
     /**
@@ -401,12 +426,12 @@ public class MapViewer extends Activity
     @Override
     public void showProgressBar() {
         progressBar.setVisibility(View.VISIBLE);
-        if (reloadButton != null) reloadButton.setVisible(false);
+        if (reloadButton != null) reloadButton.setEnabled(false);
     }
 
     @Override
     public void hideProgressBar() {
-        if (reloadButton != null) reloadButton.setVisible(true);
+        if (reloadButton != null) reloadButton.setEnabled(true);
         progressBar.setVisibility(View.INVISIBLE);
     }
 
@@ -440,6 +465,9 @@ public class MapViewer extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        case R.id.action_share:
+            shareCurrentAppLink();
+            return true;
         case R.id.action_reload:
             updateMap(true);
             return true;
