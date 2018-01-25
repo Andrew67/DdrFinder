@@ -33,7 +33,7 @@ import java.util.List;
 
 /**
  * Represents the API v2 result.
- * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
+ * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
  */
 public class Result implements ApiResult {
     private String error;

@@ -28,7 +28,7 @@ import android.os.Parcelable;
  * Standard interface for API data source.
  * When new fields are added in API versions, old models should provide new functions to compensate.
  * For example, the model.v1 ApiResultV1 class was extended to return static "ziv" source information.
- * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
+ * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
  */
 public interface DataSource extends Parcelable {
 

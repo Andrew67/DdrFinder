@@ -32,7 +32,7 @@ import java.util.List;
  * When new fields are added in API versions, old models should provide new functions to compensate.
  * For example, the model.v1 ApiResultV1 class was extended to return static "ziv" source information.
  * Normalizes error codes to latest API level as well.
- * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
+ * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
  */
 public interface ApiResult {
 

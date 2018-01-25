@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * Standard interface for API arcade locations.
  * When new fields are added in API versions, old models should provide new functions to compensate.
  * For example, the model.v1 ArcadeLocationV1 class was extended to return static "ziv" source information.
- * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
+ * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
  */
 public interface ArcadeLocation extends Parcelable, ClusterItem {
     int getId();

@@ -31,7 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 /**
  * Represents the API v2 location.
- * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
+ * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
  */
 public class Location implements ArcadeLocation {
     private int id;

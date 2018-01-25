@@ -30,7 +30,7 @@ import com.andrew67.ddrfinder.interfaces.DataSource;
 
 /**
  * Represents the API v2 source.
- * See: https://github.com/Andrew67/ddr-finder/wiki/API-Description
+ * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
  * Note: the infoURL field is ignored, mInfoURL is used in its place.
  */
 public class Source implements DataSource {
@@ -103,7 +103,7 @@ public class Source implements DataSource {
         Source src = new Source();
         src.shortName = "fallback";
         src.name = "Source Website";
-        src.mInfoURL = "http://ddrfinder.andrew67.com/info.php?id=${id}&android=1";
+        src.mInfoURL = "https://ddrfinder.andrew67.com/info.php?id=${id}&android=1";
         src.hasDDR = false;
         return src;
     }
