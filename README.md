@@ -22,6 +22,9 @@ Developing your own version
 * Modify settings_api_version_default in res/values/strings.xml to set your endpoint API version as default.
 * Modify about_url in res/values/strings.xml to point to your about page.
 * Modify values in getFallback() in the model.v3.Source class to your info redirection script.
+* Deploy your own version of [ddr-finder-app](https://github.com/Andrew67/ddr-finder-app) or compatible.
+* Modify BASE_URL in the AppLink class to your equivalent deployed web app, or remove the URL share functionality.
+* Modify intent filters in AndroidManifest.xml to point to your deployment URL.
 
 Acknowledgments
 ---------------
