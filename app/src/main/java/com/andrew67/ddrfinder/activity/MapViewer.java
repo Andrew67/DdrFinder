@@ -42,8 +42,7 @@ import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.andrew67.ddrfinder.util.Analytics;
-import com.andrew67.ddrfinder.util.AppUrlParser;
-import com.andrew67.ddrfinder.util.ParsedAppUrl;
+import com.andrew67.ddrfinder.util.AppLink;
 import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -88,7 +87,7 @@ public class MapViewer extends Activity
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
     /** Contains requested initial map state, if opened by app link. */
-    private ParsedAppUrl appLink;
+    private AppLink appLink;
 
     private GoogleMap mMap = null;
     private ClusterManager<ArcadeLocation> mClusterManager;
@@ -124,7 +123,7 @@ public class MapViewer extends Activity
         onCreateSavedInstanceState = savedInstanceState;
 
         // Parse out location/zoom from a passed in app link.
-        appLink = AppUrlParser.parse(getIntent().getData());
+        appLink = AppLink.parse(getIntent().getData());
 
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 

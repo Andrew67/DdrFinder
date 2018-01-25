@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package com.andrew67.ddrfinder.util;
 
 import android.net.Uri;
@@ -28,17 +29,56 @@ import android.support.annotation.Nullable;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
- * Helps parse app URLs (e.g. for positioning the map).
- * See docs/URLs.md in the ddr-finder main project.
+ * Represents an app link (e.g. for positioning the map on app launch which can be shared).
  */
-public class AppUrlParser {
+public class AppLink {
+
+    private static String BASE_URL = "https://ddrfinder.andrew67.com/app";
+
+    private LatLng position = null;
+    private Integer zoom = null;
 
     /**
-     * Builds an instance of ParsedAppUrl by parsing the given Uri.
-     * @param url Uri to parse. Can come straight from getIntent().getData().
-     * @return Instance of ParsedAppUrl.
+     * Build the AppLink. Cannot be called directly.
      */
-    public static ParsedAppUrl parse(@Nullable Uri url) {
+    private AppLink(@Nullable LatLng position, @Nullable Integer zoom) {
+        this.position = position;
+        this.zoom = zoom;
+    }
+
+    /**
+     * Return the positions for the center of the map, if set.
+     * @return Center position, or null if not specified.
+     */
+    @Nullable
+    public LatLng getPosition() {
+        return position;
+    }
+
+    /**
+     * Return the zoom level for the map, if set.
+     * @return Zoom level, or null if not specified.
+     */
+    @Nullable
+    public Integer getZoom() {
+        return zoom;
+    }
+
+    /**
+     * Return the data source to use, if set.
+     * @return Data source short name, or null if not specified.
+     */
+    @Nullable
+    public String getSourceShortName() {
+        return null;
+    }
+
+    /**
+     * Builds an instance of AppLink by parsing the given Uri.
+     * @param url Uri to parse. Can come straight from getIntent().getData().
+     * @return Instance of AppLink.
+     */
+    public static AppLink parse(@Nullable Uri url) {
         LatLng position = null;
         Integer zoom = null;
         if (url != null) {
@@ -59,7 +99,28 @@ public class AppUrlParser {
                 // This exception is to be expected given user input.
             }
         }
-        return new ParsedAppUrl(position, zoom);
+        return new AppLink(position, zoom);
+    }
+
+    /**
+     * Converts this AppLink into a URL string for sharing.
+     * @return Absolute URL to the app with the state represented by this AppLink.
+     */
+    @Override
+    public String toString() {
+        StringBuilder url = new StringBuilder(BASE_URL);
+        url.append("/map"); // Append activity; currently only map is available.
+        // Append coordinates as "/@{lat},{long},{zoom}z".
+        if (position != null && zoom != null) {
+            url.append("/@");
+            url.append(position.latitude);
+            url.append(',');
+            url.append(position.longitude);
+            url.append(',');
+            url.append(zoom);
+            url.append('z');
+        }
+        return url.toString();
     }
 
 }
