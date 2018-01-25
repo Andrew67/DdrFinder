@@ -35,8 +35,8 @@ public class AppLink {
 
     private static String BASE_URL = "https://ddrfinder.andrew67.com/app";
 
-    private LatLng position = null;
-    private Integer zoom = null;
+    private final LatLng position;
+    private final Integer zoom;
 
     /**
      * Build the AppLink. Cannot be called directly.
@@ -79,8 +79,7 @@ public class AppLink {
      * @return Instance of AppLink.
      */
     public static AppLink parse(@Nullable Uri url) {
-        LatLng position = null;
-        Integer zoom = null;
+        Builder appLink = new Builder();
         if (url != null) {
             try {
                 // For now we only handle /ng links, so no need to verify path segments.
@@ -89,17 +88,17 @@ public class AppLink {
                     String[] llComponents = ll.split(",");
                     Double latitude = Double.valueOf(llComponents[0]);
                     Double longitude = Double.valueOf(llComponents[1]);
-                    position = new LatLng(latitude, longitude);
+                    appLink.position(new LatLng(latitude, longitude));
                 }
                 String z = url.getQueryParameter("z");
                 if (z != null) {
-                    zoom = Integer.valueOf(z);
+                    appLink.zoom(Integer.valueOf(z));
                 }
             } catch (NumberFormatException e) {
                 // This exception is to be expected given user input.
             }
         }
-        return new AppLink(position, zoom);
+        return appLink.build();
     }
 
     /**
@@ -121,6 +120,36 @@ public class AppLink {
             url.append('z');
         }
         return url.toString();
+    }
+
+    /**
+     * Mutable helper class for building AppLink instances.
+     */
+    public static class Builder {
+        private LatLng position = null;
+        private Integer zoom = null;
+
+        public Builder position(@Nullable LatLng position) {
+            this.position = position;
+            return this;
+        }
+
+        public Builder zoom(@Nullable Integer zoom) {
+            this.zoom = zoom;
+            return this;
+        }
+
+        public AppLink build() {
+            return new AppLink(position, zoom);
+        }
+    }
+
+    /**
+     * Constructs a new builder, copying this AppLink instance.
+     * @return New builder with current parameters.
+     */
+    public Builder buildUpon() {
+        return new Builder().position(position).zoom(zoom);
     }
 
 }
