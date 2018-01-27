@@ -29,7 +29,10 @@ import android.support.annotation.Nullable;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents an app link (e.g. for positioning the map on app launch which can be shared).
@@ -37,6 +40,13 @@ import java.util.Locale;
 public class AppLink {
 
     private static String BASE_URL = "https://ddrfinder.andrew67.com/app";
+    private static int ACTIVITY = 1;
+    private static String ACTIVITY_MAP = "map";
+
+    private static Pattern LAT_LNG_ZOOM = Pattern.compile("@(.*),(.*),(.*)z");
+    private static int LAT = 1;
+    private static int LNG = 2;
+    private static int ZOOM = 3;
 
     private final LatLng position;
     private final Float zoom;
@@ -85,17 +95,35 @@ public class AppLink {
         Builder appLink = new Builder();
         if (url != null) {
             try {
-                // For now we only handle /ng links, so no need to verify path segments.
-                String ll = url.getQueryParameter("ll");
-                if (ll != null) {
-                    String[] llComponents = ll.split(",");
-                    Double latitude = Double.valueOf(llComponents[0]);
-                    Double longitude = Double.valueOf(llComponents[1]);
-                    appLink.position(new LatLng(latitude, longitude));
-                }
-                String z = url.getQueryParameter("z");
-                if (z != null) {
-                    appLink.zoom(Float.valueOf(z));
+                List<String> pathSegments = url.getPathSegments();
+
+                // Handle /app/map/@{latitude},{longitude},{zoom}z links.
+                // Setting the datasrc is not yet supported, so let's let web handle those for now.
+                if (pathSegments.size() == 3 &&
+                        ACTIVITY_MAP.equals(pathSegments.get(ACTIVITY))) {
+                    Matcher m = LAT_LNG_ZOOM.matcher(url.getLastPathSegment());
+                    if (m.matches()) {
+                        appLink.position(new LatLng(
+                                Double.valueOf(m.group(LAT)),
+                                Double.valueOf(m.group(LNG))
+                        ));
+                        appLink.zoom(Float.valueOf(m.group(ZOOM)));
+                    }
+                } else {
+                    // Handle /ng links.
+                    // One /ng is sunset and redirects to /app/map, this can be removed.
+                    String ll = url.getQueryParameter("ll");
+                    if (ll != null) {
+                        String[] llComponents = ll.split(",");
+                        appLink.position(new LatLng(
+                                Double.valueOf(llComponents[0]),
+                                Double.valueOf(llComponents[1])
+                        ));
+                    }
+                    String z = url.getQueryParameter("z");
+                    if (z != null) {
+                        appLink.zoom(Float.valueOf(z));
+                    }
                 }
             } catch (NumberFormatException e) {
                 // This exception is to be expected given user input.
