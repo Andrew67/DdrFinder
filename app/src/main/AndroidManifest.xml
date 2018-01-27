@@ -30,6 +30,8 @@
                 <data android:scheme="https" android:host="ddrfinder.andrew67.com"
                     android:pathPrefix="/ng"/>
                 <data android:scheme="http"/>
+                <data android:path="/app"/>
+                <data android:path="/app/"/>
                 <data android:path="/app/map"/>
                 <data android:path="/app/map/"/>
                 <data android:pathPrefix="/app/map/@"/>
