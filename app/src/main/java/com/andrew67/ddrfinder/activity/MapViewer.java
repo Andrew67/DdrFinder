@@ -110,6 +110,7 @@ public class MapViewer extends Activity
 
     private FirebaseAnalytics firebaseAnalytics;
     private SharedPreferences sharedPref;
+    private SharedPreferences state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +118,7 @@ public class MapViewer extends Activity
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        state = getSharedPreferences(PREF_STATE, MODE_PRIVATE);
 
         setContentView(R.layout.map_viewer);
 
@@ -204,7 +206,13 @@ public class MapViewer extends Activity
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
-            if (onCreateSavedInstanceState == null && appLink.getPosition() == null) {
+            // Move camera to current location under 3 conditions:
+            // - This onCreate is not the result of a rotatation, etc.
+            // - The application was not opened via app link.
+            // - It has been over 4 hours since the last camera movement.
+            if (onCreateSavedInstanceState == null &&
+                    appLink.getPosition() == null &&
+                    System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) > 1000 * 60 * 60 * 4) {
                 zoomToCurrentLocation();
             }
         } else {
@@ -261,6 +269,7 @@ public class MapViewer extends Activity
     private final String KEY_LATITUDE = "latitude";
     private final String KEY_LONGITUDE = "longitude";
     private final String KEY_ZOOM = "zoom";
+    private final String KEY_LAST_CAMERA_TIMESTAMP = "lastCameraTimestamp";
 
     // Dallas, TX, US; zoomed-out default causes too much CPU stress on slower devices
     private final double DEFAULT_LATITUDE = 32.7157;
@@ -272,12 +281,11 @@ public class MapViewer extends Activity
      * @param position The position to save.
      */
     private void saveCameraToState(CameraPosition position) {
-        final SharedPreferences state = getSharedPreferences(PREF_STATE, MODE_PRIVATE);
-
         state.edit()
                 .putLong(KEY_LATITUDE, Double.doubleToRawLongBits(position.target.latitude))
                 .putLong(KEY_LONGITUDE, Double.doubleToRawLongBits(position.target.longitude))
                 .putFloat(KEY_ZOOM, position.zoom)
+                .putLong(KEY_LAST_CAMERA_TIMESTAMP, System.currentTimeMillis())
                 .apply();
 
         // Update current AppLink that would be shared from the share icon.
@@ -288,8 +296,6 @@ public class MapViewer extends Activity
      * Load the camera position from the last saved state, or use the defaults.
      */
     private CameraPosition loadCameraFromState() {
-        final SharedPreferences state = getSharedPreferences(PREF_STATE, MODE_PRIVATE);
-
         Long rawLatitude = state.getLong(KEY_LATITUDE, Long.MIN_VALUE);
         Long rawLongitude = state.getLong(KEY_LONGITUDE, Long.MIN_VALUE);
         final float zoom = state.getFloat(KEY_ZOOM, DEFAULT_ZOOM);
@@ -514,6 +520,7 @@ public class MapViewer extends Activity
                     try {
                         mMap.setMyLocationEnabled(true);
                     } catch (SecurityException e) { /* Satisfy linter; it should be granted */ }
+                    // Zoom to current location if application was not opened via app link.
                     if (appLink.getPosition() == null) zoomToCurrentLocation();
                 } else {
                     showMessage(R.string.error_perm_loc);
