@@ -15,10 +15,54 @@
       },
       "oauth_client": [
         {
-          "client_id": "908908238003-27ht38qhb58hjeuan6urgb2vsi5ml4of.apps.googleusercontent.com",
+          "client_id": "908908238003-faor2kgbs3egq9731r8vp05gi4rn5geu.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.andrew67.ddrfinder",
+            "certificate_hash": "d906f4f7ac3072990a2fa497dba26c8d237a4635"
+          }
+        },
+        {
+          "client_id": "908908238003-vud2k05fecd811ghpebn4n68c862nqcs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg1zZmVtt2PZhYOXA8520kflYCCIWOOe0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908908238003-vud2k05fecd811ghpebn4n68c862nqcs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908908238003:android:8593dedd722d3539",
+        "android_client_info": {
+          "package_name": "com.andrew67.ddrfinder.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "908908238003-4gchrm82atk8ph769qcarrnmn30qmvji.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andrew67.ddrfinder.debug",
             "certificate_hash": "2d04c94a5d581f9630239e5ecad4ee9ceda2115c"
           }
         },
