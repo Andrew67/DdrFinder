@@ -37,10 +37,11 @@ import com.andrew67.ddrfinder.model.v3.Result;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
@@ -64,7 +65,9 @@ public class MapLoaderV3 extends MapLoader {
             final LatLngBounds box = boxes[0];
 
             final OkHttpClient client = new OkHttpClient();
-            final HttpUrl requestURL = HttpUrl.parse(apiUrl).newBuilder()
+            HttpUrl requestURL = HttpUrl.parse(apiUrl);
+            assert requestURL != null;
+            requestURL = requestURL.newBuilder()
                     .addQueryParameter("version", "30")
                     .addQueryParameter("canHandleLargeDataset", "")
                     .addQueryParameter("datasrc", datasrc)
@@ -88,7 +91,9 @@ public class MapLoaderV3 extends MapLoader {
             // Data/error loaded OK
             if (statusCode == 200 || statusCode == 400) {
                 final Gson gson = new Gson();
-                result = gson.fromJson(response.body().charStream(), Result.class);
+                final ResponseBody responseBody = response.body();
+                assert responseBody != null;
+                result = gson.fromJson(responseBody.charStream(), Result.class);
                 result.setBounds(box);
                 Log.d("api", "Raw API result: " + gson.toJson(result, Result.class));
             }
