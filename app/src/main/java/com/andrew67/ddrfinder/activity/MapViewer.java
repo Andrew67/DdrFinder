@@ -475,7 +475,7 @@ public class MapViewer extends Activity
             shareCurrentAppLink();
             return true;
         case R.id.action_reload:
-            updateMap(true);
+            if (mMap != null) updateMap(true);
             return true;
         case R.id.action_about:
             startActivity(new Intent(this, About.class));
@@ -497,7 +497,7 @@ public class MapViewer extends Activity
         // Clear all markers and reload current view when a relevant preference changed.
         // After app simplification for 3.0.6, only data source is relevant.
         final String currDatasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
-        if (prevDatasrc != null && !currDatasrc.equals(prevDatasrc)) {
+        if (mMap != null && prevDatasrc != null && !currDatasrc.equals(prevDatasrc)) {
             clearMap();
             updateMap(false);
         }
