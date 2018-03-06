@@ -142,14 +142,14 @@ public class AppLink {
         url.append("/map"); // Append activity; currently only map is available.
         // Append coordinates as "/@{lat},{long},{zoom}z".
         if (position != null && zoom != null) {
-            NumberFormat sixDigitsFormatter = NumberFormat.getInstance(Locale.US);
-            sixDigitsFormatter.setMinimumFractionDigits(0);
-            sixDigitsFormatter.setMaximumFractionDigits(6);
+            NumberFormat latLngFormatter = NumberFormat.getInstance(Locale.US);
+            latLngFormatter.setMinimumFractionDigits(0);
+            latLngFormatter.setMaximumFractionDigits(5);
 
             url.append("/@");
-            url.append(sixDigitsFormatter.format(position.latitude));
+            url.append(latLngFormatter.format(position.latitude));
             url.append(',');
-            url.append(sixDigitsFormatter.format(position.longitude));
+            url.append(latLngFormatter.format(position.longitude));
             url.append(',');
             url.append(zoom.intValue());
             url.append('z');
