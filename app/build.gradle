@@ -1,13 +1,11 @@
 apply plugin: 'com.android.application'
 
-//noinspection GroovyMissingReturnStatement
 android {
     compileSdkVersion 26
-    //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
-        versionCode 20
-        versionName "3.0.8"
+        versionCode 21
+        versionName "3.0.9"
         minSdkVersion 15
         targetSdkVersion 26
         resConfigs "en", "es", "ja"
