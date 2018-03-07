@@ -100,6 +100,8 @@ public class MapViewer extends Activity
     private AppLink appLink;
     /** Contains mutable map state that can be built into a shareable AppLink. */
     private AppLink.Builder currentAppLink;
+    /** When non-null, points to a user-specified Autocomplete-provided location to move the map to. */
+    private Place autocompletedPlace = null;
 
     private GoogleMap mMap = null;
     private ClusterManager<ArcadeLocation> mClusterManager;
@@ -220,9 +222,11 @@ public class MapViewer extends Activity
             // - This onCreate is not the result of a rotation, etc.
             // - The application was not opened via app link.
             // - It has been over 4 hours since the last camera movement.
+            // - The app isn't resuming from a Places API Autocomplete selection.
             if (onCreateSavedInstanceState == null &&
                     appLink.getPosition() == null &&
-                    System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) > 1000 * 60 * 60 * 4) {
+                    System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) > 1000 * 60 * 60 * 4 &&
+                    autocompletedPlace == null) {
                 zoomToCurrentLocation();
             }
         } else {
@@ -230,6 +234,9 @@ public class MapViewer extends Activity
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_LOCATION);
         }
+
+        // If returning from a Places API Autocomplete selection, move the map to that location.
+        if (autocompletedPlace != null) moveMapToAutocompletedPlace();
 
         mClusterManager.setOnClusterItemClickListener(actionModeEnabler);
         mClusterManager.setOnClusterItemInfoWindowClickListener(moreInfoListener);
@@ -507,20 +514,26 @@ public class MapViewer extends Activity
     @Override
     protected void onResume() {
         super.onResume();
-        // Clear all markers and reload current view when a relevant preference changed.
-        // After app simplification for 3.0.6, only data source is relevant.
-        final String currDatasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
-        if (mMap != null && prevDatasrc != null && !currDatasrc.equals(prevDatasrc)) {
-            clearMap();
-            updateMap(false);
+        if (mMap != null) {
+            // Clear all markers and reload current view when a relevant preference changed.
+            // After app simplification for 3.0.6, only data source is relevant.
+            final String currDatasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
+            if (prevDatasrc != null && !currDatasrc.equals(prevDatasrc)) {
+                clearMap();
+                updateMap(false);
+            }
+
+            // Enable "My Location" if resuming activity with location permission enabled.
+            // i.e. User goes to Settings to enable, then comes back.
+            if (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            }
+
+            // Move to Places API Autocompleted place if coming back from it.
+            if (autocompletedPlace != null) moveMapToAutocompletedPlace();
         }
 
-        // Enable "My Location" if resuming activity with location permission enabled.
-        // i.e. User goes to Settings to enable, then comes back.
-        if (mMap != null && ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        }
     }
 
     @Override
@@ -553,6 +566,7 @@ public class MapViewer extends Activity
             final Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                     .setFilter(typeFilter)
                     .build(this);
+            firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_START, null);
             startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
         } catch (GooglePlayServicesNotAvailableException e) {
             // This exception is not actionable
@@ -574,37 +588,52 @@ public class MapViewer extends Activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            // TODO: If mMap unavailable (e.g. came back from low memory) queue the change so it gets run in onMapReady
-            if (resultCode == RESULT_OK && mMap != null) {
-                final Place place = PlaceAutocomplete.getPlace(this, data);
-                // If LatLngBounds are available, move to those;
-                // otherwise use LatLng as center with base zoom.
-                final LatLngBounds viewport = place.getViewport();
-                CameraUpdate cameraUpdate;
-                if (viewport != null) {
-                    Log.d("MapViewer", "Places API using viewport: " + viewport.toString());
-                    cameraUpdate = CameraUpdateFactory.newLatLngBounds(viewport, 0);
-                } else {
-                    final LatLng latLng = place.getLatLng();
-                    Log.d("MapViewer", "Places API using latLng: " + latLng.toString());
-                    cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, BASE_ZOOM);
-                }
-
-                try {
-                    mMap.animateCamera(cameraUpdate);
-                } catch (IllegalStateException e) {
-                    // This exception is thrown when map layout has not yet occurred.
-                    // See: https://developers.google.com/android/reference/com/google/android/gms/maps/CameraUpdateFactory.html
-                    // TODO: Log to Firebase
-                    // TODO: Handle by falling back to a newLatLngZoom update
-                    e.printStackTrace();
-                }
+            if (resultCode == RESULT_OK) {
+                autocompletedPlace = PlaceAutocomplete.getPlace(this, data);
+                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_COMPLETE, null);
+            } else if (resultCode == RESULT_CANCELED) {
+                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_CANCELED, null);
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                // TODO: Log to Firebase
                 final Status status = PlaceAutocomplete.getStatus(this, data);
                 Log.e("MapViewer", status.getStatusMessage());
+                final Bundle params = new Bundle();
+                params.putString(Analytics.Param.EXCEPTION_MESSAGE, status.getStatusMessage());
+                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_ERROR, params);
             }
         }
+    }
+
+    /**
+     * Move the map to the last user-specified autocomplete location, then sets it to null.
+     * The user-specified location is set in onActivityResult (fires before onResume).
+     * This function can only be called from onMapReady or onResume (when onMapReady has previously fired).
+     */
+    private void moveMapToAutocompletedPlace() {
+        final LatLngBounds viewport = autocompletedPlace.getViewport();
+        final CameraUpdate viewportCameraUpdate = viewport == null ?
+                null : CameraUpdateFactory.newLatLngBounds(viewport, 0);
+        final LatLng latLng = autocompletedPlace.getLatLng();
+        final CameraUpdate latLngCameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, BASE_ZOOM);
+
+        boolean success = false;
+
+        // If LatLngBounds are available, move to those; otherwise use LatLng as center with base zoom.
+        if (viewportCameraUpdate != null) {
+            try {
+                Log.d("MapViewer", "Places API using viewport: " + viewport.toString());
+                mMap.animateCamera(viewportCameraUpdate);
+                success = true;
+            } catch (IllegalStateException e) {
+                // This exception is thrown when map layout has not yet occurred.
+                // See: https://developers.google.com/android/reference/com/google/android/gms/maps/CameraUpdateFactory.html
+                Log.e("MapViewer", "Places API: map layout has not occurred; falling back to latLng");
+            }
+        }
+        if (!success) {
+            Log.d("MapViewer", "Places API using latLng: " + latLng.toString());
+            mMap.animateCamera(latLngCameraUpdate);
+        }
+        autocompletedPlace = null;
     }
 
     /**

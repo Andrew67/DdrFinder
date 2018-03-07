@@ -38,6 +38,14 @@ public class Analytics {
         public static final String LOCATION_ACTION = "location_action";
         /** The user has performed an action related to the location permission. */
         public static final String LOCATION_PERMISSION_ACTION = "location_permission";
+        /** The user has started searching for a location via the Places API. */
+        public static final String PLACES_SEARCH_START = "places_search_start";
+        /** The user has successfully found and loaded a Places API search result. */
+        public static final String PLACES_SEARCH_COMPLETE = "places_search_complete";
+        /** The user has dismissed the Places API search screen without selecting a result. */
+        public static final String PLACES_SEARCH_CANCELED = "places_search_canceled";
+        /** The Places API has thrown an error. */
+        public static final String PLACES_SEARCH_ERROR = "places_search_error";
     }
 
     public static class Param {
