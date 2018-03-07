@@ -44,6 +44,14 @@ import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
 import com.andrew67.ddrfinder.util.ThemeUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -57,6 +65,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -85,6 +94,7 @@ public class MapViewer extends Activity
 
     private static final int BASE_ZOOM = 12;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
+    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 2;
 
     /** Contains requested initial map state, if opened by app link. */
     private AppLink appLink;
@@ -207,7 +217,7 @@ public class MapViewer extends Activity
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             // Move camera to current location under 3 conditions:
-            // - This onCreate is not the result of a rotatation, etc.
+            // - This onCreate is not the result of a rotation, etc.
             // - The application was not opened via app link.
             // - It has been over 4 hours since the last camera movement.
             if (onCreateSavedInstanceState == null &&
@@ -471,6 +481,9 @@ public class MapViewer extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        case R.id.action_search:
+            startPlaceAutocomplete();
+            return true;
         case R.id.action_share:
             shareCurrentAppLink();
             return true;
@@ -525,6 +538,72 @@ public class MapViewer extends Activity
                 } else {
                     showMessage(R.string.error_perm_loc);
                 }
+        }
+    }
+
+    /**
+     * Starts the place autocomplete overlay activity (with filter for regions).
+     * If Google Play Services requires an update, shows actionable error message to user.
+     */
+    private void startPlaceAutocomplete() {
+        try {
+            final AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                    .build();
+            final Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                    .setFilter(typeFilter)
+                    .build(this);
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // This exception is not actionable
+            e.printStackTrace();
+        } catch (GooglePlayServicesRepairableException e) {
+            // This exception is actionable; display Play Services update dialog to user
+            final Dialog errorDialog = GoogleApiAvailability.getInstance()
+                    .getErrorDialog(this, e.getConnectionStatusCode(), PLACE_AUTOCOMPLETE_REQUEST_CODE);
+            if (errorDialog != null) errorDialog.show();
+        }
+    }
+
+    /**
+     * Handle results from startActivityForResult.
+     * Currently used to handle result from Places Autocomplete widget.
+     * Note: this function gets called before onResume.
+     * In cases with low memory, this means the order is onCreate, onActivityResult, onResume (with onMapReady undetermined).
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            // TODO: If mMap unavailable (e.g. came back from low memory) queue the change so it gets run in onMapReady
+            if (resultCode == RESULT_OK && mMap != null) {
+                final Place place = PlaceAutocomplete.getPlace(this, data);
+                // If LatLngBounds are available, move to those;
+                // otherwise use LatLng as center with base zoom.
+                final LatLngBounds viewport = place.getViewport();
+                CameraUpdate cameraUpdate;
+                if (viewport != null) {
+                    Log.d("MapViewer", "Places API using viewport: " + viewport.toString());
+                    cameraUpdate = CameraUpdateFactory.newLatLngBounds(viewport, 0);
+                } else {
+                    final LatLng latLng = place.getLatLng();
+                    Log.d("MapViewer", "Places API using latLng: " + latLng.toString());
+                    cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, BASE_ZOOM);
+                }
+
+                try {
+                    mMap.animateCamera(cameraUpdate);
+                } catch (IllegalStateException e) {
+                    // This exception is thrown when map layout has not yet occurred.
+                    // See: https://developers.google.com/android/reference/com/google/android/gms/maps/CameraUpdateFactory.html
+                    // TODO: Log to Firebase
+                    // TODO: Handle by falling back to a newLatLngZoom update
+                    e.printStackTrace();
+                }
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                // TODO: Log to Firebase
+                final Status status = PlaceAutocomplete.getStatus(this, data);
+                Log.e("MapViewer", status.getStatusMessage());
+            }
         }
     }
 

@@ -2,6 +2,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/action_search"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="@string/action_search"
+        tools:ignore="AppCompatResource" />
+
+    <item
         android:id="@+id/action_share"
         android:showAsAction="ifRoom"
         android:icon="@drawable/ic_share_white_24dp"
