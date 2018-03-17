@@ -51,8 +51,8 @@ import java.util.Set;
 
 public class MapLoaderV3 extends MapLoader {
 
-    private static OkHttpClient client = new OkHttpClient();
-    private static JsonAdapter<Result> jsonAdapter = new Moshi.Builder().build().adapter(Result.class);
+    private static final OkHttpClient client = new OkHttpClient();
+    private static final JsonAdapter<Result> jsonAdapter = new Moshi.Builder().build().adapter(Result.class);
 
     public MapLoaderV3(ClusterManager<ArcadeLocation> clusterManager,
                        List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
