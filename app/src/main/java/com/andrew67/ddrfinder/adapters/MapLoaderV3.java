@@ -35,8 +35,10 @@ import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.andrew67.ddrfinder.model.v3.Result;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -48,6 +50,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class MapLoaderV3 extends MapLoader {
+
+    private static JsonAdapter<Result> jsonAdapter = new Moshi.Builder().build().adapter(Result.class);
 
     public MapLoaderV3(ClusterManager<ArcadeLocation> clusterManager,
                        List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
@@ -90,12 +94,12 @@ public class MapLoaderV3 extends MapLoader {
 
             // Data/error loaded OK
             if (statusCode == 200 || statusCode == 400) {
-                final Gson gson = new Gson();
                 final ResponseBody responseBody = response.body();
                 assert responseBody != null;
-                result = gson.fromJson(responseBody.charStream(), Result.class);
+                result = jsonAdapter.fromJson(responseBody.source());
+                assert result != null;
                 result.setBounds(box);
-                Log.d("api", "Raw API result: " + gson.toJson(result, Result.class));
+                Log.d("api", "Response JSON parse complete");
             }
             // Unexpected error code
             else {
