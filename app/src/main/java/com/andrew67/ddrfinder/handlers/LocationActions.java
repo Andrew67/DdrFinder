@@ -131,12 +131,12 @@ public class LocationActions {
             } else {
                 CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    builder.setToolbarColor(ThemeUtil.getThemeColor(context.getTheme(), android.R.attr.actionModeBackground));
+                    builder.setToolbarColor(ThemeUtil.getThemeColor(context.getTheme(), android.R.attr.actionModeBackground))
+                            .setCloseButtonIcon(BitmapFactory.decodeResource(context.getResources(),
+                                    R.drawable.ic_arrow_back_white_24dp));
                 }
                 builder.setShowTitle(true)
                         .addDefaultShareMenuItem()
-                        .setCloseButtonIcon(BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.ic_arrow_back_white_24dp))
                         .setStartAnimations(context, R.anim.slide_in_right, R.anim.slide_out_left)
                         .setExitAnimations(context, R.anim.slide_in_left, R.anim.slide_out_right);
                 CustomTabsIntent customTabsIntent = builder.build();
