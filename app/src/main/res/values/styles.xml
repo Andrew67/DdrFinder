@@ -4,18 +4,26 @@
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
 
-        <!-- Base Theme for Android 4.0, fallback to Holo colors -->
-        <item name="mColorAccent">@android:color/holo_orange_dark</item>
-        <item name="pinColor">@android:color/holo_red_light</item>
-        <item name="pinColorHasDDR">@android:color/holo_blue_light</item>
-        <item name="actionBarIconColor">@android:color/white</item>
+        <!-- Base Theme: inspired by DDR (2013) White Cabinet color scheme; updated to use Material Palette -->
+        <item name="colorPrimary">@color/material_blue_700</item>
+        <item name="colorPrimaryDark">@color/material_blue_700_dark</item>
+
+        <item name="colorAccent">@color/material_purple_500</item>
+        <item name="actionModeBackground">?colorAccent</item>
+        <item name="actionModeStatusBarColor">@color/material_purple_500_dark</item>
+
+        <item name="pinColor">@color/material_purple_500_light</item>
+        <item name="pinColorHasDDR">@color/material_yellow_600</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <!-- Application theme. -->

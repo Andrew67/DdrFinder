@@ -12,7 +12,7 @@
             android:key="location"
             android:title="@string/settings_location"
             android:persistent="false"/>
-        <SwitchPreference
+        <CheckBoxPreference
             android:key="customtabs"
             android:defaultValue="true"
             android:title="@string/settings_custom_tabs"/>

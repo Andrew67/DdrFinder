@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Andrés Cordero
+ * Copyright (c) 2017-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,13 +23,15 @@
 
 package com.andrew67.ddrfinder.activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
@@ -41,38 +43,52 @@ import com.andrew67.ddrfinder.R;
 
 /**
  * An activity that provides a built-in web browser, for example for loading "More Info" links.
- * Pass in the "url" intent extra when invoking.
  */
 
-public class BrowserActivity extends Activity {
+public class BrowserActivity extends AppCompatActivity {
 
-    WebView webview;
-    String url;
+    private WebView webview;
+
+    public static void start(Context context, String url) {
+        Intent starter = new Intent(context, BrowserActivity.class);
+        starter.putExtra("url", url);
+        context.startActivity(starter);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        webview = new WebView(this);
-        setContentView(webview);
+        setContentView(R.layout.browser);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        url = (String) getIntent().getExtras().get("url");
-        String title = (String) getIntent().getExtras().get("title");
+        assert getIntent().getExtras() != null;
+        final String url = (String) getIntent().getExtras().get("url");
 
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(title);
-            actionBar.setSubtitle(url);
+            actionBar.setTitle("");
         }
 
+        webview = findViewById(R.id.webview);
         WebSettings settings = webview.getSettings();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
         settings.setUseWideViewPort(true);
         settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
 
-        webview.setWebViewClient(new WebViewClient());
+        webview.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                if (actionBar != null) {
+                    actionBar.setTitle(view.getTitle());
+                    actionBar.setSubtitle(url);
+                }
+            }
+        });
         webview.loadUrl(url);
     }
 
@@ -91,8 +107,10 @@ public class BrowserActivity extends Activity {
             case R.id.action_copylink:
                 final ClipboardManager clipboard =
                         (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                clipboard.setPrimaryClip(ClipData.newPlainText("url", url));
-                Toast.makeText(this, R.string.copy_complete, Toast.LENGTH_SHORT).show();
+                if (clipboard != null && webview != null) {
+                    clipboard.setPrimaryClip(ClipData.newPlainText("url", webview.getUrl()));
+                    Toast.makeText(this, R.string.copy_complete, Toast.LENGTH_SHORT).show();
+                }
                 return true;
             case R.id.action_reload:
                 webview.reload();

@@ -26,22 +26,23 @@
 
 package com.andrew67.ddrfinder.activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.R;
@@ -51,7 +52,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.Arrays;
 
 // Based on https://developer.android.com/guide/topics/ui/settings.html#Fragment
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends AppCompatActivity {
 
     public static final String KEY_PREF_API_SRC = "api_src";
     public static final String API_SRC_CUSTOM = "custom";
@@ -63,17 +64,16 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.settings);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         setTitle(R.string.action_settings);
 
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        // Display the fragment as the main content.
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new SettingsFragment())
-                .commit();
     }
 
     @Override
@@ -89,6 +89,7 @@ public class SettingsActivity extends Activity {
 
     public static class EnableLocationDialogFragment extends DialogFragment {
         @Override
+        @NonNull
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // From https://developer.android.com/guide/topics/ui/dialogs.html#DialogFragment
             // Use the Builder class for convenient dialog construction
@@ -122,7 +123,7 @@ public class SettingsActivity extends Activity {
         }
     }
 
-    public static class SettingsFragment extends PreferenceFragment
+    public static class SettingsFragment extends PreferenceFragmentCompat
             implements SharedPreferences.OnSharedPreferenceChangeListener {
 
         private FirebaseAnalytics firebaseAnalytics;
@@ -130,17 +131,19 @@ public class SettingsActivity extends Activity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
+        }
 
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.preferences);
+            setPreferencesFromResource(R.xml.preferences, rootKey);
 
             // Set preference summaries to current values
             final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
             findPreference(KEY_PREF_API_SRC).setSummary(
                     getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                             sharedPref.getString(KEY_PREF_API_SRC, "")));
-
-            firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
         }
 
         @Override
@@ -159,7 +162,7 @@ public class SettingsActivity extends Activity {
                 findPreference(KEY_PREF_LOCATION).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
-                        new EnableLocationDialogFragment().show(getFragmentManager(), "dialog");
+                        new EnableLocationDialogFragment().show(getActivity().getSupportFragmentManager(), "dialog");
                         Bundle params = new Bundle();
                         params.putString(Analytics.Param.ACTION_TYPE, "enable_clicked");
                         firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_ACTION, params);

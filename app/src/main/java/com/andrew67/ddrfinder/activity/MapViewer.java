@@ -57,7 +57,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -66,7 +66,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -81,9 +80,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -92,7 +93,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MapViewer extends Activity implements MessageDisplay, OnMapReadyCallback {
+public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMapReadyCallback {
 
     private static final int BASE_ZOOM = 12;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
@@ -135,6 +136,8 @@ public class MapViewer extends Activity implements MessageDisplay, OnMapReadyCal
         state = getSharedPreferences(PREF_STATE, MODE_PRIVATE);
 
         setContentView(R.layout.map_viewer);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         attributionText = findViewById(R.id.attribution);
         progressBar = findViewById(R.id.progressBar);
@@ -145,7 +148,8 @@ public class MapViewer extends Activity implements MessageDisplay, OnMapReadyCal
         // Initialize a mutable AppLink builder based on the initial AppLink, for sharing.
         currentAppLink = appLink.buildUpon();
 
-        ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
+        ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                .getMapAsync(this);
 
         // For clients upgrading from <= 3.0.5/17 that had the now-removed "Custom" option selected, move to default.
         if (SettingsActivity.API_SRC_CUSTOM.equals(sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""))) {
@@ -164,13 +168,11 @@ public class MapViewer extends Activity implements MessageDisplay, OnMapReadyCal
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Load custom "Icy Blue" style on Material Style devices
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_icy_blue));
-            } catch (Resources.NotFoundException e) {
-                // Do nothing; default map style is used.
-            }
+        // Load custom "Icy Blue" style
+        try {
+            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_icy_blue));
+        } catch (Resources.NotFoundException e) {
+            // Do nothing; default map style is used.
         }
 
         mClusterManager = new ClusterManager<>(this, mMap);
@@ -682,7 +684,7 @@ public class MapViewer extends Activity implements MessageDisplay, OnMapReadyCal
         @Override
         public boolean onClusterItemClick(ArcadeLocation location) {
             if (actionMode == null) {
-                actionMode = startActionMode(actionModeCallback);
+                actionMode = startSupportActionMode(actionModeCallback);
             }
             selectedLocation = location;
             trackMapAction("marker_selected", getSource(location));
@@ -709,7 +711,7 @@ public class MapViewer extends Activity implements MessageDisplay, OnMapReadyCal
     private ActionMode actionMode = null;
     private ArcadeLocation selectedLocation = null;
     private final ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
-        // Called when the action mode is created; startActionMode() was called
+        // Called when the action mode is created; startSupportActionMode() was called
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Inflate a menu resource providing context menu items

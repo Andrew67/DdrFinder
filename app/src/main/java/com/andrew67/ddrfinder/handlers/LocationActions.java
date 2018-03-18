@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2016 Andrés Cordero
+ * Copyright (c) 2013-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -129,17 +129,15 @@ public class LocationActions {
             if (!useCustomTabs) {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, infoURI));
             } else {
-                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    builder.setToolbarColor(ThemeUtil.getThemeColor(context.getTheme(), android.R.attr.actionModeBackground))
-                            .setCloseButtonIcon(BitmapFactory.decodeResource(context.getResources(),
-                                    R.drawable.ic_arrow_back_white_24dp));
-                }
-                builder.setShowTitle(true)
+                final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                        .setShowTitle(true)
                         .addDefaultShareMenuItem()
+                        .setToolbarColor(ThemeUtil.getThemeColor(context.getTheme(), R.attr.actionModeBackground))
+                        .setCloseButtonIcon(BitmapFactory.decodeResource(context.getResources(),
+                                R.drawable.ic_arrow_back_white_24dp))
                         .setStartAnimations(context, R.anim.slide_in_right, R.anim.slide_out_left)
-                        .setExitAnimations(context, R.anim.slide_in_left, R.anim.slide_out_right);
-                CustomTabsIntent customTabsIntent = builder.build();
+                        .setExitAnimations(context, R.anim.slide_in_left, R.anim.slide_out_right)
+                        .build();
 
                 // Chrome detection recipe based on http://stackoverflow.com/a/32656019
                 // Otherwise, setPackage is not called, and falls back to user-selected browser.
@@ -163,9 +161,7 @@ public class LocationActions {
         } catch (Exception e) {
             // Launch built-in WebView browser if there's an exception thrown attempting to launch a regular browser activity.
             Log.e("LocationActions", "Error launching Intent for HTTP(S) link; using built-in browser.", e);
-            context.startActivity(new Intent(context, BrowserActivity.class)
-                    .putExtra("url", infoURL)
-                    .putExtra("title", location.getName()));
+            BrowserActivity.start(context, infoURL);
 
             Bundle params = new Bundle();
             params.putString(Analytics.Param.ACTION_TYPE, "moreinfo_exception");

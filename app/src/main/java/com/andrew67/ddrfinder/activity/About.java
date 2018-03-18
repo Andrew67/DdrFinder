@@ -26,9 +26,10 @@
 
 package com.andrew67.ddrfinder.activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
@@ -37,21 +38,24 @@ import com.andrew67.ddrfinder.R;
 
 import okhttp3.HttpUrl;
 
-public class About extends Activity {
+public class About extends AppCompatActivity {
     private static final HttpUrl aboutBaseUrl = HttpUrl.parse(BuildConfig.ABOUT_BASE_URL);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final WebView webview = new WebView(this);
-        setContentView(webview);
+
+        setContentView(R.layout.browser);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         setTitle(R.string.action_about);
 
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        final WebView webview = findViewById(R.id.webview);
         assert aboutBaseUrl != null;
         webview.loadUrl(aboutBaseUrl.newBuilder()
                 .addQueryParameter("c", String.valueOf(BuildConfig.VERSION_CODE))
