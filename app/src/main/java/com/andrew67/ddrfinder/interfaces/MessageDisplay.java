@@ -23,6 +23,8 @@
 
 package com.andrew67.ddrfinder.interfaces;
 
+import android.support.annotation.StringRes;
+
 /**
  * Interface for any class that implements the ability to show a message
  */
@@ -39,5 +41,5 @@ public interface MessageDisplay {
 	 * it should throw an exception.
 	 * @param resourceId The resource ID of the message to display.
 	 */
-	void showMessage(int resourceId) throws RuntimeException;
+	void showMessage(@StringRes int resourceId) throws RuntimeException;
 }

@@ -26,6 +26,7 @@ package com.andrew67.ddrfinder.adapters;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
@@ -106,7 +107,7 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
                                @NonNull List<ArcadeLocation> newLocations,
                                @NonNull List<DataSource> newSources);
         /** Called on error loading arcade data. */
-        void onError(int errorCode, int errorMessageResourceId);
+        void onError(int errorCode, @StringRes int errorMessageResourceId);
         /**
          * Called regardless of success/error and after either one is called.
          * Use for cleanup, like stopping a progress bar.

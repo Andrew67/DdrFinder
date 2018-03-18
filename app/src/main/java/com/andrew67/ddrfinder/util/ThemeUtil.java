@@ -25,6 +25,8 @@ package com.andrew67.ddrfinder.util;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.support.annotation.AttrRes;
+import android.support.annotation.ColorRes;
 import android.util.TypedValue;
 
 public class ThemeUtil {
@@ -35,7 +37,7 @@ public class ThemeUtil {
      * @param theme Theme to extract color from
      * @param attr Reference to the color name, from R.attr
      */
-    public static int getThemeColor(Resources.Theme theme, int attr) {
+    public static int getThemeColor(Resources.Theme theme, @AttrRes int attr) {
         TypedValue typedValue = new TypedValue();
         theme.resolveAttribute(attr, typedValue, true);
         return typedValue.data;
@@ -47,7 +49,7 @@ public class ThemeUtil {
      * @param theme Theme to extract color from
      * @param attr Reference to the color name, from R.attr
      */
-    public static float getThemeColorHue(Resources.Theme theme, int attr) {
+    public static float getThemeColorHue(Resources.Theme theme, @AttrRes int attr) {
         int rgbColor = getThemeColor(theme, attr);
         float[] hsv = new float[3];
         Color.colorToHSV(rgbColor, hsv);

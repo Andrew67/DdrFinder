@@ -78,6 +78,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -381,7 +382,7 @@ public class MapViewer extends Activity implements MessageDisplay, OnMapReadyCal
         }
 
         @Override
-        public void onError(int errorCode, int errorMessageResourceId) {
+        public void onError(int errorCode, @StringRes int errorMessageResourceId) {
             showMessage(errorMessageResourceId);
         }
 
@@ -503,7 +504,7 @@ public class MapViewer extends Activity implements MessageDisplay, OnMapReadyCal
     // Keep toast references mapped by resource id, to prevent excessive repeated toasts.
     private final SparseArray<Toast> toasts = new SparseArray<>();
     @Override
-    public void showMessage(int resourceId) {
+    public void showMessage(@StringRes int resourceId) {
         final Toast oldToast = toasts.get(resourceId);
         if (oldToast == null) {
             final Toast newToast = Toast.makeText(this, resourceId, Toast.LENGTH_SHORT);
