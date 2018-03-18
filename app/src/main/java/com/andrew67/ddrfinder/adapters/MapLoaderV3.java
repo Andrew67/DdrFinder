@@ -51,15 +51,15 @@ import java.util.Set;
 
 public class MapLoaderV3 extends MapLoader {
 
+    private static final HttpUrl apiUrl = HttpUrl.parse(BuildConfig.API_BASE_URL);
     private static final OkHttpClient client = new OkHttpClient();
     private static final JsonAdapter<Result> jsonAdapter = new Moshi.Builder().build().adapter(Result.class);
 
     public MapLoaderV3(ClusterManager<ArcadeLocation> clusterManager,
                        List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
                        ProgressBarController pbc, MessageDisplay display, TextView attributionText,
-                       List<LatLngBounds> areas, Map<String, DataSource> sources,
-                       String apiUrl, String datasrc) {
-        super(clusterManager, loadedLocations, loadedArcadeIds, pbc, display, attributionText, areas, sources, apiUrl, datasrc);
+                       List<LatLngBounds> areas, Map<String, DataSource> sources, String datasrc) {
+        super(clusterManager, loadedLocations, loadedArcadeIds, pbc, display, attributionText, areas, sources, datasrc);
     }
 
     @Override
@@ -69,9 +69,7 @@ public class MapLoaderV3 extends MapLoader {
             if (boxes.length == 0) throw new IllegalArgumentException("No boxes passed to doInBackground");
             final LatLngBounds box = boxes[0];
 
-            HttpUrl requestURL = HttpUrl.parse(apiUrl);
-            assert requestURL != null;
-            requestURL = requestURL.newBuilder()
+            final HttpUrl requestUrl = apiUrl.newBuilder()
                     .addQueryParameter("version", "30")
                     .addQueryParameter("canHandleLargeDataset", "")
                     .addQueryParameter("datasrc", datasrc)
@@ -81,11 +79,11 @@ public class MapLoaderV3 extends MapLoader {
                     .addQueryParameter("lnglower", "" + box.southwest.longitude)
                     .build();
 
-            Log.d("api", "Request URL: " + requestURL);
+            Log.d("api", "Request URL: " + requestUrl);
             final Request get = new Request.Builder()
                     .header("User-Agent", BuildConfig.APPLICATION_ID + " " + BuildConfig.VERSION_NAME
                             + "/Android?SDK=" + Build.VERSION.SDK_INT)
-                    .url(requestURL)
+                    .url(requestUrl)
                     .build();
 
             final Response response = client.newCall(get).execute();

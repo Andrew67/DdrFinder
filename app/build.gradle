@@ -9,6 +9,12 @@ android {
         minSdkVersion 15
         targetSdkVersion 26
         resConfigs "en", "es", "ja"
+
+        buildConfigField 'String', 'API_BASE_URL', '"https://ddrfinder.andrew67.com/locate.php"'
+        buildConfigField 'String', 'ABOUT_BASE_URL', '"https://ddrfinder.andrew67.com/about.php"'
+        buildConfigField 'String', 'APPLINK_BASE_URL', '"https://ddrfinder.andrew67.com/app"'
+        buildConfigField 'String', 'FALLBACK_INFO_URL', '"https://ddrfinder.andrew67.com/info.php?id=${id}&android=1"'
+        resValue 'string', 'GOOGLE_MAPS_API_KEY', 'AIzaSyCd56mJAgfzpvF4yL-YXj9S8JsQyCd84tc'
     }
     buildTypes {
         release {

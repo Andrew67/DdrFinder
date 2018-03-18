@@ -47,7 +47,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCd56mJAgfzpvF4yL-YXj9S8JsQyCd84tc"/>
+            android:value="@string/GOOGLE_MAPS_API_KEY"/>
 
         <!-- Split window meta-data -->
         <meta-data android:name="com.lge.support.SPLIT_WINDOW" android:value="true" />

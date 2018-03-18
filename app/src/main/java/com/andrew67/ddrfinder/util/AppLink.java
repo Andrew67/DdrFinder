@@ -26,6 +26,7 @@ package com.andrew67.ddrfinder.util;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import com.andrew67.ddrfinder.BuildConfig;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.text.NumberFormat;
@@ -39,7 +40,6 @@ import java.util.regex.Pattern;
  */
 public class AppLink {
 
-    private static String BASE_URL = "https://ddrfinder.andrew67.com/app";
     private static int ACTIVITY = 1;
     private static String ACTIVITY_MAP = "map";
 
@@ -138,7 +138,7 @@ public class AppLink {
      */
     @Override
     public String toString() {
-        StringBuilder url = new StringBuilder(BASE_URL);
+        StringBuilder url = new StringBuilder(BuildConfig.APPLINK_BASE_URL);
         url.append("/map"); // Append activity; currently only map is available.
         // Append coordinates as "/@{lat},{long},{zoom}z".
         if (position != null && zoom != null) {

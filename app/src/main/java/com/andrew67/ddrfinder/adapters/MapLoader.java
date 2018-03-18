@@ -49,14 +49,12 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
     private final TextView attributionText;
     private final List<LatLngBounds> areas;
     private final Map<String,DataSource> sources;
-    final String apiUrl;
     final String datasrc;
 
     MapLoader(ClusterManager<ArcadeLocation> clusterManager,
                  List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
                  ProgressBarController pbc, MessageDisplay display, TextView attributionText,
-                 List<LatLngBounds> areas, Map<String,DataSource> sources,
-                 String apiUrl, String datasrc) {
+                 List<LatLngBounds> areas, Map<String,DataSource> sources, String datasrc) {
         super();
         this.clusterManager = clusterManager;
         this.loadedLocations = loadedLocations;
@@ -66,7 +64,6 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
         this.attributionText = attributionText;
         this.areas = areas;
         this.sources = sources;
-        this.apiUrl = apiUrl;
         this.datasrc = datasrc;
 
         // Show indeterminate progress bar

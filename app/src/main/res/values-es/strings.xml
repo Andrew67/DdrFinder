@@ -15,7 +15,6 @@
     <string name="settings_src">Fuente de datos</string>
     <string name="copy_complete">Copiado</string>
     <string name="error_zoom">Acerque al mapa para cargar más localizaciones</string>
-    <string name="about_url"><![CDATA[https://ddrfinder.andrew67.com/about.php?c=%1$d&n=%2$s&locale=es]]></string>
     <string name="settings_category_basic">Configuración básica</string>
     <string name="settings_category_advanced">Configuración avanzada</string>
     <string name="error_api_ver">El servidor no reconoció el nivel de protocolo del cliente</string>

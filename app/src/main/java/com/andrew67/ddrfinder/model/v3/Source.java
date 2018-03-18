@@ -26,6 +26,7 @@ package com.andrew67.ddrfinder.model.v3;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 
 /**
@@ -103,7 +104,7 @@ public class Source implements DataSource {
         Source src = new Source();
         src.shortName = "fallback";
         src.name = "Source Website";
-        src.mInfoURL = "https://ddrfinder.andrew67.com/info.php?id=${id}&android=1";
+        src.mInfoURL = BuildConfig.FALLBACK_INFO_URL;
         src.hasDDR = false;
         return src;
     }

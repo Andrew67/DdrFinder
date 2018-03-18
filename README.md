@@ -15,16 +15,18 @@ MIT license (with some exceptions; see LICENSE).
 
 Developing your own version
 ---------------------------
-* Request a Google Maps V2 API Key from the [Google API Developer Console](https://code.google.com/apis/console/).
-* Modify AndroidManifest.xml and add the new key.
+* Modify applicationId in build.gradle and package in AndroidManifest.xml.
+* Request a Google Maps V2 API Key from the [Google API Developer Console](https://code.google.com/apis/console/) using the new package names.
+* Modify GOOGLE_MAPS_API_KEY in build.gradle with your new key.
 * Deploy your own version of [ddr-finder](https://github.com/Andrew67/ddr-finder) or compatible.
-* Modify api_endpoint defaultValue property in res/xml/preferences.xml to point to your API endpoint.
-* Modify settings_api_version_default in res/values/strings.xml to set your endpoint API version as default.
-* Modify about_url in res/values/strings.xml to point to your about page.
-* Modify values in getFallback() in the model.v3.Source class to your info redirection script.
+* Modify API_BASE_URL in build.gradle to point to your API endpoint.
+* Modify ABOUT_BASE_URL in build.gradle to point to your about page.
+* Modify FALLBACK_INFO_URL in build.gradle to your info redirection script.
 * Deploy your own version of [ddr-finder-app](https://github.com/Andrew67/ddr-finder-app) or compatible.
-* Modify BASE_URL in the AppLink class to your equivalent deployed web app, or remove the URL share functionality.
+* Modify APPLINK_BASE_URL in build.gradle to your equivalent deployed web app, or remove the URL share functionality.
 * Modify intent filters in AndroidManifest.xml to point to your deployment URL.
+* Set up a project in the [Firebase Console](https://console.firebase.google.com/) using the new package names, or remove Analytics functionality.
+* Download the new google-services.json and replace the existing copy.
 
 Acknowledgments
 ---------------

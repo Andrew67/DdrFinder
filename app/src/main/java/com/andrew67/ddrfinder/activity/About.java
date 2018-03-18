@@ -35,7 +35,11 @@ import android.webkit.WebView;
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 
+import okhttp3.HttpUrl;
+
 public class About extends Activity {
+    private static final HttpUrl aboutBaseUrl = HttpUrl.parse(BuildConfig.ABOUT_BASE_URL);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +52,11 @@ public class About extends Activity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        final int versionCode = BuildConfig.VERSION_CODE;
-        final String versionName = BuildConfig.VERSION_NAME;
-
-        webview.loadUrl(String.format(getString(R.string.about_url),
-                versionCode, versionName));
+        assert aboutBaseUrl != null;
+        webview.loadUrl(aboutBaseUrl.newBuilder()
+                .addQueryParameter("c", String.valueOf(BuildConfig.VERSION_CODE))
+                .addQueryParameter("n", BuildConfig.VERSION_NAME)
+                .build().toString());
     }
 
     @Override

@@ -342,11 +342,10 @@ public class MapViewer extends Activity
                         .build();
             }
 
-            final String apiUrl = getResources().getString(R.string.api_url);
             final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
 
             new MapLoaderV3(mClusterManager, loadedLocations, loadedLocationIds, this, this,
-                    attributionText, loadedAreas, loadedSources, apiUrl, datasrc).execute(box);
+                    attributionText, loadedAreas, loadedSources, datasrc).execute(box);
 
             // Track forced refreshes by data source.
             if (force) trackMapAction("forced_refresh", datasrc);

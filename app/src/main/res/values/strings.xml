@@ -8,8 +8,6 @@
     <string name="action_about">About</string>
     <string name="error_zoom">Zoom in to load more locations</string>
     <string name="error_api">Error loading data</string>
-    <string name="api_url" translatable="false">https://ddrfinder.andrew67.com/locate.php</string>
-    <string name="about_url"><![CDATA[https://ddrfinder.andrew67.com/about.php?c=%1$d&n=%2$s]]></string>
     <string name="location_actions_navigate">Navigate</string>
     <string name="location_actions_info">More info</string>
     <string name="location_actions_copy">Copy GPS coordinates</string>
