@@ -50,6 +50,7 @@ public interface ApiResult {
     int ERROR_REQUESTS = 42;
     int ERROR_OK = -1; // non-standard; success case
     int ERROR_UNEXPECTED = -2; // non-standard
+    int ERROR_NO_RESULTS = -3; // non-standard
 
     /**
      * Returns the list of ArcadeLocation items from the API.

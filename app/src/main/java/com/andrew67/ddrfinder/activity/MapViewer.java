@@ -27,8 +27,10 @@
 package com.andrew67.ddrfinder.activity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,9 +42,9 @@ import com.andrew67.ddrfinder.handlers.LocationActions;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
-import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
+import com.andrew67.ddrfinder.util.AttributionGenerator;
 import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -89,8 +91,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MapViewer extends Activity
-    implements ProgressBarController, MessageDisplay, OnMapReadyCallback {
+public class MapViewer extends Activity implements MessageDisplay, OnMapReadyCallback {
 
     private static final int BASE_ZOOM = 12;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
@@ -177,29 +178,17 @@ public class MapViewer extends Activity
 
         // Restore previously loaded areas locations, and sources if available
         // (and re-create the location markers)
-        if (onCreateSavedInstanceState != null &&
-                onCreateSavedInstanceState.containsKey("loadedAreas") &&
-                onCreateSavedInstanceState.containsKey("loadedLocations") &&
-                onCreateSavedInstanceState.containsKey("loadedSources") &&
-                onCreateSavedInstanceState.containsKey("attributionText")) {
+        if (onCreateSavedInstanceState != null) {
             final ArrayList<LatLngBounds> savedLoadedAreas =
                     onCreateSavedInstanceState.getParcelableArrayList("loadedAreas");
-            if (savedLoadedAreas != null) loadedAreas.addAll(savedLoadedAreas);
             final ArrayList<ArcadeLocation> savedLoadedLocations =
                     onCreateSavedInstanceState.getParcelableArrayList("loadedLocations");
-
             final ArrayList<DataSource> savedLoadedSources =
                     onCreateSavedInstanceState.getParcelableArrayList("loadedSources");
-            if (savedLoadedSources != null) {
-                for (DataSource src : savedLoadedSources) {
-                    loadedSources.put(src.getShortName(), src);
-                }
+
+            if (savedLoadedAreas != null && savedLoadedLocations != null && savedLoadedSources != null) {
+                fillMap(savedLoadedAreas, savedLoadedLocations, savedLoadedSources);
             }
-
-            MapLoader.fillMap(mClusterManager, loadedLocations, loadedLocationIds, savedLoadedLocations);
-
-            // Restore the attribution text.
-            attributionText.setText(onCreateSavedInstanceState.getCharSequence("attributionText"));
         }
 
         // Start the camera from the app link lat/lng/zoom (if specified and initial launch).
@@ -344,13 +333,63 @@ public class MapViewer extends Activity
 
             final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
 
-            new MapLoaderV3(mClusterManager, loadedLocations, loadedLocationIds, this, this,
-                    attributionText, loadedAreas, loadedSources, datasrc).execute(box);
+            new MapLoaderV3(datasrc, mapLoaderCallback).execute(box);
 
             // Track forced refreshes by data source.
             if (force) trackMapAction("forced_refresh", datasrc);
         }
     }
+
+    /**
+     * Fill map with given parameters.
+     * Loaded with either previously saved areas or new ones that come in from updateMap's loader.
+     */
+    private void fillMap(@NonNull List<LatLngBounds> newBounds,
+                         @NonNull List<ArcadeLocation> newLocations,
+                         @NonNull List<DataSource> newSources) {
+        for (ArcadeLocation loc : newLocations)
+        {
+            if (!loadedLocationIds.contains(loc.getId())) {
+                mClusterManager.addItem(loc);
+                loadedLocationIds.add(loc.getId());
+                loadedLocations.add(loc);
+            }
+        }
+        // Required to force a re-render.
+        mClusterManager.cluster();
+
+        loadedAreas.addAll(newBounds);
+        for (DataSource src : newSources) {
+            loadedSources.put(src.getShortName(), src);
+        }
+        attributionText.setText(AttributionGenerator.fromSources(loadedSources.values()));
+    }
+
+
+    /** Update UI as MapLoader events happen (data loaded, error, etc.) */
+    private MapLoader.Callback mapLoaderCallback = new MapLoader.Callback() {
+        @Override
+        public void onPreLoad() {
+            showProgressBar();
+        }
+
+        @Override
+        public void onLocationsLoaded(@NonNull LatLngBounds newBounds,
+                                      @NonNull List<ArcadeLocation> newLocations,
+                                      @NonNull List<DataSource> newSources) {
+            fillMap(Collections.singletonList(newBounds), newLocations, newSources);
+        }
+
+        @Override
+        public void onError(int errorCode, int errorMessageResourceId) {
+            showMessage(errorMessageResourceId);
+        }
+
+        @Override
+        public void onFinish() {
+            hideProgressBar();
+        }
+    };
 
     /**
      * Test whether the given boundaries have already been loaded
@@ -391,6 +430,7 @@ public class MapViewer extends Activity
         loadedLocationIds.clear();
         loadedLocations.clear();
         loadedAreas.clear();
+        loadedSources.clear();
     }
 
     /**
@@ -445,16 +485,14 @@ public class MapViewer extends Activity
         outState.putCharSequence("attributionText", attributionText.getText());
     }
 
-    @Override
-    public void showProgressBar() {
-        progressBar.setVisibility(View.VISIBLE);
+    private void showProgressBar() {
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
         if (reloadButton != null) reloadButton.setEnabled(false);
     }
 
-    @Override
-    public void hideProgressBar() {
+    private void hideProgressBar() {
         if (reloadButton != null) reloadButton.setEnabled(true);
-        progressBar.setVisibility(View.INVISIBLE);
+        if (progressBar != null) progressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override

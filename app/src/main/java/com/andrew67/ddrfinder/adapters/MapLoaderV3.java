@@ -24,18 +24,14 @@
 package com.andrew67.ddrfinder.adapters;
 
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
-import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
-import com.andrew67.ddrfinder.interfaces.DataSource;
-import com.andrew67.ddrfinder.interfaces.MessageDisplay;
-import com.andrew67.ddrfinder.interfaces.ProgressBarController;
 import com.andrew67.ddrfinder.model.v3.Result;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.maps.android.clustering.ClusterManager;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
@@ -45,21 +41,14 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 public class MapLoaderV3 extends MapLoader {
 
     private static final HttpUrl apiUrl = HttpUrl.parse(BuildConfig.API_BASE_URL);
     private static final OkHttpClient client = new OkHttpClient();
     private static final JsonAdapter<Result> jsonAdapter = new Moshi.Builder().build().adapter(Result.class);
 
-    public MapLoaderV3(ClusterManager<ArcadeLocation> clusterManager,
-                       List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
-                       ProgressBarController pbc, MessageDisplay display, TextView attributionText,
-                       List<LatLngBounds> areas, Map<String, DataSource> sources, String datasrc) {
-        super(clusterManager, loadedLocations, loadedArcadeIds, pbc, display, attributionText, areas, sources, datasrc);
+    public MapLoaderV3(@NonNull String datasrc, @Nullable Callback callback) {
+        super(datasrc, callback);
     }
 
     @Override
@@ -69,6 +58,7 @@ public class MapLoaderV3 extends MapLoader {
             if (boxes.length == 0) throw new IllegalArgumentException("No boxes passed to doInBackground");
             final LatLngBounds box = boxes[0];
 
+            assert apiUrl != null;
             final HttpUrl requestUrl = apiUrl.newBuilder()
                     .addQueryParameter("version", "30")
                     .addQueryParameter("canHandleLargeDataset", "")

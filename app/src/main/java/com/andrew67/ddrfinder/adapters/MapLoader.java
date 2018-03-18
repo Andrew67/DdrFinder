@@ -24,104 +24,93 @@
 package com.andrew67.ddrfinder.adapters;
 
 import android.os.AsyncTask;
-import android.widget.TextView;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
-import com.andrew67.ddrfinder.interfaces.MessageDisplay;
-import com.andrew67.ddrfinder.interfaces.ProgressBarController;
-import com.andrew67.ddrfinder.util.AttributionGenerator;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.maps.android.clustering.ClusterManager;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
-    private final ClusterManager<ArcadeLocation> clusterManager;
-    private final List<ArcadeLocation> loadedLocations;
-    private final Set<Integer> loadedArcadeIds;
-    private final ProgressBarController pbc;
-    private final MessageDisplay display;
-    private final TextView attributionText;
-    private final List<LatLngBounds> areas;
-    private final Map<String,DataSource> sources;
     final String datasrc;
+    private final WeakReference<Callback> callbackWeakReference;
 
-    MapLoader(ClusterManager<ArcadeLocation> clusterManager,
-                 List<ArcadeLocation> loadedLocations, Set<Integer> loadedArcadeIds,
-                 ProgressBarController pbc, MessageDisplay display, TextView attributionText,
-                 List<LatLngBounds> areas, Map<String,DataSource> sources, String datasrc) {
+    /**
+     * Initialize a MapLoader instance
+     * @param datasrc The data source to use for arcade locations
+     * @param callback The callback to use in the UI thread. Do not use a lambda, as a weak reference is used to aid in garbage collection of views.
+     */
+    MapLoader(@NonNull String datasrc, @Nullable Callback callback) {
         super();
-        this.clusterManager = clusterManager;
-        this.loadedLocations = loadedLocations;
-        this.loadedArcadeIds = loadedArcadeIds;
-        this.pbc = pbc;
-        this.display = display;
-        this.attributionText = attributionText;
-        this.areas = areas;
-        this.sources = sources;
         this.datasrc = datasrc;
-
-        // Show indeterminate progress bar
-        // Assumes this class is constructed followed by a call to execute()
-        // where the bar is hidden on data load completion
-        pbc.showProgressBar();
+        this.callbackWeakReference = new WeakReference<>(callback);
     }
-
 
     @Override
-    protected void onPostExecute(ApiResult result) {
-        super.onPostExecute(result);
-        pbc.hideProgressBar();
-
-        if (result == null) {
-            display.showMessage(R.string.error_api_unexpected);
-            return;
-        }
-
-        switch(result.getErrorCode()) {
-            case ApiResult.ERROR_OK:
-                if (result.getLocations().size() == 0) {
-                    display.showMessage(R.string.area_no_results);
-                }
-
-                fillMap(clusterManager, loadedLocations, loadedArcadeIds, result.getLocations());
-                areas.add(result.getBounds());
-
-                for (DataSource src : result.getSources()) {
-                    sources.put(src.getShortName(), src);
-                }
-                attributionText.setText(AttributionGenerator.fromSources(result.getSources()));
-
-                break;
-            case ApiResult.ERROR_OVERSIZED_BOX:
-                display.showMessage(R.string.error_zoom);
-                break;
-            case ApiResult.ERROR_DATA_SOURCE:
-                display.showMessage(R.string.error_datasrc);
-                break;
-            case ApiResult.ERROR_CLIENT_API_VERSION:
-                display.showMessage(R.string.error_api_ver);
-            default:
-                display.showMessage(R.string.error_api);
-        }
+    protected void onPreExecute() {
+        super.onPreExecute();
+        final Callback callback = callbackWeakReference.get();
+        if (callback != null) callback.onPreLoad();
     }
 
-    public static void fillMap(ClusterManager<ArcadeLocation> clusterManager, List<ArcadeLocation> loadedLocations,
-                               Set<Integer> loadedArcadeIds, List<ArcadeLocation> feed) {
-        for (ArcadeLocation loc : feed)
-        {
-            if (!loadedArcadeIds.contains(loc.getId())) {
-                clusterManager.addItem(loc);
-                loadedArcadeIds.add(loc.getId());
-                loadedLocations.add(loc);
+    @Override
+    protected void onPostExecute(@Nullable ApiResult result) {
+        super.onPostExecute(result);
+
+        final Callback callback = callbackWeakReference.get();
+        if (callback == null) return;
+
+        if (result == null) {
+            callback.onError(ApiResult.ERROR_UNEXPECTED, R.string.error_api_unexpected);
+        } else {
+            switch(result.getErrorCode()) {
+                case ApiResult.ERROR_OK:
+                    if (result.getLocations().size() == 0) {
+                        callback.onError(ApiResult.ERROR_NO_RESULTS, R.string.area_no_results);
+                    } else {
+                        callback.onLocationsLoaded(result.getBounds(),
+                                result.getLocations(), result.getSources());
+                    }
+                    break;
+                case ApiResult.ERROR_OVERSIZED_BOX:
+                    callback.onError(ApiResult.ERROR_OVERSIZED_BOX, R.string.error_zoom);
+                    break;
+                case ApiResult.ERROR_DATA_SOURCE:
+                    callback.onError(ApiResult.ERROR_DATA_SOURCE, R.string.error_datasrc);
+                    break;
+                case ApiResult.ERROR_CLIENT_API_VERSION:
+                    callback.onError(ApiResult.ERROR_CLIENT_API_VERSION, R.string.error_api_ver);
+                    break;
+                default:
+                    callback.onError(ApiResult.ERROR_UNEXPECTED, R.string.error_api);
+                    break;
             }
         }
-        // Required to force a re-render.
-        clusterManager.cluster();
+
+        callback.onFinish();
+    }
+
+    public interface Callback {
+        /**
+         * Called before data starts being loaded.
+         * Use for e.g. starting a progress bar.
+         */
+        void onPreLoad();
+        /** Called on success loading arcade data. */
+        void onLocationsLoaded(@NonNull LatLngBounds newBounds,
+                               @NonNull List<ArcadeLocation> newLocations,
+                               @NonNull List<DataSource> newSources);
+        /** Called on error loading arcade data. */
+        void onError(int errorCode, int errorMessageResourceId);
+        /**
+         * Called regardless of success/error and after either one is called.
+         * Use for cleanup, like stopping a progress bar.
+         */
+        void onFinish();
     }
 }
