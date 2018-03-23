@@ -8,10 +8,6 @@
             android:title="@string/settings_src"
             android:entries="@array/settings_src_entries"
             android:entryValues="@array/settings_src_entryValues"/>
-        <Preference
-            android:key="location"
-            android:title="@string/settings_location"
-            android:persistent="false"/>
         <CheckBoxPreference
             android:key="customtabs"
             android:defaultValue="true"

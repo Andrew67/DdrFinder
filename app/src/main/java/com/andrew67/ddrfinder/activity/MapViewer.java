@@ -33,12 +33,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.MapLoader;
 import com.andrew67.ddrfinder.adapters.MapLoaderV3;
 import com.andrew67.ddrfinder.handlers.LocationClusterRenderer;
 import com.andrew67.ddrfinder.handlers.LocationActions;
+import com.andrew67.ddrfinder.mylocation.MyLocationModel;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
 import com.andrew67.ddrfinder.interfaces.MessageDisplay;
@@ -63,23 +65,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
 import android.app.Dialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
@@ -96,33 +97,37 @@ import android.widget.Toast;
 public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMapReadyCallback {
 
     private static final int BASE_ZOOM = 12;
-    private static final int PERMISSIONS_REQUEST_LOCATION = 1;
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 2;
 
+    // State
     /** Contains requested initial map state, if opened by app link. */
     private AppLink appLink;
     /** Contains mutable map state that can be built into a shareable AppLink. */
     private AppLink.Builder currentAppLink;
     /** When non-null, points to a user-specified Autocomplete-provided location to move the map to. */
     private Place autocompletedPlace = null;
+    /** ViewModel that assists with user location requests. */
+    private MyLocationModel myLocationModel;
 
+    // Map
     private GoogleMap mMap = null;
     private ClusterManager<ArcadeLocation> mClusterManager;
     private LocationClusterRenderer mClusterRenderer;
+
+    // UI
     private MenuItem reloadButton;
     private ProgressBar progressBar;
+    private TextView attributionText;
 
+    // Data
     private final Set<Integer> loadedLocationIds = new HashSet<>();
     // Set as ArrayList instead of List due to Bundle packing
     private final ArrayList<ArcadeLocation> loadedLocations = new ArrayList<>();
     private final ArrayList<LatLngBounds> loadedAreas =	new ArrayList<>();
-
-    /**
-     * Loaded data sources, keyed by source name
-     */
+    /** Loaded data sources, keyed by source name. */
     private final Map<String,DataSource> loadedSources = new HashMap<>();
-    private TextView attributionText;
 
+    // Helpers
     private FirebaseAnalytics firebaseAnalytics;
     private SharedPreferences sharedPref;
     private SharedPreferences state;
@@ -148,6 +153,7 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
         // Initialize a mutable AppLink builder based on the initial AppLink, for sharing.
         currentAppLink = appLink.buildUpon();
 
+        myLocationModel = ViewModelProviders.of(this).get(MyLocationModel.class);
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
 
@@ -167,6 +173,8 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
         // Load custom "Icy Blue" style
         try {
@@ -205,27 +213,42 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(loadCameraFromState()));
         }
 
-        // Check for location permission, and request if disabled.
-        // This permission allows the user to locate themselves on the map.
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-            // Move camera to current location under 3 conditions:
-            // - This onCreate is not the result of a rotation, etc.
-            // - The application was not opened via app link.
-            // - It has been over 4 hours since the last camera movement.
-            // - The app isn't resuming from a Places API Autocomplete selection.
-            if (onCreateSavedInstanceState == null &&
-                    appLink.getPosition() == null &&
-                    System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) > 1000 * 60 * 60 * 4 &&
-                    autocompletedPlace == null) {
-                zoomToCurrentLocation();
-            }
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_LOCATION);
+        // Move camera to current location under these conditions:
+        // - User has previously granted the My Location permission.
+        // - This onCreate is not the result of a rotation, etc.
+        // - The application was not opened via app link.
+        // - It has been over 4 hours since the last camera movement.
+        // - The app isn't resuming from a Places API Autocomplete selection.
+        if (onCreateSavedInstanceState == null &&
+                appLink.getPosition() == null &&
+                System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) > TimeUnit.HOURS.toMillis(4) &&
+                autocompletedPlace == null) {
+            myLocationModel.requestMyLocationSilently(this, new OnSuccessListener<LatLng>() {
+                @Override
+                public void onSuccess(LatLng latLng) {
+                    zoomToLocation(latLng);
+                }
+            });
         }
+
+        // Register success and failure listeners for the My Location data and permission.
+        myLocationModel.getLocationResponse().observe(this, new Observer<MyLocationModel.MyLocationResponse>() {
+            /** SecurityException is never thrown if setMyLocationEnable is called when permissionGranted is true. */
+            @Override
+            public void onChanged(@Nullable MyLocationModel.MyLocationResponse myLocationResponse)
+                    throws SecurityException {
+                if (myLocationResponse != null) {
+                    if (myLocationResponse.permissionGranted) {
+                        mMap.setMyLocationEnabled(true);
+                        if (myLocationResponse.latLng != null) {
+                            zoomToLocation(myLocationResponse.latLng);
+                        }
+                    } else if (myLocationResponse.permissionDenied) {
+                        showMessage(R.string.error_perm_loc);
+                    }
+                }
+            }
+        });
 
         // If returning from a Places API Autocomplete selection, move the map to that location.
         if (autocompletedPlace != null) moveMapToAutocompletedPlace();
@@ -451,24 +474,15 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
     }
 
     /**
-     * Zooms and moves the map to the user's last known current location, typically on app startup.
+     * Zooms and moves the map to the given location, increasing zoom to base zoom if necessary.
      */
-    private void zoomToCurrentLocation() {
-        final LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        if (locationManager != null) {
-            try {
-                Location lastKnown = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if (lastKnown != null) {
-                    mMap.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(lastKnown.getLatitude(),
-                                            lastKnown.getLongitude()),
-                                    BASE_ZOOM));
-                }
-            } catch (SecurityException e) {
-                showMessage(R.string.error_perm_loc);
-            }
-        }
+    private void zoomToLocation(@NonNull LatLng latLng) {
+        final float currentZoom = mMap.getCameraPosition().zoom;
+        mMap.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(latLng.latitude,
+                                latLng.longitude),
+                        Math.max(currentZoom, BASE_ZOOM)));
     }
 
     @Override
@@ -531,6 +545,9 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
         case R.id.action_search:
             startPlaceAutocomplete();
             return true;
+        case R.id.action_my_location:
+            myLocationModel.requestMyLocation(this);
+            return true;
         case R.id.action_share:
             shareCurrentAppLink();
             return true;
@@ -554,6 +571,7 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
     @Override
     protected void onResume() {
         super.onResume();
+        myLocationModel.onResume(this);
         if (mMap != null) {
             // Clear all markers and reload current view when a relevant preference changed.
             // After app simplification for 3.0.6, only data source is relevant.
@@ -561,13 +579,6 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
             if (prevDatasrc != null && !currDatasrc.equals(prevDatasrc)) {
                 clearMap();
                 updateMap(false);
-            }
-
-            // Enable "My Location" if resuming activity with location permission enabled.
-            // i.e. User goes to Settings to enable, then comes back.
-            if (ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                mMap.setMyLocationEnabled(true);
             }
 
             // Move to Places API Autocompleted place if coming back from it.
@@ -580,18 +591,8 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_LOCATION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    try {
-                        mMap.setMyLocationEnabled(true);
-                    } catch (SecurityException e) { /* Satisfy linter; it should be granted */ }
-                    // Zoom to current location if application was not opened via app link.
-                    if (appLink.getPosition() == null) zoomToCurrentLocation();
-                } else {
-                    showMessage(R.string.error_perm_loc);
-                }
-        }
+        myLocationModel.onRequestPermissionsResult(this,
+                requestCode, permissions, grantResults);
     }
 
     /**

@@ -26,18 +26,9 @@
 
 package com.andrew67.ddrfinder.activity;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.Preference;
@@ -58,7 +49,6 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String API_SRC_CUSTOM = "custom";
 
     public static final String KEY_PREF_ANALYTICS = "analyticsEnabled";
-    public static final String KEY_PREF_LOCATION = "location";
     public static final String KEY_PREF_CUSTOMTABS = "customtabs";
 
     @Override
@@ -84,42 +74,6 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public static class EnableLocationDialogFragment extends DialogFragment {
-        @Override
-        @NonNull
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // From https://developer.android.com/guide/topics/ui/dialogs.html#DialogFragment
-            // Use the Builder class for convenient dialog construction
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            final FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
-
-            builder.setMessage(R.string.settings_location_dialog_message)
-                    .setTitle(R.string.settings_location)
-                    .setPositiveButton(R.string.settings_location_dialog_positive, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // Recipe from http://stackoverflow.com/a/32983128
-                            Intent i = new Intent();
-                            i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            i.setData(Uri.fromParts("package", getActivity().getPackageName(), null));
-                            startActivity(i);
-                            Bundle params = new Bundle();
-                            params.putString(Analytics.Param.ACTION_TYPE, "enable_accepted");
-                            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_ACTION, params);
-                        }
-                    })
-                    .setNegativeButton(R.string.settings_location_dialog_negative, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User cancelled the dialog
-                            Bundle params = new Bundle();
-                            params.putString(Analytics.Param.ACTION_TYPE, "enable_dismissed");
-                            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_ACTION, params);
-                        }
-                    });
-            // Create the AlertDialog object and return it
-            return builder.create();
         }
     }
 
@@ -151,25 +105,6 @@ public class SettingsActivity extends AppCompatActivity {
             super.onResume();
             getPreferenceScreen().getSharedPreferences()
                     .registerOnSharedPreferenceChangeListener(this);
-
-            // Disable the "Enable Current Location" option if we already have the permission
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                findPreference(KEY_PREF_LOCATION).setEnabled(false);
-            }
-            else {
-                // Set up dialog for "Enable Current Location" option
-                findPreference(KEY_PREF_LOCATION).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        new EnableLocationDialogFragment().show(getActivity().getSupportFragmentManager(), "dialog");
-                        Bundle params = new Bundle();
-                        params.putString(Analytics.Param.ACTION_TYPE, "enable_clicked");
-                        firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_ACTION, params);
-                        return false;
-                    }
-                });
-            }
         }
 
         @Override
