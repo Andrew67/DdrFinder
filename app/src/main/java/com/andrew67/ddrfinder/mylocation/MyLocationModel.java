@@ -69,6 +69,7 @@ public class MyLocationModel extends ViewModel {
      * Get the location response LiveData object.
      * Useful for setting up observers on startup, without triggering the location permission prompt
      */
+    @NonNull
     public LiveData<MyLocationResponse> getLocationResponse() {
         return locationResponse;
     }
@@ -79,6 +80,7 @@ public class MyLocationModel extends ViewModel {
      * a permission denied event.
      * If the permission is denied, attempts to guide the user to enabling it, before giving up
      */
+    @NonNull
     public LiveData<MyLocationResponse> requestMyLocation(@NonNull Activity activity) {
         if (ContextCompat.checkSelfPermission(activity,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
