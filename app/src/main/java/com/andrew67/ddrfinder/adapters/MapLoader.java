@@ -24,21 +24,37 @@
 package com.andrew67.ddrfinder.adapters;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
 
+import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.interfaces.ApiResult;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
+import com.andrew67.ddrfinder.model.v3.Result;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
-    final String datasrc;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
+public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
+    private static final HttpUrl apiUrl = HttpUrl.parse(BuildConfig.API_BASE_URL);
+    private static final OkHttpClient client = new OkHttpClient();
+    private static final JsonAdapter<Result> jsonAdapter = new Moshi.Builder().build().adapter(Result.class);
+
+    private final String datasrc;
     private final WeakReference<Callback> callbackWeakReference;
 
     /**
@@ -46,7 +62,7 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
      * @param datasrc The data source to use for arcade locations
      * @param callback The callback to use in the UI thread. Do not use a lambda, as a weak reference is used to aid in garbage collection of views.
      */
-    MapLoader(@NonNull String datasrc, @Nullable Callback callback) {
+    public MapLoader(@NonNull String datasrc, @Nullable Callback callback) {
         super();
         this.datasrc = datasrc;
         this.callbackWeakReference = new WeakReference<>(callback);
@@ -57,6 +73,56 @@ public abstract class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult>
         super.onPreExecute();
         final Callback callback = callbackWeakReference.get();
         if (callback != null) callback.onPreLoad();
+    }
+
+    @Override
+    protected ApiResult doInBackground(LatLngBounds... boxes) {
+        ApiResult result = null;
+        try {
+            if (boxes.length == 0) throw new IllegalArgumentException("No boxes passed to doInBackground");
+            final LatLngBounds box = boxes[0];
+
+            assert apiUrl != null;
+            final HttpUrl requestUrl = apiUrl.newBuilder()
+                    .addQueryParameter("version", "30")
+                    .addQueryParameter("canHandleLargeDataset", "")
+                    .addQueryParameter("datasrc", datasrc)
+                    .addQueryParameter("latupper", "" + box.northeast.latitude)
+                    .addQueryParameter("lngupper", "" + box.northeast.longitude)
+                    .addQueryParameter("latlower", "" + box.southwest.latitude)
+                    .addQueryParameter("lnglower", "" + box.southwest.longitude)
+                    .build();
+
+            Log.d("api", "Request URL: " + requestUrl);
+            final Request get = new Request.Builder()
+                    .header("User-Agent", BuildConfig.APPLICATION_ID + " " + BuildConfig.VERSION_NAME
+                            + "/Android?SDK=" + Build.VERSION.SDK_INT)
+                    .url(requestUrl)
+                    .build();
+
+            final Response response = client.newCall(get).execute();
+            final int statusCode = response.code();
+            Log.d("api", "Status code: " + statusCode);
+
+            // Data/error loaded OK
+            if (statusCode == 200 || statusCode == 400) {
+                final ResponseBody responseBody = response.body();
+                assert responseBody != null;
+                result = jsonAdapter.fromJson(responseBody.source());
+                assert result != null;
+                result.setBounds(box);
+                Log.d("api", "Response JSON parse complete");
+            }
+            // Unexpected error code
+            else {
+                throw new RuntimeException("Unexpected HTTP status code: " + statusCode);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @Override

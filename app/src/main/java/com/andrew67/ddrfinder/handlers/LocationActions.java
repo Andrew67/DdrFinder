@@ -27,7 +27,6 @@ import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.activity.BrowserActivity;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
-import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.model.v3.Source;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.ThemeUtil;
@@ -43,7 +42,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -58,8 +56,9 @@ import java.util.List;
  * Helper class for location actions.
  */
 public class LocationActions {
-	private final @NonNull ArcadeLocation location;
-	private final @NonNull DataSource source;
+	private final ArcadeLocation location;
+	private final DataSource source;
+	private final Bundle analyticsParams;
 
     /**
      * Set up a new location action helper.
@@ -69,25 +68,30 @@ public class LocationActions {
     public LocationActions(@NonNull ArcadeLocation location, @Nullable DataSource source) {
         this.location = location;
         this.source = (source != null) ? source : Source.getFallback();
+
+        this.analyticsParams = new Bundle();
+        this.analyticsParams.putString(Analytics.Param.ACTIVE_DATASRC, this.source.getShortName());
     }
 
     /**
      * Copy the location's GPS coordinates to the context clipboard.
      * @param context The context which provides the clipboard service.
-     * @param display Optional message display provider, to show "Copied" message.
+     * @return Success status of copying to clipboard. Can be used to show "Copied" message
      */
-    public void copyGps(@NonNull Context context, @Nullable MessageDisplay display) {
+    public boolean copyGps(@NonNull Context context) {
         final LatLng coordinates = location.getPosition();
         final ClipboardManager clipboard =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+
+        boolean success = false;
         if (clipboard != null) {
             clipboard.setPrimaryClip(ClipData.newPlainText("gps",
                     coordinates.latitude + ", " + coordinates.longitude));
-            if (display != null) {
-                display.showMessage(R.string.copy_complete);
-            }
+            success = true;
         }
-        trackLocationAction(context, "copy_gps");
+        FirebaseAnalytics.getInstance(context)
+                .logEvent(Analytics.Event.LOCATION_ACTION_COPYGPS, analyticsParams);
+        return success;
     }
 
     /**
@@ -102,7 +106,8 @@ public class LocationActions {
                     Uri.parse("geo:" + coordinates.latitude + "," +
                             coordinates.longitude + "?q=" + coordinates.latitude +
                             "," + coordinates.longitude + "(" + label + ")")));
-            trackLocationAction(context, "navigate");
+            FirebaseAnalytics.getInstance(context)
+                    .logEvent(Analytics.Event.LOCATION_ACTION_NAVIGATE, analyticsParams);
         } catch (UnsupportedEncodingException e) {
             // UTF-8 should always be a supported encoding
             e.printStackTrace();
@@ -157,24 +162,12 @@ public class LocationActions {
                 customTabsIntent.launchUrl(context, infoURI);
             }
 
-            trackLocationAction(context, "moreinfo");
+            FirebaseAnalytics.getInstance(context)
+                    .logEvent(Analytics.Event.LOCATION_ACTION_MOREINFO, analyticsParams);
         } catch (Exception e) {
             // Launch built-in WebView browser if there's an exception thrown attempting to launch a regular browser activity.
             Log.e("LocationActions", "Error launching Intent for HTTP(S) link; using built-in browser.", e);
             BrowserActivity.start(context, infoURL);
-
-            Bundle params = new Bundle();
-            params.putString(Analytics.Param.ACTION_TYPE, "moreinfo_exception");
-            params.putString(Analytics.Param.ACTIVE_DATASRC, source.getShortName());
-            params.putString(Analytics.Param.EXCEPTION_MESSAGE, e.getMessage());
-            FirebaseAnalytics.getInstance(context).logEvent(Analytics.Event.LOCATION_ACTION, params);
         }
-    }
-
-    private void trackLocationAction(@NonNull Context context, @NonNull String actionType) {
-        Bundle params = new Bundle();
-        params.putString(Analytics.Param.ACTION_TYPE, actionType);
-        params.putString(Analytics.Param.ACTIVE_DATASRC, source.getShortName());
-        FirebaseAnalytics.getInstance(context).logEvent(Analytics.Event.LOCATION_ACTION, params);
     }
 }

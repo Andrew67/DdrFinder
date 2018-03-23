@@ -37,13 +37,11 @@ import java.util.concurrent.TimeUnit;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.adapters.MapLoader;
-import com.andrew67.ddrfinder.adapters.MapLoaderV3;
 import com.andrew67.ddrfinder.handlers.LocationClusterRenderer;
 import com.andrew67.ddrfinder.handlers.LocationActions;
 import com.andrew67.ddrfinder.mylocation.MyLocationModel;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
-import com.andrew67.ddrfinder.interfaces.MessageDisplay;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
 import com.andrew67.ddrfinder.util.AttributionGenerator;
@@ -94,7 +92,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMapReadyCallback {
+public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int BASE_ZOOM = 12;
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 2;
@@ -361,10 +359,10 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
 
             final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
 
-            new MapLoaderV3(datasrc, mapLoaderCallback).execute(box);
+            new MapLoader(datasrc, mapLoaderCallback).execute(box);
 
             // Track forced refreshes by data source.
-            if (force) trackMapAction("forced_refresh", datasrc);
+            if (force) trackMapAction(Analytics.Event.MAP_ACTION_RELOAD, datasrc);
         }
     }
 
@@ -395,7 +393,7 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
 
 
     /** Update UI as MapLoader events happen (data loaded, error, etc.) */
-    private MapLoader.Callback mapLoaderCallback = new MapLoader.Callback() {
+    private final MapLoader.Callback mapLoaderCallback = new MapLoader.Callback() {
         @Override
         public void onPreLoad() {
             showProgressBar();
@@ -514,15 +512,9 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
         if (progressBar != null) progressBar.setVisibility(View.INVISIBLE);
     }
 
-    @Override
-    public void showMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
     // Keep toast references mapped by resource id, to prevent excessive repeated toasts.
     private final SparseArray<Toast> toasts = new SparseArray<>();
-    @Override
-    public void showMessage(@StringRes int resourceId) {
+    private void showMessage(@StringRes int resourceId) {
         final Toast oldToast = toasts.get(resourceId);
         if (oldToast == null) {
             final Toast newToast = Toast.makeText(this, resourceId, Toast.LENGTH_SHORT);
@@ -691,7 +683,7 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
                 actionMode = startSupportActionMode(actionModeCallback);
             }
             selectedLocation = location;
-            trackMapAction("marker_selected", getSource(location));
+            trackMapAction(Analytics.Event.MAP_MARKER_SELECTED, getSource(location));
             return false; // keep the default action of moving view and showing info window
         }
     };
@@ -756,7 +748,8 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
                     actions.moreInfo(MapViewer.this, useCustomTabs);
                     return true;
                 case R.id.action_copygps:
-                    actions.copyGps(MapViewer.this, MapViewer.this);
+                    final boolean copySuccess = actions.copyGps(MapViewer.this);
+                    if (copySuccess) showMessage(R.string.copy_complete);
                     return true;
                 default:
                     return false;
@@ -772,7 +765,7 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
                 if (selectedMarker != null) {
                     selectedMarker.hideInfoWindow();
                 }
-                trackMapAction("marker_deselected", getSource(selectedLocation));
+                trackMapAction(Analytics.Event.MAP_MARKER_DESELECTED, getSource(selectedLocation));
             }
 
             // Set status bar color back to default app color.
@@ -793,7 +786,7 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
         public void onClusterItemInfoWindowClick(ArcadeLocation location) {
             final DataSource source = getSource(location);
             final LocationActions actions = new LocationActions(location, source);
-            trackMapAction("marker_infowindow_clicked", source);
+            trackMapAction(Analytics.Event.MAP_INFOWINDOW_CLICKED, source);
             final boolean useCustomTabs = sharedPref
                     .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
             actions.moreInfo(MapViewer.this, useCustomTabs);
@@ -801,15 +794,14 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
     };
 
     /** Track a user-initiated map action with the given active data source. */
-    private void trackMapAction(@NonNull String actionType, @NonNull String activeSource) {
+    private void trackMapAction(@NonNull String event, @NonNull String activeSource) {
         Bundle params = new Bundle();
-        params.putString(Analytics.Param.ACTION_TYPE, actionType);
         params.putString(Analytics.Param.ACTIVE_DATASRC, activeSource);
-        firebaseAnalytics.logEvent(Analytics.Event.MAP_ACTION, params);
+        firebaseAnalytics.logEvent(event, params);
     }
     /** Track a user-initiated map action with the given active data source. */
-    private void trackMapAction(@NonNull String actionType, @NonNull DataSource activeSource) {
-        trackMapAction(actionType, activeSource.getShortName());
+    private void trackMapAction(@NonNull String event, @NonNull DataSource activeSource) {
+        trackMapAction(event, activeSource.getShortName());
     }
 }
 

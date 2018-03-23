@@ -32,16 +32,32 @@ public class Analytics {
     public static class Event {
         /** The user has changed a preference in the Settings dialog. */
         public static final String SET_PREFERENCE = "set_preference";
+
         /** The user has performed an action on the map. */
         public static final String MAP_ACTION = "map_action";
-        /** The user has triggered an action on a location. */
-        public static final String LOCATION_ACTION = "location_action";
+        /** The user has forced a reload on the map */
+        public static final String MAP_ACTION_RELOAD = "map_action_reload";
+        /** The user has selected a map marker */
+        public static final String MAP_MARKER_SELECTED = "map_marker_selected";
+        /** The user has deselected a map marker */
+        public static final String MAP_MARKER_DESELECTED = "map_marker_deselected";
+        /** The user has clicked the marker infowindow */
+        public static final String MAP_INFOWINDOW_CLICKED = "map_infowindow_clicked";
+
+        /** The user has copied a location's GPS coordinates */
+        public static final String LOCATION_ACTION_COPYGPS = "location_action_copygps";
+        /** The user has clicked the navigation button for a location */
+        public static final String LOCATION_ACTION_NAVIGATE = "location_action_navigate";
+        /** The user has clicked the more info button for a location */
+        public static final String LOCATION_ACTION_MOREINFO = "location_action_moreinfo";
+
         /** The user has requested their own location on the map */
         public static final String LOCATION_REQUESTED = "location_requested";
         /** The user has granted the location permission request and their location was found */
         public static final String LOCATION_FOUND = "location_found";
         /** The user has denied the location permission */
         public static final String LOCATION_PERMISSION_DENIED = "location_permission_denied";
+
         /** The user has started searching for a location via the Places API. */
         public static final String PLACES_SEARCH_START = "places_search_start";
         /** The user has successfully found and loaded a Places API search result. */
@@ -55,7 +71,6 @@ public class Analytics {
     public static class Param {
         public static final String PREFERENCE_KEY = "preference_key";
         public static final String PREFERENCE_VALUE = "preference_value";
-        public static final String ACTION_TYPE = "action_type";
         /**
          * Data source active while performing a map/location action.
          * Tracking this can help segment user actions by data source.
