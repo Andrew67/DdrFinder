@@ -42,15 +42,11 @@ import com.andrew67.ddrfinder.handlers.LocationActions;
 import com.andrew67.ddrfinder.mylocation.MyLocationModel;
 import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.andrew67.ddrfinder.interfaces.DataSource;
+import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
 import com.andrew67.ddrfinder.util.AttributionGenerator;
 import com.andrew67.ddrfinder.util.ThemeUtil;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdate;
@@ -67,7 +63,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
-import android.app.Dialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -95,17 +90,16 @@ import android.widget.Toast;
 public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int BASE_ZOOM = 12;
-    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 2;
 
     // State
     /** Contains requested initial map state, if opened by app link. */
     private AppLink appLink;
     /** Contains mutable map state that can be built into a shareable AppLink. */
     private AppLink.Builder currentAppLink;
-    /** When non-null, points to a user-specified Autocomplete-provided location to move the map to. */
-    private Place autocompletedPlace = null;
     /** ViewModel that assists with user location requests. */
     private MyLocationModel myLocationModel;
+    /** ViewModel that assists with places autocomplete */
+    private PlaceAutocompleteModel placeAutocompleteModel;
 
     // Map
     private GoogleMap mMap = null;
@@ -152,6 +146,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         currentAppLink = appLink.buildUpon();
 
         myLocationModel = ViewModelProviders.of(this).get(MyLocationModel.class);
+        placeAutocompleteModel = ViewModelProviders.of(this).get(PlaceAutocompleteModel.class);
+
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
 
@@ -220,7 +216,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         if (onCreateSavedInstanceState == null &&
                 appLink.getPosition() == null &&
                 System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) > TimeUnit.HOURS.toMillis(4) &&
-                autocompletedPlace == null) {
+                !placeAutocompleteModel.hasPendingAutocompleteResponse()) {
             myLocationModel.requestMyLocationSilently(this, new OnSuccessListener<LatLng>() {
                 @Override
                 public void onSuccess(LatLng latLng) {
@@ -251,7 +247,23 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         });
 
         // If returning from a Places API Autocomplete selection, move the map to that location.
-        if (autocompletedPlace != null) moveMapToAutocompletedPlace();
+        placeAutocompleteModel.getAutocompleteResponse().observe(this, new Observer<PlaceAutocompleteModel.PlaceAutocompleteResponse>() {
+            @Override
+            public void onChanged(@Nullable PlaceAutocompleteModel.PlaceAutocompleteResponse response) {
+                if (response != null) {
+                    if (response.resultCode == RESULT_OK && response.place != null) {
+                        moveMapToAutocompletedPlace(response.place);
+                        firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_COMPLETE, null);
+                    } else if (response.resultCode == RESULT_CANCELED) {
+                        firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_CANCELED, null);
+                    } else if (response.resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                        final Bundle params = new Bundle();
+                        params.putString(Analytics.Param.EXCEPTION_MESSAGE, response.errorMessage);
+                        firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_ERROR, params);
+                    }
+                }
+            }
+        });
 
         mClusterManager.setOnClusterItemClickListener(actionModeEnabler);
         mClusterManager.setOnClusterItemInfoWindowClickListener(moreInfoListener);
@@ -537,7 +549,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_search:
-            startPlaceAutocomplete();
+            firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_START, null);
+            placeAutocompleteModel.startPlaceAutocomplete(this);
             return true;
         case R.id.action_my_location:
             firebaseAnalytics.logEvent(Analytics.Event.LOCATION_REQUESTED, null);
@@ -575,9 +588,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                 clearMap();
                 updateMap(false);
             }
-
-            // Move to Places API Autocompleted place if coming back from it.
-            if (autocompletedPlace != null) moveMapToAutocompletedPlace();
         }
 
     }
@@ -591,31 +601,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     /**
-     * Starts the place autocomplete overlay activity (with filter for regions).
-     * If Google Play Services requires an update, shows actionable error message to user.
-     */
-    private void startPlaceAutocomplete() {
-        try {
-            final AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
-                    .build();
-            final Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                    .setFilter(typeFilter)
-                    .build(this);
-            firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_START, null);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // This exception is not actionable
-            e.printStackTrace();
-        } catch (GooglePlayServicesRepairableException e) {
-            // This exception is actionable; display Play Services update dialog to user
-            final Dialog errorDialog = GoogleApiAvailability.getInstance()
-                    .getErrorDialog(this, e.getConnectionStatusCode(), PLACE_AUTOCOMPLETE_REQUEST_CODE);
-            if (errorDialog != null) errorDialog.show();
-        }
-    }
-
-    /**
      * Handle results from startActivityForResult.
      * Currently used to handle result from Places Autocomplete widget.
      * Note: this function gets called before onResume.
@@ -623,28 +608,13 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                autocompletedPlace = PlaceAutocomplete.getPlace(this, data);
-                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_COMPLETE, null);
-            } else if (resultCode == RESULT_CANCELED) {
-                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_CANCELED, null);
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                final Status status = PlaceAutocomplete.getStatus(this, data);
-                Log.e("MapViewer", status.getStatusMessage());
-                final Bundle params = new Bundle();
-                params.putString(Analytics.Param.EXCEPTION_MESSAGE, status.getStatusMessage());
-                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_ERROR, params);
-            }
-        }
+        placeAutocompleteModel.onActivityResult(this, requestCode, resultCode, data);
     }
 
     /**
-     * Move the map to the last user-specified autocomplete location, then sets it to null.
-     * The user-specified location is set in onActivityResult (fires before onResume).
-     * This function can only be called from onMapReady or onResume (when onMapReady has previously fired).
+     * Move the map to the user-specified autocomplete location
      */
-    private void moveMapToAutocompletedPlace() {
+    private void moveMapToAutocompletedPlace(Place autocompletedPlace) {
         final LatLngBounds viewport = autocompletedPlace.getViewport();
         final CameraUpdate viewportCameraUpdate = viewport == null ?
                 null : CameraUpdateFactory.newLatLngBounds(viewport, 0);
@@ -669,7 +639,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             Log.d("MapViewer", "Places API using latLng: " + latLng.toString());
             mMap.animateCamera(latLngCameraUpdate);
         }
-        autocompletedPlace = null;
     }
 
     /**
