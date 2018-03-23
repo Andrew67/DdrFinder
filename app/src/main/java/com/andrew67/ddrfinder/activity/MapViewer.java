@@ -241,9 +241,11 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
                     if (myLocationResponse.permissionGranted) {
                         mMap.setMyLocationEnabled(true);
                         if (myLocationResponse.latLng != null) {
+                            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_FOUND, null);
                             zoomToLocation(myLocationResponse.latLng);
                         }
                     } else if (myLocationResponse.permissionDenied) {
+                        firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_DENIED, null);
                         showMessage(R.string.error_perm_loc);
                     }
                 }
@@ -546,6 +548,7 @@ public class MapViewer extends AppCompatActivity implements MessageDisplay, OnMa
             startPlaceAutocomplete();
             return true;
         case R.id.action_my_location:
+            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_REQUESTED, null);
             myLocationModel.requestMyLocation(this);
             return true;
         case R.id.action_share:

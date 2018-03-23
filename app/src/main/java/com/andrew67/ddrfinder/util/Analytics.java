@@ -36,8 +36,12 @@ public class Analytics {
         public static final String MAP_ACTION = "map_action";
         /** The user has triggered an action on a location. */
         public static final String LOCATION_ACTION = "location_action";
-        /** The user has performed an action related to the location permission. */
-        public static final String LOCATION_PERMISSION_ACTION = "location_permission";
+        /** The user has requested their own location on the map */
+        public static final String LOCATION_REQUESTED = "location_requested";
+        /** The user has granted the location permission request and their location was found */
+        public static final String LOCATION_FOUND = "location_found";
+        /** The user has denied the location permission */
+        public static final String LOCATION_PERMISSION_DENIED = "location_permission_denied";
         /** The user has started searching for a location via the Places API. */
         public static final String PLACES_SEARCH_START = "places_search_start";
         /** The user has successfully found and loaded a Places API search result. */
