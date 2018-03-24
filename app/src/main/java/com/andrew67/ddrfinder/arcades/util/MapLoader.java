@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder.adapters;
+package com.andrew67.ddrfinder.arcades.util;
 
 import android.os.AsyncTask;
 import android.os.Build;
@@ -32,9 +32,9 @@ import android.util.Log;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.model.v3.ApiResult;
-import com.andrew67.ddrfinder.model.v3.ArcadeLocation;
-import com.andrew67.ddrfinder.model.v3.DataSource;
+import com.andrew67.ddrfinder.arcades.model.ApiResult;
+import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
+import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;

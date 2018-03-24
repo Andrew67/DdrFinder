@@ -21,12 +21,12 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder.handlers;
+package com.andrew67.ddrfinder.arcades.util;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.activity.BrowserActivity;
-import com.andrew67.ddrfinder.model.v3.ArcadeLocation;
-import com.andrew67.ddrfinder.model.v3.DataSource;
+import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
+import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.model.LatLng;

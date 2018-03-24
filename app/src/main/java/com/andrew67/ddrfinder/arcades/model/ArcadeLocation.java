@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.andrew67.ddrfinder.model.v3;
+package com.andrew67.ddrfinder.arcades.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

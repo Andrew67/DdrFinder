@@ -21,9 +21,9 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder.util;
+package com.andrew67.ddrfinder.arcades.util;
 
-import com.andrew67.ddrfinder.model.v3.DataSource;
+import com.andrew67.ddrfinder.arcades.model.DataSource;
 
 /**
  * Generate attribution text for the map view.

@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder.model.v3;
+package com.andrew67.ddrfinder.arcades.model;
 
 import android.support.annotation.NonNull;
 
