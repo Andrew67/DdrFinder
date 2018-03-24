@@ -26,7 +26,7 @@ package com.andrew67.ddrfinder.placesearch;
 import android.app.Activity;
 import android.app.Dialog;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.SingleLiveEvent;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.content.Intent;
@@ -52,11 +52,11 @@ public class PlaceAutocompleteModel extends ViewModel {
 
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 59573;
     /** LiveData that holds the most recent location response */
-    private final MutableLiveData<PlaceAutocompleteResponse> autocompleteResponse;
+    private final SingleLiveEvent<PlaceAutocompleteResponse> autocompleteResponse;
 
     public PlaceAutocompleteModel() {
         super();
-        autocompleteResponse = new MutableLiveData<>();
+        autocompleteResponse = new SingleLiveEvent<>();
     }
 
     /**

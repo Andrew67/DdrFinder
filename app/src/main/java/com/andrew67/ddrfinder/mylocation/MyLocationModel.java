@@ -25,7 +25,7 @@ package com.andrew67.ddrfinder.mylocation;
 
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.SingleLiveEvent;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -50,7 +50,7 @@ public class MyLocationModel extends ViewModel {
 
     private static final int PERMISSIONS_REQUEST_LOCATION = 57359;
     /** LiveData that holds the most recent location response */
-    private final MutableLiveData<MyLocationResponse> locationResponse;
+    private final SingleLiveEvent<MyLocationResponse> locationResponse;
 
     /**
      * Holds whether permission was recently requested and denied.
@@ -61,7 +61,7 @@ public class MyLocationModel extends ViewModel {
 
     public MyLocationModel() {
         super();
-        locationResponse = new MutableLiveData<>();
+        locationResponse = new SingleLiveEvent<>();
         permissionDeniedFromPlatform = false;
     }
 
