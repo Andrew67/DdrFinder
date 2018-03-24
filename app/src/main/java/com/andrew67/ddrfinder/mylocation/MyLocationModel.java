@@ -130,9 +130,7 @@ public class MyLocationModel extends ViewModel {
      */
     public void onResume(@NonNull FragmentActivity activity) {
         if (ContextCompat.checkSelfPermission(activity,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                // Check that it's not already in granted state, so that this event only fires once
-                (locationResponse.getValue() == null || !locationResponse.getValue().permissionGranted)) {
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationResponse.setValue(MyLocationResponse.PERMISSION_GRANTED_NO_LOCATION);
         } else if (permissionDeniedFromPlatform) {
             permissionDeniedFromPlatform = false;
