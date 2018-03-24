@@ -26,7 +26,7 @@ package com.andrew67.ddrfinder.handlers;
 import android.content.Context;
 
 import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
+import com.andrew67.ddrfinder.model.v3.ArcadeLocation;
 import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;

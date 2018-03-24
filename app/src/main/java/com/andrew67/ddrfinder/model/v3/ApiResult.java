@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Andrés Cordero
+ * Copyright (c) 2015-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,46 +23,74 @@
 
 package com.andrew67.ddrfinder.model.v3;
 
-import com.andrew67.ddrfinder.interfaces.ApiResult;
-import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
-import com.andrew67.ddrfinder.interfaces.DataSource;
+import android.support.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLngBounds;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents the API v2 result.
+ * Represents the API v3 result.
  * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
  */
-public class Result implements ApiResult {
+public final class ApiResult {
+
     private String error;
     private Integer errorCode;
-    private Source[] sources;
-    private Location[] locations;
-    private transient LatLngBounds bounds; // non-standard
+    private List<DataSource> sources;
+    private List<ArcadeLocation> locations;
+    private transient LatLngBounds bounds; // non-API
 
-    @Override
+    private ApiResult() { }
+
+    /**
+     * Returns the error code from the API.
+     * @return Error code.
+     */
     public int getErrorCode() {
         return (errorCode == null) ? ERROR_OK : errorCode;
     }
 
-    @Override
+    // Error codes, from V2
+    public static final int ERROR_CLIENT_API_VERSION = 1;
+    public static final int ERROR_REQUIRED_FIELD = 20;
+    public static final int ERROR_DATA_SOURCE = 21;
+    public static final int ERROR_OVERSIZED_BOX = 23;
+    public static final int ERROR_REQUESTS = 42;
+    public static final int ERROR_OK = -1; // non-standard; success case
+    public static final int ERROR_UNEXPECTED = -2; // non-standard
+    public static final int ERROR_NO_RESULTS = -3; // non-standard
+
+    /**
+     * Returns the list of ArcadeLocation items from the API.
+     */
+    @NonNull
     public List<ArcadeLocation> getLocations() {
-        return Arrays.<ArcadeLocation>asList(locations);
+        if (locations != null) return locations;
+        else return Collections.emptyList();
     }
 
-    @Override
+    /**
+     * Returns the list of DataSource items from the API.
+     */
+    @NonNull
     public List<DataSource> getSources() {
-        return Arrays.<DataSource>asList(sources);
+        if (sources != null) return sources;
+        else return Collections.emptyList();
     }
 
-    @Override
+    /**
+     * (non-API) Set the latitude/longitude bounds this result belongs to.
+     * This field should only be set once.
+     */
     public void setBounds(LatLngBounds bounds) {
         this.bounds = bounds;
     }
 
-    @Override
+    /**
+     * (non-API) Get the latitude/longitude bounds this result belongs to.
+     */
     public LatLngBounds getBounds() {
         return bounds;
     }

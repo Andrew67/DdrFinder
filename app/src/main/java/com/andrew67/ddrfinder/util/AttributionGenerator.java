@@ -23,7 +23,7 @@
 
 package com.andrew67.ddrfinder.util;
 
-import com.andrew67.ddrfinder.interfaces.DataSource;
+import com.andrew67.ddrfinder.model.v3.DataSource;
 
 /**
  * Generate attribution text for the map view.

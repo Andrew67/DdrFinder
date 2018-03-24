@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Andrés Cordero
+ * Copyright (c) 2015-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,44 +20,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package com.andrew67.ddrfinder.model.v3;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.andrew67.ddrfinder.BuildConfig;
-import com.andrew67.ddrfinder.interfaces.DataSource;
 
 /**
- * Represents the API v2 source.
+ * Represents the API v3 data source.
  * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
- * Note: the infoURL field is ignored, mInfoURL is used in its place.
+ * The infoURL field is ignored; mInfoURL is used in its place since this code is always on mobile
  */
-public class Source implements DataSource {
+public final class DataSource implements Parcelable {
+
     private String shortName;
     private String name;
     private String mInfoURL;
     private boolean hasDDR;
 
-    private Source() { }
+    private DataSource() { }
 
-    @Override
+    /**
+     * Get the key/shortname of the data source, e.g. "ziv"
+     */
     public String getShortName() {
         return shortName;
     }
 
-    @Override
+    /**
+     * Get the human-readable name of the data source, e.g. "Zenius -I- vanisher.com"
+     */
     public String getName() {
         return name;
     }
 
-    @Override
+    /**
+     * Get the info URL for locations that belong to this source.
+     */
     public String getInfoURL() {
         return mInfoURL;
     }
 
-    @Override
+    /**
+     * Retuns whether the location has meaningful data for the "hasDDR" field.
+     */
     public boolean hasDDR() {
         return hasDDR;
     }
@@ -75,7 +82,7 @@ public class Source implements DataSource {
         dest.writeBooleanArray(new boolean[] { hasDDR });
     }
 
-    private Source(Parcel in) {
+    private DataSource(Parcel in) {
         this.shortName = in.readString();
         this.name = in.readString();
         this.mInfoURL = in.readString();
@@ -84,14 +91,14 @@ public class Source implements DataSource {
         this.hasDDR = hasDDRArray[0];
     }
 
-    public static final Parcelable.Creator<Source> CREATOR
-            = new Parcelable.Creator<Source>() {
-        public Source createFromParcel(Parcel in) {
-            return new Source(in);
+    public static final Parcelable.Creator<DataSource> CREATOR
+            = new Parcelable.Creator<DataSource>() {
+        public DataSource createFromParcel(Parcel in) {
+            return new DataSource(in);
         }
 
-        public Source[] newArray(int size) {
-            return new Source[size];
+        public DataSource[] newArray(int size) {
+            return new DataSource[size];
         }
     };
 
@@ -101,7 +108,7 @@ public class Source implements DataSource {
      * @return Fallback data source for locations.
      */
     public static DataSource getFallback() {
-        Source src = new Source();
+        DataSource src = new DataSource();
         src.shortName = "fallback";
         src.name = "Source Website";
         src.mInfoURL = BuildConfig.FALLBACK_INFO_URL;

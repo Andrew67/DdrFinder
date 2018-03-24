@@ -25,9 +25,8 @@ package com.andrew67.ddrfinder.handlers;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.activity.BrowserActivity;
-import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
-import com.andrew67.ddrfinder.interfaces.DataSource;
-import com.andrew67.ddrfinder.model.v3.Source;
+import com.andrew67.ddrfinder.model.v3.ArcadeLocation;
+import com.andrew67.ddrfinder.model.v3.DataSource;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.maps.model.LatLng;
@@ -67,7 +66,7 @@ public class LocationActions {
      */
     public LocationActions(@NonNull ArcadeLocation location, @Nullable DataSource source) {
         this.location = location;
-        this.source = (source != null) ? source : Source.getFallback();
+        this.source = (source != null) ? source : DataSource.getFallback();
 
         this.analyticsParams = new Bundle();
         this.analyticsParams.putString(Analytics.Param.ACTIVE_DATASRC, this.source.getShortName());

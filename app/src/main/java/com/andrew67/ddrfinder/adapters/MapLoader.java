@@ -32,10 +32,9 @@ import android.util.Log;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.interfaces.ApiResult;
-import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
-import com.andrew67.ddrfinder.interfaces.DataSource;
-import com.andrew67.ddrfinder.model.v3.Result;
+import com.andrew67.ddrfinder.model.v3.ApiResult;
+import com.andrew67.ddrfinder.model.v3.ArcadeLocation;
+import com.andrew67.ddrfinder.model.v3.DataSource;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -52,7 +51,8 @@ import okhttp3.ResponseBody;
 public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
     private static final HttpUrl apiUrl = HttpUrl.parse(BuildConfig.API_BASE_URL);
     private static final OkHttpClient client = new OkHttpClient();
-    private static final JsonAdapter<Result> jsonAdapter = new Moshi.Builder().build().adapter(Result.class);
+    private static final JsonAdapter<ApiResult> jsonAdapter = new Moshi.Builder().build()
+            .adapter(ApiResult.class);
 
     private final String datasrc;
     private final WeakReference<Callback> callbackWeakReference;

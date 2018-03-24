@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Andrés Cordero
+ * Copyright (c) 2015-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,20 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package com.andrew67.ddrfinder.model.v3;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
-import com.andrew67.ddrfinder.interfaces.ArcadeLocation;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 
 /**
- * Represents the API v2 location.
+ * Represents the API v3 arcade location.
  * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
  */
-public class Location implements ArcadeLocation {
+public final class ArcadeLocation implements Parcelable, ClusterItem {
     private int id;
     private String src;
     private String sid;
@@ -43,40 +43,35 @@ public class Location implements ArcadeLocation {
     private double lng;
     private Integer hasDDR; // optional; interface should be Boolean, but this gets fed to us as "0" or "1" (or null!)
 
-    private Location() { }
+    private ArcadeLocation() { }
 
-    @Override
     public int getId() {
         return id;
     }
 
-    @Override
     public String getSrc() {
         return src;
     }
 
-    @Override
     public String getSid() {
         return sid;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public String getCity() {
         return city;
     }
 
     private LatLng position = null;
     @Override
+    @NonNull
     public LatLng getPosition() {
         return (position == null) ? position = new LatLng(lat, lng) : position;
     }
 
-    @Override
     public boolean hasDDR() {
         return Integer.valueOf(1).equals(hasDDR);
     }
@@ -100,7 +95,7 @@ public class Location implements ArcadeLocation {
         else dest.writeInt(0);
     }
 
-    private Location(Parcel in) {
+    private ArcadeLocation(Parcel in) {
         this.id = in.readInt();
         this.src = in.readString();
         this.sid = in.readString();
@@ -111,14 +106,14 @@ public class Location implements ArcadeLocation {
         this.hasDDR = in.readInt();
     }
 
-    public static final Parcelable.Creator<Location> CREATOR
-            = new Parcelable.Creator<Location>() {
-        public Location createFromParcel(Parcel in) {
-            return new Location(in);
+    public static final Parcelable.Creator<ArcadeLocation> CREATOR
+            = new Parcelable.Creator<ArcadeLocation>() {
+        public ArcadeLocation createFromParcel(Parcel in) {
+            return new ArcadeLocation(in);
         }
 
-        public Location[] newArray(int size) {
-            return new Location[size];
+        public ArcadeLocation[] newArray(int size) {
+            return new ArcadeLocation[size];
         }
     };
 }
