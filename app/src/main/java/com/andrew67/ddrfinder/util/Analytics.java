@@ -33,8 +33,6 @@ public class Analytics {
         /** The user has changed a preference in the Settings dialog. */
         public static final String SET_PREFERENCE = "set_preference";
 
-        /** The user has performed an action on the map. */
-        public static final String MAP_ACTION = "map_action";
         /** The user has forced a reload on the map */
         public static final String MAP_ACTION_RELOAD = "map_action_reload";
         /** The user has selected a map marker */
