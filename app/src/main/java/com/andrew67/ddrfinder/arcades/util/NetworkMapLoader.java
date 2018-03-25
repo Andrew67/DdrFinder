@@ -36,8 +36,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
-import java.lang.ref.WeakReference;
-
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

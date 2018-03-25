@@ -27,10 +27,8 @@
 package com.andrew67.ddrfinder.activity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -114,8 +112,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
     // Data
     private final Set<Integer> loadedLocationIds = new HashSet<>();
-    /** Loaded data sources, keyed by source name. */
-    private final Map<String,DataSource> loadedSources = new HashMap<>();
 
     // Helpers
     private FirebaseAnalytics firebaseAnalytics;
@@ -128,7 +124,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        state = getSharedPreferences(PREF_STATE, MODE_PRIVATE);
+        state = getSharedPreferences("state", MODE_PRIVATE);
 
         setContentView(R.layout.map_viewer);
         final Toolbar toolbar = findViewById(R.id.toolbar);
@@ -145,17 +141,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         // Set up arcades model and hook up attribution text, progress bar and errors to it
         arcadesModel = ViewModelProviders.of(this).get(ArcadesModel.class);
-
-        arcadesModel.getDataSources().observe(this, new Observer<List<DataSource>>() {
-            @Override
-            public void onChanged(@Nullable List<DataSource> dataSources) {
-                if (dataSources != null) {
-                    for (DataSource src : dataSources) {
-                        loadedSources.put(src.getShortName(), src);
-                    }
-                }
-            }
-        });
 
         arcadesModel.getAttribution().observe(this, new Observer<String>() {
             @Override
@@ -341,16 +326,10 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     // Preference names for storing last known coordinates.
-    private final String PREF_STATE = "state";
     private final String KEY_LATITUDE = "latitude";
     private final String KEY_LONGITUDE = "longitude";
     private final String KEY_ZOOM = "zoom";
     private final String KEY_LAST_CAMERA_TIMESTAMP = "lastCameraTimestamp";
-
-    // Dallas, TX, US; zoomed-out default causes too much CPU stress on slower devices
-    private final double DEFAULT_LATITUDE = 32.7157;
-    private final double DEFAULT_LONGITUDE = -96.8088;
-    private final float DEFAULT_ZOOM = 9;
 
     /**
      * Save the given camera position to the current state.
@@ -372,13 +351,15 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      * Load the camera position from the last saved state, or use the defaults.
      */
     private CameraPosition loadCameraFromState() {
+        // Default: Dallas, TX, US
+        // Old zoomed-out default caused too much CPU stress on slower devices
         Long rawLatitude = state.getLong(KEY_LATITUDE, Long.MIN_VALUE);
         Long rawLongitude = state.getLong(KEY_LONGITUDE, Long.MIN_VALUE);
-        final float zoom = state.getFloat(KEY_ZOOM, DEFAULT_ZOOM);
+        final float zoom = state.getFloat(KEY_ZOOM, 9);
 
-        final double latitude = (rawLatitude == Long.MIN_VALUE) ? DEFAULT_LATITUDE :
+        final double latitude = (rawLatitude == Long.MIN_VALUE) ? 32.7157 :
                 Double.longBitsToDouble(rawLatitude);
-        final double longitude = (rawLongitude == Long.MIN_VALUE) ? DEFAULT_LONGITUDE :
+        final double longitude = (rawLongitude == Long.MIN_VALUE) ? -96.8088 :
                 Double.longBitsToDouble(rawLongitude);
 
         return new CameraPosition(new LatLng(latitude, longitude), zoom, 0, 0);
@@ -389,17 +370,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      * @param force Whether to ignore already loaded areas and load them again
      */
     private void updateMap(boolean force) {
-        LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
-        // Preload a slightly larger box area when zoomed in, for a smoother pan/zoom experience
-        // as network requests are reduced.
-        if (Math.abs(box.northeast.latitude - box.southwest.latitude) < 0.5
-                && Math.abs(box.northeast.longitude - box.southwest.longitude) < 0.5) {
-            box = LatLngBounds.builder()
-                    .include(new LatLng(box.northeast.latitude + 0.125, box.northeast.longitude + 0.125))
-                    .include(new LatLng(box.southwest.latitude - 0.125, box.southwest.longitude - 0.125))
-                    .build();
-        }
-
+        final LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
         final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
         arcadesModel.requestLocations(box, datasrc, force);
 
@@ -408,8 +379,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     /**
-     * Fill map with given parameters.
-     * Loaded with either previously saved areas or new ones that come in from updateMap's loader.
+     * Fill map with given locations
      */
     private void fillMap(@NonNull List<ArcadeLocation> newLocations) {
         // If a location is currently selected, use an additive marker adding method
@@ -437,30 +407,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             mClusterManager.cluster();
         }
         Log.d("LoadedLocations", String.valueOf(loadedLocationIds.size()));
-    }
-
-    /**
-     * Clears map of all markers, and internal data structures of all loaded areas.
-     */
-    private void clearMap() {
-        mClusterManager.clearItems();
-        mClusterManager.cluster();
-        loadedLocationIds.clear();
-        loadedSources.clear();
-    }
-
-    /**
-     * Get the source corresponding to the given location.
-     * If specific source not found, "fallback" source is returned.
-     * @return Data source of location.
-     */
-    private DataSource getSource(ArcadeLocation location) {
-        if (loadedSources.containsKey(location.getSrc()))
-            return loadedSources.get(location.getSrc());
-        else {
-            Log.d("MapViewer", "failed to get source: " + location.getSrc());
-            return loadedSources.get("fallback");
-        }
     }
 
     /**
@@ -527,8 +473,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             startActivity(new Intent(this, About.class));
             return true;
         case R.id.action_settings:
-            // Store current data source preference for future comparison in onResume.
-            prevDatasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         default:
@@ -536,21 +480,12 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-    private String prevDatasrc = null;
     @Override
     protected void onResume() {
         super.onResume();
         myLocationModel.onResume(this);
-        if (mMap != null) {
-            // Clear all markers and reload current view when a relevant preference changed.
-            // After app simplification for 3.0.6, only data source is relevant.
-            final String currDatasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
-            if (prevDatasrc != null && !currDatasrc.equals(prevDatasrc)) {
-                clearMap();
-                updateMap(false);
-            }
-        }
-
+        // Re-check in case dataSrc was changed
+        if (mMap != null) updateMap(false);
     }
 
     @Override
@@ -613,7 +548,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                 actionMode = startSupportActionMode(actionModeCallback);
             }
             selectedLocation = location;
-            trackMapAction(Analytics.Event.MAP_MARKER_SELECTED, getSource(location));
+            trackMapAction(Analytics.Event.MAP_MARKER_SELECTED, location);
             return false; // keep the default action of moving view and showing info window
         }
     };
@@ -666,7 +601,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             if (selectedLocation == null) return false;
 
             final LocationActions actions =
-                    new LocationActions(selectedLocation, getSource(selectedLocation));
+                    new LocationActions(selectedLocation, arcadesModel.getSource(selectedLocation));
 
             switch (item.getItemId()) {
                 case R.id.action_navigate:
@@ -693,7 +628,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             if (selectedLocation != null) {
                 final Marker selectedMarker = mClusterRenderer.getMarker(selectedLocation);
                 if (selectedMarker != null) selectedMarker.hideInfoWindow();
-                trackMapAction(Analytics.Event.MAP_MARKER_DESELECTED, getSource(selectedLocation));
+                trackMapAction(Analytics.Event.MAP_MARKER_DESELECTED, selectedLocation);
                 selectedLocation = null;
             }
 
@@ -713,7 +648,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             new ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation>() {
         @Override
         public void onClusterItemInfoWindowClick(ArcadeLocation location) {
-            final DataSource source = getSource(location);
+            final DataSource source = arcadesModel.getSource(location);
             final LocationActions actions = new LocationActions(location, source);
             trackMapAction(Analytics.Event.MAP_INFOWINDOW_CLICKED, source);
             final boolean useCustomTabs = sharedPref
@@ -722,15 +657,18 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         }
     };
 
-    /** Track a user-initiated map action with the given active data source. */
+    /** Track a user-initiated map action with the given active data source */
     private void trackMapAction(@NonNull String event, @NonNull String activeSource) {
         Bundle params = new Bundle();
         params.putString(Analytics.Param.ACTIVE_DATASRC, activeSource);
         firebaseAnalytics.logEvent(event, params);
     }
-    /** Track a user-initiated map action with the given active data source. */
+    /** Track a user-initiated map action with the given active data source */
     private void trackMapAction(@NonNull String event, @NonNull DataSource activeSource) {
         trackMapAction(event, activeSource.getShortName());
     }
+    /** Track a user-initiated map action with the source from the given location */
+    private void trackMapAction(@NonNull String event, @NonNull ArcadeLocation location) {
+        trackMapAction(event, arcadesModel.getSource(location));
+    }
 }
-

@@ -29,6 +29,7 @@ import android.arch.lifecycle.SingleLiveEvent;
 import android.arch.lifecycle.SnackbarMessage;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.andrew67.ddrfinder.arcades.model.ApiResult;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
@@ -38,7 +39,9 @@ import com.andrew67.ddrfinder.arcades.util.CachedMapLoader;
 import com.andrew67.ddrfinder.arcades.util.MapLoaderCallback;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides all the data fields needed to show a loaded map of arcades,
@@ -47,7 +50,7 @@ import java.util.List;
 public class ArcadesModel extends ViewModel {
     // Data corresponding to last area requested
     private final MutableLiveData<List<ArcadeLocation>> arcadeLocations = new MutableLiveData<>();
-    private final MutableLiveData<List<DataSource>> dataSources = new MutableLiveData<>();
+    private final Map<String, DataSource> dataSources = new HashMap<>();
     private final MutableLiveData<String> attribution = new MutableLiveData<>();
 
     // Fire once
@@ -59,16 +62,6 @@ public class ArcadesModel extends ViewModel {
     /** Get the arcade locations to show on the current map */
     public LiveData<List<ArcadeLocation>> getArcadeLocations() {
         return arcadeLocations;
-    }
-
-    /**
-     * Get the data source information from the latest request.
-     * This function should be refactored so that the UI code is not the one pulling out data
-     * sources corresponding to loaded arcades
-     */
-    @Deprecated
-    public LiveData<List<DataSource>> getDataSources() {
-        return dataSources;
     }
 
     /** Get the attribution to show on the current map */
@@ -97,6 +90,24 @@ public class ArcadesModel extends ViewModel {
         cachedMapLoader.requestLocations(bounds, dataSrc, force, mapLoaderCallback);
     }
 
+    /**
+     * Fetches the DataSource for the given arcade location.
+     * If specific source not found, "fallback" source is returned
+     */
+    @NonNull
+    public DataSource getSource(@NonNull ArcadeLocation location) {
+        if (dataSources.containsKey(location.getSrc()))
+            return dataSources.get(location.getSrc());
+        else {
+            Log.w("ArcadesModel", "Failed to get source: " + location.getSrc());
+            if (dataSources.containsKey("fallback")) return dataSources.get("fallback");
+            else {
+                Log.w("ArcadesModel", "Failed to get fallback source");
+                return DataSource.getFallback();
+            }
+        }
+    }
+
     private final MapLoaderCallback mapLoaderCallback = new MapLoaderCallback() {
         @Override
         public void onPreLoad() {
@@ -106,7 +117,10 @@ public class ArcadesModel extends ViewModel {
         @Override
         public void onLocationsLoaded(@NonNull ApiResult result) {
             arcadeLocations.setValue(result.getLocations());
-            dataSources.setValue(result.getSources());
+
+            dataSources.clear();
+            for (DataSource src : result.getSources()) dataSources.put(src.getShortName(), src);
+
             attribution.setValue(AttributionGenerator.fromSources(result.getSources()));
         }
 

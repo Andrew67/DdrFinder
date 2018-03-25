@@ -43,6 +43,7 @@ public final class ArcadeLocation implements Parcelable, ClusterItem {
     private double lng;
     private Integer hasDDR; // optional; interface should be Boolean, but this gets fed to us as "0" or "1" (or null!)
 
+    @SuppressWarnings("unused")
     private ArcadeLocation() { }
 
     public int getId() {
@@ -71,6 +72,7 @@ public final class ArcadeLocation implements Parcelable, ClusterItem {
         return !getCity().isEmpty() ? getCity() : null;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String getCity() {
         return city;
     }

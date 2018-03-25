@@ -39,6 +39,17 @@ public class CachedMapLoader {
         }
 
         // force || cachedApiResult == null
+
+        // Preload slightly larger bounds when zoomed in, for a smoother pan/zoom experience
+        // as network requests are reduced.
+        if (Math.abs(bounds.northeast.latitude - bounds.southwest.latitude) < 0.5
+                && Math.abs(bounds.northeast.longitude - bounds.southwest.longitude) < 0.5) {
+            bounds = LatLngBounds.builder()
+                    .include(new LatLng(bounds.northeast.latitude + 0.125, bounds.northeast.longitude + 0.125))
+                    .include(new LatLng(bounds.southwest.latitude - 0.125, bounds.southwest.longitude - 0.125))
+                    .build();
+        }
+
         new NetworkMapLoader(dataSrc, new MapLoaderCallback() {
             @Override
             public void onPreLoad() {
