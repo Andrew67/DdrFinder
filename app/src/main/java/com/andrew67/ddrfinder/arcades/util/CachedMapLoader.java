@@ -104,35 +104,37 @@ public class CachedMapLoader {
         final Set<DataSource> cachedSources = new HashSet<>();
         final Set<ArcadeLocation> cachedArcadeLocations = new HashSet<>();
 
-        for (ApiResult result : resultsCache) {
-            // Check if the result record contains results including the given data source
-            boolean containsDataSource = false;
-            for (DataSource source : result.getSources()) {
-                if (source.getShortName().equals(dataSrc)) {
-                    containsDataSource = true;
-                    cachedSources.add(source);
+        synchronized (resultsCache) {
+            for (ApiResult result : resultsCache) {
+                // Check if the result record contains results including the given data source
+                boolean containsDataSource = false;
+                for (DataSource source : result.getSources()) {
+                    if (source.getShortName().equals(dataSrc)) {
+                        containsDataSource = true;
+                        cachedSources.add(source);
+                    }
                 }
-            }
 
-            // Check if the result bounds include the requested box,
-            // and add locations as we go if they do.
-            if (containsDataSource) {
-                final LatLngBounds bounds = result.getBounds();
+                // Check if the result bounds include the requested box,
+                // and add locations as we go if they do.
+                if (containsDataSource) {
+                    final LatLngBounds bounds = result.getBounds();
 
-                if (bounds.contains(northeast) || bounds.contains(southwest) ||
-                        bounds.contains(northwest) || bounds.contains(southeast)) {
-                    for (ArcadeLocation location : result.getLocations()) {
-                        if (box.contains(location.getPosition()))
-                            cachedArcadeLocations.add(location);
+                    if (bounds.contains(northeast) || bounds.contains(southwest) ||
+                            bounds.contains(northwest) || bounds.contains(southeast)) {
+                        for (ArcadeLocation location : result.getLocations()) {
+                            if (box.contains(location.getPosition()))
+                                cachedArcadeLocations.add(location);
+                        }
+
+                        if (bounds.contains(northeast)) loadedNE = true;
+                        if (bounds.contains(southwest)) loadedSW = true;
+                        if (bounds.contains(northwest)) loadedNW = true;
+                        if (bounds.contains(southeast)) loadedSE = true;
                     }
 
-                    if (bounds.contains(northeast)) loadedNE = true;
-                    if (bounds.contains(southwest)) loadedSW = true;
-                    if (bounds.contains(northwest)) loadedNW = true;
-                    if (bounds.contains(southeast)) loadedSE = true;
+                    if (loadedNE && loadedSW && loadedNW && loadedSE) break;
                 }
-
-                if (loadedNE && loadedSW && loadedNW && loadedSE) break;
             }
         }
         if (loadedNE && loadedSW && loadedNW && loadedSE) loaded = true;
