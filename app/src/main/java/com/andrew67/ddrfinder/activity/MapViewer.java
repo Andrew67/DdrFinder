@@ -27,7 +27,6 @@
 package com.andrew67.ddrfinder.activity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.arcades.util.MapLoader;
+import com.andrew67.ddrfinder.arcades.vm.ArcadesModel;
 import com.andrew67.ddrfinder.arcades.vm.LocationClusterRenderer;
 import com.andrew67.ddrfinder.arcades.util.LocationActions;
 import com.andrew67.ddrfinder.mylocation.MyLocationModel;
@@ -45,7 +44,6 @@ import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
-import com.andrew67.ddrfinder.arcades.util.AttributionGenerator;
 import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
@@ -64,6 +62,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.SnackbarMessage;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -92,6 +91,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private static final int BASE_ZOOM = 12;
 
     // State
+    /** Contains arcades, sources, etc. to be shown on current map */
+    private ArcadesModel arcadesModel;
     /** Contains requested initial map state, if opened by app link. */
     private AppLink appLink;
     /** Contains mutable map state that can be built into a shareable AppLink. */
@@ -145,6 +146,53 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         // Initialize a mutable AppLink builder based on the initial AppLink, for sharing.
         currentAppLink = appLink.buildUpon();
 
+        // Set up arcades model and hook up attribution text, progress bar and errors to it
+        arcadesModel = ViewModelProviders.of(this).get(ArcadesModel.class);
+
+        arcadesModel.getLoadedAreas().observe(this, new Observer<List<LatLngBounds>>() {
+            @Override
+            public void onChanged(@Nullable List<LatLngBounds> latLngBounds) {
+                loadedAreas.clear();
+                loadedAreas.addAll(latLngBounds);
+            }
+        });
+
+        arcadesModel.getDataSources().observe(this, new Observer<List<DataSource>>() {
+            @Override
+            public void onChanged(@Nullable List<DataSource> dataSources) {
+                if (dataSources != null) {
+                    for (DataSource src : dataSources) {
+                        loadedSources.put(src.getShortName(), src);
+                    }
+                }
+            }
+        });
+
+        arcadesModel.getAttribution().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                if (s != null) attributionText.setText(s);
+            }
+        });
+
+        arcadesModel.getProgress().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean != null) {
+                    if (aBoolean) showProgressBar();
+                    else hideProgressBar();
+                }
+
+            }
+        });
+
+        arcadesModel.getErrorMessage().observe(this, new SnackbarMessage.SnackbarObserver() {
+            @Override
+            public void onNewMessage(int snackbarMessageResourceId) {
+                showMessage(snackbarMessageResourceId);
+            }
+        });
+
         myLocationModel = ViewModelProviders.of(this).get(MyLocationModel.class);
         placeAutocompleteModel = ViewModelProviders.of(this).get(PlaceAutocompleteModel.class);
 
@@ -180,21 +228,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         mClusterManager = new ClusterManager<>(this, mMap);
         mClusterRenderer = new LocationClusterRenderer(this, mMap, mClusterManager);
         mClusterManager.setRenderer(mClusterRenderer);
-
-        // Restore previously loaded areas locations, and sources if available
-        // (and re-create the location markers)
-        if (onCreateSavedInstanceState != null) {
-            final ArrayList<LatLngBounds> savedLoadedAreas =
-                    onCreateSavedInstanceState.getParcelableArrayList("loadedAreas");
-            final ArrayList<ArcadeLocation> savedLoadedLocations =
-                    onCreateSavedInstanceState.getParcelableArrayList("loadedLocations");
-            final ArrayList<DataSource> savedLoadedSources =
-                    onCreateSavedInstanceState.getParcelableArrayList("loadedSources");
-
-            if (savedLoadedAreas != null && savedLoadedLocations != null && savedLoadedSources != null) {
-                fillMap(savedLoadedAreas, savedLoadedLocations, savedLoadedSources);
-            }
-        }
 
         // Start the camera from the app link lat/lng/zoom (if specified and initial launch).
         // Otherwise, start the camera on the last known user-interacted view.
@@ -261,6 +294,16 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                         params.putString(Analytics.Param.EXCEPTION_MESSAGE, response.errorMessage);
                         firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_ERROR, params);
                     }
+                }
+            }
+        });
+
+        // Register map-filling code for when arcade model loads current arcades
+        arcadesModel.getArcadeLocations().observe(this, new Observer<List<ArcadeLocation>>() {
+            @Override
+            public void onChanged(@Nullable List<ArcadeLocation> arcadeLocations) {
+                if (arcadeLocations != null) {
+                    fillMap(arcadeLocations);
                 }
             }
         });
@@ -370,8 +413,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             }
 
             final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
-
-            new MapLoader(datasrc, mapLoaderCallback).execute(box);
+            arcadesModel.updateForBoundsAndSource(box, datasrc, force);
 
             // Track forced refreshes by data source.
             if (force) trackMapAction(Analytics.Event.MAP_ACTION_RELOAD, datasrc);
@@ -382,9 +424,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      * Fill map with given parameters.
      * Loaded with either previously saved areas or new ones that come in from updateMap's loader.
      */
-    private void fillMap(@NonNull List<LatLngBounds> newBounds,
-                         @NonNull List<ArcadeLocation> newLocations,
-                         @NonNull List<DataSource> newSources) {
+    private void fillMap(@NonNull List<ArcadeLocation> newLocations) {
         for (ArcadeLocation loc : newLocations)
         {
             if (!loadedLocationIds.contains(loc.getId())) {
@@ -395,39 +435,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         }
         // Required to force a re-render.
         mClusterManager.cluster();
-
-        loadedAreas.addAll(newBounds);
-        for (DataSource src : newSources) {
-            loadedSources.put(src.getShortName(), src);
-        }
-        attributionText.setText(AttributionGenerator.fromSources(loadedSources.values()));
     }
-
-
-    /** Update UI as MapLoader events happen (data loaded, error, etc.) */
-    private final MapLoader.Callback mapLoaderCallback = new MapLoader.Callback() {
-        @Override
-        public void onPreLoad() {
-            showProgressBar();
-        }
-
-        @Override
-        public void onLocationsLoaded(@NonNull LatLngBounds newBounds,
-                                      @NonNull List<ArcadeLocation> newLocations,
-                                      @NonNull List<DataSource> newSources) {
-            fillMap(Collections.singletonList(newBounds), newLocations, newSources);
-        }
-
-        @Override
-        public void onError(int errorCode, @StringRes int errorMessageResourceId) {
-            showMessage(errorMessageResourceId);
-        }
-
-        @Override
-        public void onFinish() {
-            hideProgressBar();
-        }
-    };
 
     /**
      * Test whether the given boundaries have already been loaded
@@ -495,23 +503,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                         new LatLng(latLng.latitude,
                                 latLng.longitude),
                         Math.max(currentZoom, BASE_ZOOM)));
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // Save the list of currently loaded map areas and locations
-        outState.putParcelableArrayList("loadedAreas", loadedAreas);
-        outState.putParcelableArrayList("loadedLocations", loadedLocations);
-
-        // Save the map of currently loaded sources, as a list
-        final ArrayList<DataSource> currSources = new ArrayList<>(loadedSources.size());
-        currSources.addAll(loadedSources.values());
-        outState.putParcelableArrayList("loadedSources", currSources);
-
-        // Save the current attribution text
-        outState.putCharSequence("attributionText", attributionText.getText());
     }
 
     private void showProgressBar() {
