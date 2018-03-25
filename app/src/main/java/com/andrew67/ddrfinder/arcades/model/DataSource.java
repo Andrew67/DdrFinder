@@ -70,6 +70,16 @@ public final class DataSource implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object that) {
+        return that != null && that instanceof DataSource && this.hashCode() == that.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return this.shortName.hashCode();
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }

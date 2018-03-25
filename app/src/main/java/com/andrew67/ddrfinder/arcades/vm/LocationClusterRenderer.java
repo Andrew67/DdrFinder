@@ -35,7 +35,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 /**
- * Custom ClusterRenderer class for arcade locations to handle setting up marker color, info window, etc.
+ * Custom ClusterRenderer class for arcade locations to handle setting up marker color
  */
 public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocation> {
 
@@ -52,10 +52,7 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
     protected void onBeforeClusterItemRendered(ArcadeLocation loc, MarkerOptions markerOptions) {
         // Set marker color to accent color or DDR location color.
         float hue = loc.hasDDR() ? hasDDRPinColor : defaultPinColor;
-
-        markerOptions.title(loc.getName())
-                .icon(BitmapDescriptorFactory.defaultMarker(hue));
-        if (!"".equals(loc.getCity())) markerOptions.snippet(loc.getCity());
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(hue));
     }
 
 }

@@ -30,13 +30,14 @@ import android.arch.lifecycle.SnackbarMessage;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
+import com.andrew67.ddrfinder.arcades.model.ApiResult;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.andrew67.ddrfinder.arcades.util.AttributionGenerator;
-import com.andrew67.ddrfinder.arcades.util.MapLoader;
+import com.andrew67.ddrfinder.arcades.util.CachedMapLoader;
+import com.andrew67.ddrfinder.arcades.util.MapLoaderCallback;
 import com.google.android.gms.maps.model.LatLngBounds;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,15 +45,16 @@ import java.util.List;
  * based on a given bounds and data source.
  */
 public class ArcadesModel extends ViewModel {
-    // Latest data
+    // Data corresponding to last area requested
     private final MutableLiveData<List<ArcadeLocation>> arcadeLocations = new MutableLiveData<>();
-    private final MutableLiveData<List<LatLngBounds>> loadedAreas = new MutableLiveData<>();
     private final MutableLiveData<List<DataSource>> dataSources = new MutableLiveData<>();
     private final MutableLiveData<String> attribution = new MutableLiveData<>();
 
     // Fire once
     private final SingleLiveEvent<Boolean> inProgress = new SingleLiveEvent<>();
     private final SnackbarMessage errorMessage = new SnackbarMessage();
+
+    private final CachedMapLoader cachedMapLoader = new CachedMapLoader();
 
     /** Get the arcade locations to show on the current map */
     public LiveData<List<ArcadeLocation>> getArcadeLocations() {
@@ -67,16 +69,6 @@ public class ArcadesModel extends ViewModel {
     @Deprecated
     public LiveData<List<DataSource>> getDataSources() {
         return dataSources;
-    }
-
-    /**
-     * Get the areas loaded so far.
-     * This function should be refactored so that the UI code is not the one deciding whether to
-     * do a network request or not (other than reporting that the user requested one explicitly)
-     */
-    @Deprecated
-    public LiveData<List<LatLngBounds>> getLoadedAreas() {
-        return loadedAreas;
     }
 
     /** Get the attribution to show on the current map */
@@ -99,39 +91,23 @@ public class ArcadesModel extends ViewModel {
      * Updates the various data fields during the process
      * @param force Whether to force a network request (e.g. user clicked Reload button)
      */
-    public void updateForBoundsAndSource(@NonNull LatLngBounds bounds,
-                                         @NonNull String dataSrc,
-                                         boolean force) {
-        new MapLoader(dataSrc, mapLoaderCallback).execute(bounds);
+    public void requestLocations(@NonNull LatLngBounds bounds,
+                                 @NonNull String dataSrc,
+                                 boolean force) {
+        cachedMapLoader.requestLocations(bounds, dataSrc, force, mapLoaderCallback);
     }
 
-    private final MapLoader.Callback mapLoaderCallback = new MapLoader.Callback() {
+    private final MapLoaderCallback mapLoaderCallback = new MapLoaderCallback() {
         @Override
         public void onPreLoad() {
             inProgress.setValue(true);
         }
 
         @Override
-        public void onLocationsLoaded(@NonNull LatLngBounds newBounds,
-                                      @NonNull List<ArcadeLocation> newLocations,
-                                      @NonNull List<DataSource> newSources) {
-            //arcadeLocations.setValue(newLocations);
-
-            // TODO: Merge them in without duplicates
-            List<ArcadeLocation> arcadeLocationsList = new ArrayList<>();
-            if (arcadeLocations.getValue() != null) arcadeLocationsList.addAll(arcadeLocations.getValue());
-            arcadeLocationsList.addAll(newLocations);
-            arcadeLocations.setValue(arcadeLocationsList);
-
-            // TODO: Keep track of loaded areas to avoid network requests
-            List<LatLngBounds> loadedAreasList = new ArrayList<>();
-            if (loadedAreas.getValue() != null) loadedAreasList.addAll(loadedAreas.getValue());
-            loadedAreasList.add(newBounds);
-            loadedAreas.setValue(loadedAreasList);
-
-            dataSources.setValue(newSources);
-            dataSources.setValue(newSources);
-            attribution.setValue(AttributionGenerator.fromSources(newSources));
+        public void onLocationsLoaded(@NonNull ApiResult result) {
+            arcadeLocations.setValue(result.getLocations());
+            dataSources.setValue(result.getSources());
+            attribution.setValue(AttributionGenerator.fromSources(result.getSources()));
         }
 
         @Override

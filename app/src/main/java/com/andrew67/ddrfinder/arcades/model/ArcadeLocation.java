@@ -61,6 +61,16 @@ public final class ArcadeLocation implements Parcelable, ClusterItem {
         return name;
     }
 
+    @Override
+    public String getTitle() {
+        return getName();
+    }
+
+    @Override
+    public String getSnippet() {
+        return !getCity().isEmpty() ? getCity() : null;
+    }
+
     public String getCity() {
         return city;
     }
@@ -74,6 +84,16 @@ public final class ArcadeLocation implements Parcelable, ClusterItem {
 
     public boolean hasDDR() {
         return Integer.valueOf(1).equals(hasDDR);
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        return that != null && that instanceof ArcadeLocation && this.hashCode() == that.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id;
     }
 
     @Override

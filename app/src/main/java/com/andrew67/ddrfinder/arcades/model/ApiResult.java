@@ -25,6 +25,7 @@ package com.andrew67.ddrfinder.arcades.model;
 
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.Collections;
@@ -43,6 +44,14 @@ public final class ApiResult {
     private transient LatLngBounds bounds; // non-API
 
     private ApiResult() { }
+
+    public ApiResult(List<DataSource> sources,
+                      List<ArcadeLocation> locations,
+                      LatLngBounds bounds) {
+        this.sources = sources;
+        this.locations = locations;
+        this.bounds = bounds;
+    }
 
     /**
      * Returns the error code from the API.

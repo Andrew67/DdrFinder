@@ -114,9 +114,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
     // Data
     private final Set<Integer> loadedLocationIds = new HashSet<>();
-    // Set as ArrayList instead of List due to Bundle packing
-    private final ArrayList<ArcadeLocation> loadedLocations = new ArrayList<>();
-    private final ArrayList<LatLngBounds> loadedAreas =	new ArrayList<>();
     /** Loaded data sources, keyed by source name. */
     private final Map<String,DataSource> loadedSources = new HashMap<>();
 
@@ -148,14 +145,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         // Set up arcades model and hook up attribution text, progress bar and errors to it
         arcadesModel = ViewModelProviders.of(this).get(ArcadesModel.class);
-
-        arcadesModel.getLoadedAreas().observe(this, new Observer<List<LatLngBounds>>() {
-            @Override
-            public void onChanged(@Nullable List<LatLngBounds> latLngBounds) {
-                loadedAreas.clear();
-                loadedAreas.addAll(latLngBounds);
-            }
-        });
 
         arcadesModel.getDataSources().observe(this, new Observer<List<DataSource>>() {
             @Override
@@ -401,23 +390,21 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     private void updateMap(boolean force) {
         LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
-        if (force || !alreadyLoaded(box)) {
-            // Preload a slightly larger box area when zoomed in, for a smoother pan/zoom experience
-            // as network requests are reduced.
-            if (Math.abs(box.northeast.latitude - box.southwest.latitude) < 0.5
-                    && Math.abs(box.northeast.longitude - box.southwest.longitude) < 0.5) {
-                box = LatLngBounds.builder()
-                        .include(new LatLng(box.northeast.latitude + 0.125, box.northeast.longitude + 0.125))
-                        .include(new LatLng(box.southwest.latitude - 0.125, box.southwest.longitude - 0.125))
-                        .build();
-            }
-
-            final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
-            arcadesModel.updateForBoundsAndSource(box, datasrc, force);
-
-            // Track forced refreshes by data source.
-            if (force) trackMapAction(Analytics.Event.MAP_ACTION_RELOAD, datasrc);
+        // Preload a slightly larger box area when zoomed in, for a smoother pan/zoom experience
+        // as network requests are reduced.
+        if (Math.abs(box.northeast.latitude - box.southwest.latitude) < 0.5
+                && Math.abs(box.northeast.longitude - box.southwest.longitude) < 0.5) {
+            box = LatLngBounds.builder()
+                    .include(new LatLng(box.northeast.latitude + 0.125, box.northeast.longitude + 0.125))
+                    .include(new LatLng(box.southwest.latitude - 0.125, box.southwest.longitude - 0.125))
+                    .build();
         }
+
+        final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
+        arcadesModel.requestLocations(box, datasrc, force);
+
+        // Track forced refreshes by data source.
+        if (force) trackMapAction(Analytics.Event.MAP_ACTION_RELOAD, datasrc);
     }
 
     /**
@@ -425,47 +412,31 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      * Loaded with either previously saved areas or new ones that come in from updateMap's loader.
      */
     private void fillMap(@NonNull List<ArcadeLocation> newLocations) {
-        for (ArcadeLocation loc : newLocations)
-        {
-            if (!loadedLocationIds.contains(loc.getId())) {
-                mClusterManager.addItem(loc);
-                loadedLocationIds.add(loc.getId());
-                loadedLocations.add(loc);
+        // If a location is currently selected, use an additive marker adding method
+        // (to avoid destroying the selected location, which would dismiss the info window),
+        // otherwise destroy all markers first
+        // and add all (saves diff calculations and removes off-screen markers)
+        if (selectedLocation != null) {
+            final List<ArcadeLocation> locationsToAdd = new ArrayList<>();
+            for (ArcadeLocation loc : newLocations) {
+                if (!loadedLocationIds.contains(loc.getId())) {
+                    locationsToAdd.add(loc);
+                    loadedLocationIds.add(loc.getId());
+                }
             }
+
+            if (locationsToAdd.size() > 0) {
+                mClusterManager.addItems(locationsToAdd);
+                mClusterManager.cluster();
+            }
+        } else {
+            mClusterManager.clearItems();
+            loadedLocationIds.clear();
+            mClusterManager.addItems(newLocations);
+            for (ArcadeLocation loc : newLocations) loadedLocationIds.add(loc.getId());
+            mClusterManager.cluster();
         }
-        // Required to force a re-render.
-        mClusterManager.cluster();
-    }
-
-    /**
-     * Test whether the given boundaries have already been loaded
-     * @param box Bounding box
-     * @return Whether data for the boundaries has been loaded
-     */
-    private boolean alreadyLoaded(LatLngBounds box) {
-        // Test all four corners (best we can do)
-        final LatLng northeast = box.northeast;
-        final LatLng southwest = box.southwest;
-        final LatLng northwest = new LatLng(northeast.latitude, southwest.longitude);
-        final LatLng southeast = new LatLng(southwest.latitude, northeast.longitude);
-
-        boolean loaded = false;
-        boolean loadedNE = false;
-        boolean loadedSW = false;
-        boolean loadedNW = false;
-        boolean loadedSE = false;
-
-        for (LatLngBounds bounds : loadedAreas) {
-            if (bounds.contains(northeast)) loadedNE = true;
-            if (bounds.contains(southwest)) loadedSW = true;
-            if (bounds.contains(northwest)) loadedNW = true;
-            if (bounds.contains(southeast)) loadedSE = true;
-            if (loadedNE && loadedSW && loadedNW && loadedSE) break;
-        }
-        if (loadedNE && loadedSW && loadedNW && loadedSE)
-            loaded = true;
-
-        return loaded;
+        Log.d("LoadedLocations", String.valueOf(loadedLocationIds.size()));
     }
 
     /**
@@ -473,9 +444,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     private void clearMap() {
         mClusterManager.clearItems();
+        mClusterManager.cluster();
         loadedLocationIds.clear();
-        loadedLocations.clear();
-        loadedAreas.clear();
         loadedSources.clear();
     }
 
@@ -722,10 +692,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             actionMode = null;
             if (selectedLocation != null) {
                 final Marker selectedMarker = mClusterRenderer.getMarker(selectedLocation);
-                if (selectedMarker != null) {
-                    selectedMarker.hideInfoWindow();
-                }
+                if (selectedMarker != null) selectedMarker.hideInfoWindow();
                 trackMapAction(Analytics.Event.MAP_MARKER_DESELECTED, getSource(selectedLocation));
+                selectedLocation = null;
             }
 
             // Set status bar color back to default app color.

@@ -27,20 +27,16 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.util.Log;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.arcades.model.ApiResult;
-import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
-import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -48,31 +44,33 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
+/**
+ * Loads arcades for given bounds box and data source using the DDR Finder API on the server
+ */
+public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
     private static final HttpUrl apiUrl = HttpUrl.parse(BuildConfig.API_BASE_URL);
     private static final OkHttpClient client = new OkHttpClient();
     private static final JsonAdapter<ApiResult> jsonAdapter = new Moshi.Builder().build()
             .adapter(ApiResult.class);
 
     private final String datasrc;
-    private final WeakReference<Callback> callbackWeakReference;
+    private final MapLoaderCallback callback;
 
     /**
-     * Initialize a MapLoader instance
+     * Initialize a NetworkMapLoader instance
      * @param datasrc The data source to use for arcade locations
-     * @param callback The callback to use in the UI thread. Do not use a lambda, as a weak reference is used to aid in garbage collection of views.
+     * @param callback The callback to use in the UI thread.
      */
-    public MapLoader(@NonNull String datasrc, @Nullable Callback callback) {
+    NetworkMapLoader(@NonNull String datasrc, @NonNull MapLoaderCallback callback) {
         super();
         this.datasrc = datasrc;
-        this.callbackWeakReference = new WeakReference<>(callback);
+        this.callback = callback;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        final Callback callback = callbackWeakReference.get();
-        if (callback != null) callback.onPreLoad();
+        callback.onPreLoad();
     }
 
     @Override
@@ -129,9 +127,6 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
     protected void onPostExecute(@Nullable ApiResult result) {
         super.onPostExecute(result);
 
-        final Callback callback = callbackWeakReference.get();
-        if (callback == null) return;
-
         if (result == null) {
             callback.onError(ApiResult.ERROR_UNEXPECTED, R.string.error_api_unexpected);
         } else {
@@ -140,8 +135,7 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
                     if (result.getLocations().size() == 0) {
                         callback.onError(ApiResult.ERROR_NO_RESULTS, R.string.area_no_results);
                     } else {
-                        callback.onLocationsLoaded(result.getBounds(),
-                                result.getLocations(), result.getSources());
+                        callback.onLocationsLoaded(result);
                     }
                     break;
                 case ApiResult.ERROR_OVERSIZED_BOX:
@@ -160,24 +154,5 @@ public class MapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
         }
 
         callback.onFinish();
-    }
-
-    public interface Callback {
-        /**
-         * Called before data starts being loaded.
-         * Use for e.g. starting a progress bar.
-         */
-        void onPreLoad();
-        /** Called on success loading arcade data. */
-        void onLocationsLoaded(@NonNull LatLngBounds newBounds,
-                               @NonNull List<ArcadeLocation> newLocations,
-                               @NonNull List<DataSource> newSources);
-        /** Called on error loading arcade data. */
-        void onError(int errorCode, @StringRes int errorMessageResourceId);
-        /**
-         * Called regardless of success/error and after either one is called.
-         * Use for cleanup, like stopping a progress bar.
-         */
-        void onFinish();
     }
 }
