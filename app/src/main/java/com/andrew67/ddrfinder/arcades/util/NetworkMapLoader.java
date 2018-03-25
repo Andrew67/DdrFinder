@@ -132,9 +132,8 @@ public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
                 case ApiResult.ERROR_OK:
                     if (result.getLocations().size() == 0) {
                         callback.onError(ApiResult.ERROR_NO_RESULTS, R.string.area_no_results);
-                    } else {
-                        callback.onLocationsLoaded(result);
                     }
+                    callback.onLocationsLoaded(result);
                     break;
                 case ApiResult.ERROR_OVERSIZED_BOX:
                     callback.onError(ApiResult.ERROR_OVERSIZED_BOX, R.string.error_zoom);
