@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +21,8 @@ import java.util.Set;
  */
 public class CachedMapLoader {
     private static final String TAG = CachedMapLoader.class.getSimpleName();
-    private final List<ApiResult> resultsCache = new ArrayList<>();
+    private final List<ApiResult> resultsCache = Collections
+            .synchronizedList(new ArrayList<ApiResult>());
 
     // Singleton pattern
     private CachedMapLoader() { }
