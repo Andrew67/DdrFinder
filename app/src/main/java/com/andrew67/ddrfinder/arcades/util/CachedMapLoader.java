@@ -22,6 +22,14 @@ public class CachedMapLoader {
     private static final String TAG = CachedMapLoader.class.getSimpleName();
     private final List<ApiResult> resultsCache = new ArrayList<>();
 
+    // Singleton pattern
+    private CachedMapLoader() { }
+    private static CachedMapLoader instance = null;
+    public static CachedMapLoader getInstance() {
+        if (instance != null) return instance;
+        return instance = new CachedMapLoader();
+    }
+
     public void requestLocations(@NonNull LatLngBounds bounds,
                                  @NonNull String dataSrc,
                                  boolean force,

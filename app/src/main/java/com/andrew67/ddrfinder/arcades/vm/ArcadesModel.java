@@ -57,7 +57,7 @@ public class ArcadesModel extends ViewModel {
     private final SingleLiveEvent<Boolean> inProgress = new SingleLiveEvent<>();
     private final SnackbarMessage errorMessage = new SnackbarMessage();
 
-    private final CachedMapLoader cachedMapLoader = new CachedMapLoader();
+    private final CachedMapLoader cachedMapLoader = CachedMapLoader.getInstance();
 
     /** Get the arcade locations to show on the current map */
     public LiveData<List<ArcadeLocation>> getArcadeLocations() {
