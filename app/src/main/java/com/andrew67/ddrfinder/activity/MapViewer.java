@@ -43,6 +43,9 @@ import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
 import com.andrew67.ddrfinder.util.ThemeUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdate;
@@ -55,10 +58,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
+import android.app.Dialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.SnackbarMessage;
 import android.arch.lifecycle.ViewModelProviders;
@@ -484,6 +489,23 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     protected void onResume() {
         super.onResume();
         myLocationModel.onResume(this);
+
+        // Update the security provider (required for older Android platform versions to receive
+        // security fixes including dropping SSLv3 as a fallback which CloudFlare implemented)
+        // See https://developer.android.com/training/articles/security-gms-provider.html
+        try {
+            ProviderInstaller.installIfNeeded(this);
+        } catch (GooglePlayServicesRepairableException e) {
+            // This exception is actionable; display Play Services update dialog to user
+            final Dialog errorDialog = GoogleApiAvailability.getInstance()
+                    .getErrorDialog(this, e.getConnectionStatusCode(), 0);
+            if (errorDialog != null) errorDialog.show();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // Non-actionable exception. If user is on API <= 21 this will definitely
+            // be followed by seeing "Unexpected connection error" on map API requests
+            e.printStackTrace();
+        }
+
         // Re-check in case dataSrc was changed
         if (mMap != null) updateMap(false);
     }

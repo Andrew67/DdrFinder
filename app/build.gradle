@@ -4,9 +4,9 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
-        versionCode 21
-        versionName "3.0.9"
-        minSdkVersion 15
+        versionCode 22
+        versionName "3.0.10"
+        minSdkVersion 17
         targetSdkVersion 27
         resConfigs "en", "es", "ja"
 
@@ -35,6 +35,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.gms:play-services-base:12.0.1'
     implementation 'com.google.android.gms:play-services-maps:12.0.1'
     implementation 'com.google.android.gms:play-services-places:12.0.1'
     implementation 'com.google.android.gms:play-services-location:12.0.1'
