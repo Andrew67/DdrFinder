@@ -29,9 +29,7 @@ import android.arch.lifecycle.SingleLiveEvent;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -49,8 +47,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class MyLocationModel extends ViewModel {
 
     private static final int PERMISSIONS_REQUEST_LOCATION = 57359;
-    /** LiveData that holds the most recent location response */
+    /** LiveData that holds the most recent user location */
     private final SingleLiveEvent<MyLocationResponse> locationResponse;
+    /** LiveData that holds the permission granted status */
+    private final SingleLiveEvent<Boolean> permissionGranted;
 
     /**
      * Holds whether permission was recently requested and denied.
@@ -62,6 +62,7 @@ public class MyLocationModel extends ViewModel {
     public MyLocationModel() {
         super();
         locationResponse = new SingleLiveEvent<>();
+        permissionGranted = new SingleLiveEvent<>();
         permissionDeniedFromPlatform = false;
     }
 
@@ -72,6 +73,18 @@ public class MyLocationModel extends ViewModel {
     @NonNull
     public LiveData<MyLocationResponse> getLocationResponse() {
         return locationResponse;
+    }
+
+    /**
+     * Get the permission granted LiveData object.
+     * Use for attaching observers for setup when granted, or error message when denied.
+     * Fires denied only when user requests location explicitly;
+     * fires granted upon original grant and on every onResume thereafter.
+     * When emitting true, SecurityException should not happen for ACCESS_FINE_LOCATION
+     */
+    @NonNull
+    public LiveData<Boolean> getPermissionGranted() {
+        return permissionGranted;
     }
 
     /**
@@ -116,7 +129,7 @@ public class MyLocationModel extends ViewModel {
                                            @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_LOCATION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                locationResponse.setValue(MyLocationResponse.PERMISSION_GRANTED_NO_LOCATION);
+                permissionGranted.setValue(true);
                 loadLocation(activity, updateLocationResponse);
             } else {
                 permissionDeniedFromPlatform = true;
@@ -131,19 +144,15 @@ public class MyLocationModel extends ViewModel {
     public void onResume(@NonNull FragmentActivity activity) {
         if (ContextCompat.checkSelfPermission(activity,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationResponse.setValue(MyLocationResponse.PERMISSION_GRANTED_NO_LOCATION);
+            permissionGranted.setValue(true);
         } else if (permissionDeniedFromPlatform) {
             permissionDeniedFromPlatform = false;
 
             // Keeping this instance around is tempting, but in most cases the user will not be
             // performing the action frequently enough to justify the extra memory cost.
             new EnableLocationDialogFragment()
-                    .setCancelListener(new EnableLocationDialogFragment.OnCancelListener() {
-                        @Override
-                        public void onCancel() {
-                            locationResponse.setValue(MyLocationResponse.PERMISSION_DENIED);
-                        }
-                    }).show(activity.getSupportFragmentManager(), "dialog");
+                    .setCancelListener(() -> permissionGranted.setValue(false))
+                    .show(activity.getSupportFragmentManager(), "dialog");
         }
     }
 
@@ -157,15 +166,12 @@ public class MyLocationModel extends ViewModel {
                 LocationServices.getFusedLocationProviderClient(activity);
         fusedLocationProviderClient.getLastLocation()
                 // Convert Location to LatLng when successful
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            onSuccessListener.onSuccess(new LatLng(
-                                    location.getLatitude(),
-                                    location.getLongitude()
-                            ));
-                        }
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        onSuccessListener.onSuccess(new LatLng(
+                                location.getLatitude(),
+                                location.getLongitude()
+                        ));
                     }
                 });
     }
@@ -185,36 +191,24 @@ public class MyLocationModel extends ViewModel {
      */
     public static final class MyLocationResponse {
         /**
-         * Whether the event is that the user granted the location permission.
-         * One of these will fire before LatLng is obtained, on app startup, etc.
-         */
-        public final boolean permissionGranted;
-        /**
-         * Whether the event is that the user denied the location permission.
-         * LatLng is guaranteed to be null in this case
-         */
-        public final boolean permissionDenied;
-        /**
          * The user's most recently requested and obtained position.
          * Will be null if the response is not from an explicit request (onResume, etc)
          */
-        public final @Nullable LatLng latLng;
-        private MyLocationResponse(boolean permissionGranted, boolean permissionDenied,
-                                  @Nullable LatLng latLng) {
-            this.permissionGranted = permissionGranted;
-            this.permissionDenied = permissionDenied;
+        public final @NonNull LatLng latLng;
+
+        /**
+         * Timestamp of when this response object was generated
+         */
+        public final long timestamp;
+
+        private MyLocationResponse(@NonNull LatLng latLng) {
             this.latLng = latLng;
+            this.timestamp = System.currentTimeMillis();
         }
 
-        /** Represents a permission denied response */
-        static final MyLocationResponse PERMISSION_DENIED =
-                new MyLocationResponse(false, true, null);
-        /** Represents a permission granted response with no location */
-        static final MyLocationResponse PERMISSION_GRANTED_NO_LOCATION =
-                new MyLocationResponse(true, false, null);
         /** Represents a location obtained response */
         static MyLocationResponse withLocation(@NonNull LatLng latLng) {
-            return new MyLocationResponse(true, false, latLng);
+            return new MyLocationResponse(latLng);
         }
     }
 }

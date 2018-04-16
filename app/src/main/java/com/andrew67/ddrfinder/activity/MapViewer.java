@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
- * 
+ *
  * Copyright (c) 2013-2018 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,12 +59,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.security.ProviderInstaller;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
 import android.app.Dialog;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.SnackbarMessage;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -147,30 +145,18 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         // Set up arcades model and hook up attribution text, progress bar and errors to it
         arcadesModel = ViewModelProviders.of(this).get(ArcadesModel.class);
 
-        arcadesModel.getAttribution().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                if (s != null) attributionText.setText(s);
-            }
+        arcadesModel.getAttribution().observe(this, s -> {
+            if (s != null) attributionText.setText(s);
         });
 
-        arcadesModel.getProgress().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean aBoolean) {
-                if (aBoolean != null) {
-                    if (aBoolean) showProgressBar();
-                    else hideProgressBar();
-                }
-
-            }
+        arcadesModel.getProgress().observe(this, aBoolean -> {
+            if (aBoolean == null) return;
+            if (aBoolean) showProgressBar();
+            else hideProgressBar();
         });
 
-        arcadesModel.getErrorMessage().observe(this, new SnackbarMessage.SnackbarObserver() {
-            @Override
-            public void onNewMessage(int snackbarMessageResourceId) {
-                showMessage(snackbarMessageResourceId);
-            }
-        });
+        arcadesModel.getErrorMessage().observe(this,
+                (SnackbarMessage.SnackbarObserver) this::showMessage);
 
         myLocationModel = ViewModelProviders.of(this).get(MyLocationModel.class);
         placeAutocompleteModel = ViewModelProviders.of(this).get(PlaceAutocompleteModel.class);
@@ -228,64 +214,51 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         if (onCreateSavedInstanceState == null &&
                 appLink.getPosition() == null &&
                 System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) > TimeUnit.HOURS.toMillis(4) &&
-                !placeAutocompleteModel.hasPendingAutocompleteResponse()) {
-            myLocationModel.requestMyLocationSilently(this, new OnSuccessListener<LatLng>() {
-                @Override
-                public void onSuccess(LatLng latLng) {
-                    zoomToLocation(latLng);
-                }
-            });
+                placeAutocompleteModel.getAutocompleteResponse().getValue() == null) {
+            myLocationModel.requestMyLocationSilently(this, this::zoomToLocation);
         }
 
         // Register success and failure listeners for the My Location data and permission.
-        myLocationModel.getLocationResponse().observe(this, new Observer<MyLocationModel.MyLocationResponse>() {
-            /** SecurityException is never thrown if setMyLocationEnable is called when permissionGranted is true. */
-            @Override
-            public void onChanged(@Nullable MyLocationModel.MyLocationResponse myLocationResponse)
-                    throws SecurityException {
-                if (myLocationResponse != null) {
-                    if (myLocationResponse.permissionGranted) {
-                        mMap.setMyLocationEnabled(true);
-                        if (myLocationResponse.latLng != null) {
-                            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_FOUND, null);
-                            zoomToLocation(myLocationResponse.latLng);
-                        }
-                    } else if (myLocationResponse.permissionDenied) {
-                        firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_DENIED, null);
-                        showMessage(R.string.error_perm_loc);
-                    }
-                }
+        myLocationModel.getLocationResponse().observe(this, myLocationResponse -> {
+            if (myLocationResponse != null) {
+                firebaseAnalytics.logEvent(Analytics.Event.LOCATION_FOUND, null);
+                zoomToLocation(myLocationResponse.latLng);
             }
         });
+        myLocationModel.getPermissionGranted().observe(this, (permissionGranted -> {
+            if (permissionGranted == null) return;
+
+            if (permissionGranted) {
+                // SecurityException will never happen when this value is true
+                try { mMap.setMyLocationEnabled(true); } catch (SecurityException ignored) { }
+            }
+            else {
+                firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_DENIED, null);
+                showMessage(R.string.error_perm_loc);
+            }
+        }));
 
         // If returning from a Places API Autocomplete selection, move the map to that location.
-        placeAutocompleteModel.getAutocompleteResponse().observe(this, new Observer<PlaceAutocompleteModel.PlaceAutocompleteResponse>() {
-            @Override
-            public void onChanged(@Nullable PlaceAutocompleteModel.PlaceAutocompleteResponse response) {
-                if (response != null) {
-                    if (response.resultCode == RESULT_OK && response.place != null) {
-                        moveMapToAutocompletedPlace(response.place);
-                        firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_COMPLETE, null);
-                    } else if (response.resultCode == RESULT_CANCELED) {
-                        firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_CANCELED, null);
-                    } else if (response.resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                        final Bundle params = new Bundle();
-                        params.putString(Analytics.Param.EXCEPTION_MESSAGE, response.errorMessage);
-                        firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_ERROR, params);
-                    }
-                }
+        placeAutocompleteModel.getAutocompleteResponse().observe(this, response -> {
+            if (response == null) return;
+
+            moveMapToAutocompletedPlace(response.place);
+            firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_COMPLETE, null);
+        });
+        placeAutocompleteModel.getAutocompleteError().observe(this, error -> {
+            if (error == null) return;
+
+            if (error.resultCode == RESULT_CANCELED) {
+                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_CANCELED, null);
+            } else if (error.resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                final Bundle params = new Bundle();
+                params.putString(Analytics.Param.EXCEPTION_MESSAGE, error.errorMessage);
+                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_ERROR, params);
             }
         });
 
         // Register map-filling code for when arcade model loads current arcades
-        arcadesModel.getArcadeLocations().observe(this, new Observer<List<ArcadeLocation>>() {
-            @Override
-            public void onChanged(@Nullable List<ArcadeLocation> arcadeLocations) {
-                if (arcadeLocations != null) {
-                    fillMap(arcadeLocations);
-                }
-            }
-        });
+        arcadesModel.getArcadeLocations().observe(this, this::fillMap);
 
         mClusterManager.setOnClusterItemClickListener(actionModeEnabler);
         mClusterManager.setOnClusterItemInfoWindowClickListener(moreInfoListener);
@@ -386,7 +359,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     /**
      * Fill map with given locations
      */
-    private void fillMap(@NonNull List<ArcadeLocation> newLocations) {
+    private void fillMap(@Nullable List<ArcadeLocation> newLocations) {
+        if (newLocations == null) return;
+
         // If a location is currently selected, use an additive marker adding method
         // (to avoid destroying the selected location, which would dismiss the info window),
         // otherwise destroy all markers first

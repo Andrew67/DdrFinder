@@ -51,12 +51,15 @@ import static android.app.Activity.RESULT_OK;
 public class PlaceAutocompleteModel extends ViewModel {
 
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 59573;
-    /** LiveData that holds the most recent location response */
+    /** LiveData that holds the most recent successful location response */
     private final SingleLiveEvent<PlaceAutocompleteResponse> autocompleteResponse;
+    /** LiveData that holds an interrupted location request (dismissed/error) */
+    private final SingleLiveEvent<PlaceAutocompleteError> autocompleteError;
 
     public PlaceAutocompleteModel() {
         super();
         autocompleteResponse = new SingleLiveEvent<>();
+        autocompleteError = new SingleLiveEvent<>();
     }
 
     /**
@@ -66,6 +69,16 @@ public class PlaceAutocompleteModel extends ViewModel {
     @NonNull
     public LiveData<PlaceAutocompleteResponse> getAutocompleteResponse() {
         return autocompleteResponse;
+    }
+
+    /**
+     * Get the autocomplete error LiveData object.
+     * Use for attaching behaviors upon search dismissed or error.
+     * Fires only once per call to {@link #startPlaceAutocomplete}
+     */
+    @NonNull
+    public LiveData<PlaceAutocompleteError> getAutocompleteError() {
+        return autocompleteError;
     }
 
     /**
@@ -85,7 +98,7 @@ public class PlaceAutocompleteModel extends ViewModel {
         } catch (GooglePlayServicesNotAvailableException e) {
             // This exception is not actionable
             e.printStackTrace();
-            autocompleteResponse.setValue(PlaceAutocompleteResponse.withError(e.getMessage()));
+            autocompleteError.setValue(PlaceAutocompleteError.withError(e.getMessage()));
         } catch (GooglePlayServicesRepairableException e) {
             // This exception is actionable; display Play Services update dialog to user
             final Dialog errorDialog = GoogleApiAvailability.getInstance()
@@ -93,18 +106,6 @@ public class PlaceAutocompleteModel extends ViewModel {
             if (errorDialog != null) errorDialog.show();
         }
         return autocompleteResponse;
-    }
-
-    /**
-     * Returns whether there is an autocomplete response pending.
-     * Useful for checking on an activity onMapReady, to otherwise do a default behavior
-     * (such as starting with user's current location)
-     */
-    public boolean hasPendingAutocompleteResponse() {
-        final PlaceAutocompleteResponse response = autocompleteResponse.getValue();
-        return response != null &&
-                response.resultCode == RESULT_OK &&
-                response.place != null;
     }
 
     /**
@@ -119,28 +120,48 @@ public class PlaceAutocompleteModel extends ViewModel {
                 final Place place = PlaceAutocomplete.getPlace(activity, data);
                 autocompleteResponse.setValue(PlaceAutocompleteResponse.withPlace(place));
             } else if (resultCode == RESULT_CANCELED) {
-                autocompleteResponse.setValue(PlaceAutocompleteResponse.CANCELED);
+                autocompleteError.setValue(PlaceAutocompleteError.CANCELED);
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 final String statusMessage = PlaceAutocomplete.getStatus(activity, data).getStatusMessage();
                 Log.e("PlaceAutocompleteModel", statusMessage);
-                autocompleteResponse.setValue(PlaceAutocompleteResponse.withError(statusMessage));
+                autocompleteError.setValue(PlaceAutocompleteError.withError(statusMessage));
             }
         }
     }
 
     /**
-     * Represents a response to a "place autocomplete" request event
+     * Represents a successful response to a "place autocomplete" request event
      */
     public static final class PlaceAutocompleteResponse {
+        /**
+         * Place result, when result code is RESULT_OK
+         */
+        public final @NonNull Place place;
+
+        /**
+         * Timestamp of when this response object was generated
+         */
+        public final long timestamp;
+
+        private PlaceAutocompleteResponse(@NonNull Place place) {
+            this.place = place;
+            this.timestamp = System.currentTimeMillis();
+        }
+
+        /** Represents a place obtained response */
+        static PlaceAutocompleteResponse withPlace(@NonNull Place place) {
+            return new PlaceAutocompleteResponse(place);
+        }
+    }
+
+    /**
+     * Represents a successful response to a "place autocomplete" request event
+     */
+    public static final class PlaceAutocompleteError {
         /**
          * Result code from the {@link PlaceAutocomplete} call to {@link #onActivityResult}
          */
         public final int resultCode;
-
-        /**
-         * Place result, when result code is RESULT_OK
-         */
-        public final @Nullable Place place;
 
         /**
          * Error message, when result code is RESULT_ERROR,
@@ -148,27 +169,18 @@ public class PlaceAutocompleteModel extends ViewModel {
          */
         public final @Nullable String errorMessage;
 
-        private PlaceAutocompleteResponse(int resultCode,
-                                          @Nullable Place place,
-                                          @Nullable String errorMessage) {
+        private PlaceAutocompleteError(int resultCode, @Nullable String errorMessage) {
             this.resultCode = resultCode;
-            this.place = place;
             this.errorMessage = errorMessage;
         }
 
         /** Represents a "user canceled" response */
-        static final PlaceAutocompleteResponse CANCELED = new PlaceAutocompleteResponse(
-                RESULT_CANCELED, null, null);
+        static final PlaceAutocompleteError CANCELED = new PlaceAutocompleteError(
+                RESULT_CANCELED, null);
 
         /** Represents an error response */
-        static PlaceAutocompleteResponse withError(@Nullable String errorMessage) {
-            return new PlaceAutocompleteResponse(PlaceAutocomplete.RESULT_ERROR,
-                    null, errorMessage);
-        }
-
-        /** Represents a place obtained response */
-        static PlaceAutocompleteResponse withPlace(@NonNull Place place) {
-            return new PlaceAutocompleteResponse(RESULT_OK, place, null);
+        static PlaceAutocompleteError withError(@Nullable String errorMessage) {
+            return new PlaceAutocompleteError(PlaceAutocomplete.RESULT_ERROR, errorMessage);
         }
     }
 }
