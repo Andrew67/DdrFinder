@@ -137,10 +137,6 @@ public class LocationActions {
                         .setShowTitle(true)
                         .addDefaultShareMenuItem()
                         .setToolbarColor(ThemeUtil.getThemeColor(context.getTheme(), R.attr.actionModeBackground))
-                        .setCloseButtonIcon(BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.ic_arrow_back_white_24dp))
-                        .setStartAnimations(context, R.anim.slide_in_right, R.anim.slide_out_left)
-                        .setExitAnimations(context, R.anim.slide_in_left, R.anim.slide_out_right)
                         .build();
 
                 // Chrome detection recipe based on http://stackoverflow.com/a/32656019
