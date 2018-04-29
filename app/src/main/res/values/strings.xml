@@ -10,7 +10,7 @@
     <string name="error_zoom">Zoom in to load more locations</string>
     <string name="error_api">Error loading data</string>
     <string name="location_actions_navigate">Navigate</string>
-    <string name="location_actions_info">More info</string>
+    <string name="location_actions_info">More information</string>
     <string name="location_actions_copy">Copy GPS coordinates</string>
     <string name="browser_actions_copy">Copy link</string>
     <string name="copy_complete">Copied</string>

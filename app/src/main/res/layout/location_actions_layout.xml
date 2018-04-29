@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/location_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Awesome Arcade" />
+
+    <TextView
+        android:id="@+id/location_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/location_name"
+        tools:text="Orlando, FL" />
+
+    <TextView
+        android:id="@+id/location_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"
+        app:layout_constraintBottom_toBottomOf="@+id/location_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="12.5km" />
+
+    <ImageView
+        style="@style/BottomSheetListIcon"
+        android:id="@+id/ic_action_navigate"
+        android:contentDescription="@string/location_actions_navigate"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/location_city"
+        app:srcCompat="@drawable/ic_navigation_black_24dp" />
+
+    <TextView
+        style="@style/BottomSheetListText"
+        android:id="@+id/action_navigate"
+        android:text="@string/location_actions_navigate"
+        app:layout_constraintBottom_toBottomOf="@+id/ic_action_navigate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ic_action_navigate"
+        app:layout_constraintTop_toTopOf="@+id/ic_action_navigate" />
+
+    <ImageView
+        style="@style/BottomSheetListIcon"
+        android:id="@+id/ic_action_moreinfo"
+        android:contentDescription="@string/location_actions_info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ic_action_navigate"
+        app:srcCompat="@drawable/ic_info_outline_black_24dp" />
+
+    <TextView
+        style="@style/BottomSheetListText"
+        android:id="@+id/action_moreinfo"
+        android:text="@string/location_actions_info"
+        app:layout_constraintBottom_toBottomOf="@+id/ic_action_moreinfo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ic_action_moreinfo"
+        app:layout_constraintTop_toTopOf="@+id/ic_action_moreinfo" />
+
+    <ImageView
+        style="@style/BottomSheetListIcon"
+        android:id="@+id/ic_action_copygps"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/location_actions_copy"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ic_action_moreinfo"
+        app:srcCompat="@drawable/ic_content_copy_black_24dp" />
+
+    <TextView
+        style="@style/BottomSheetListText"
+        android:id="@+id/action_copygps"
+        android:text="@string/location_actions_copy"
+        app:layout_constraintBottom_toBottomOf="@+id/ic_action_copygps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ic_action_copygps"
+        app:layout_constraintTop_toTopOf="@+id/ic_action_copygps" />
+
+</android.support.constraint.ConstraintLayout>

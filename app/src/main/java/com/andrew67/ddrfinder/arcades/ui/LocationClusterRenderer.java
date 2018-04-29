@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.andrew67.ddrfinder.arcades.vm;
+package com.andrew67.ddrfinder.arcades.ui;
 
 import android.content.Context;
 
