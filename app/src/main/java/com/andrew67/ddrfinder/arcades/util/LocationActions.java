@@ -39,7 +39,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -136,7 +135,8 @@ public class LocationActions {
                 final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
                         .setShowTitle(true)
                         .addDefaultShareMenuItem()
-                        .setToolbarColor(ThemeUtil.getThemeColor(context.getTheme(), R.attr.actionModeBackground))
+                        .setToolbarColor(ThemeUtil.getThemeColor(
+                                context.getTheme(), R.attr.colorPrimary))
                         .build();
 
                 // Chrome detection recipe based on http://stackoverflow.com/a/32656019

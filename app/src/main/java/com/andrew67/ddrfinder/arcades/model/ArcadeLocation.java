@@ -62,17 +62,19 @@ public final class ArcadeLocation implements Parcelable, ClusterItem {
         return name;
     }
 
+    // getTitle/getSnippet control the marker's info window.
+    // Now that we're going with the bottom sheet approach, we want the window to be empty.
+
     @Override
     public String getTitle() {
-        return getName();
+        return null;
     }
 
     @Override
     public String getSnippet() {
-        return !getCity().isEmpty() ? getCity() : null;
+        return null;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public String getCity() {
         return city;
     }

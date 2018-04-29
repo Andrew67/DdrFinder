@@ -26,23 +26,20 @@
 
 package com.andrew67.ddrfinder.activity;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.andrew67.ddrfinder.R;
+import com.andrew67.ddrfinder.arcades.ui.LocationActionsDialog;
 import com.andrew67.ddrfinder.arcades.vm.ArcadesModel;
-import com.andrew67.ddrfinder.arcades.vm.LocationClusterRenderer;
-import com.andrew67.ddrfinder.arcades.util.LocationActions;
+import com.andrew67.ddrfinder.arcades.ui.LocationClusterRenderer;
+import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel;
 import com.andrew67.ddrfinder.mylocation.MyLocationModel;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
-import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -57,7 +54,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
@@ -68,19 +64,16 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -102,19 +95,18 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private MyLocationModel myLocationModel;
     /** ViewModel that assists with places autocomplete */
     private PlaceAutocompleteModel placeAutocompleteModel;
+    /** ViewModel that shares which is the currently selected arcade location */
+    private SelectedLocationModel selectedLocationModel;
 
     // Map
-    private GoogleMap mMap = null;
+    private GoogleMap mMap;
     private ClusterManager<ArcadeLocation> mClusterManager;
-    private LocationClusterRenderer mClusterRenderer;
 
     // UI
     private MenuItem reloadButton;
     private ProgressBar progressBar;
     private TextView attributionText;
-
-    // Data
-    private final Set<Integer> loadedLocationIds = new HashSet<>();
+    private LocationActionsDialog locationActionsDialog;
 
     // Helpers
     private FirebaseAnalytics firebaseAnalytics;
@@ -160,6 +152,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         myLocationModel = ViewModelProviders.of(this).get(MyLocationModel.class);
         placeAutocompleteModel = ViewModelProviders.of(this).get(PlaceAutocompleteModel.class);
+        selectedLocationModel = ViewModelProviders.of(this).get(SelectedLocationModel.class);
 
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
@@ -191,8 +184,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         }
 
         mClusterManager = new ClusterManager<>(this, mMap);
-        mClusterRenderer = new LocationClusterRenderer(this, mMap, mClusterManager);
-        mClusterManager.setRenderer(mClusterRenderer);
+        mClusterManager.setRenderer(
+                new LocationClusterRenderer(this, mMap, mClusterManager));
 
         // Start the camera from the app link lat/lng/zoom (if specified and initial launch).
         // Otherwise, start the camera on the last known user-interacted view.
@@ -213,7 +206,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         // - The app isn't resuming from a Places API Autocomplete selection.
         if (onCreateSavedInstanceState == null &&
                 appLink.getPosition() == null &&
-                System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) > TimeUnit.HOURS.toMillis(4) &&
+                System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) >
+                        TimeUnit.HOURS.toMillis(4) &&
                 placeAutocompleteModel.getAutocompleteResponse().getValue() == null) {
             myLocationModel.requestMyLocationSilently(this, this::zoomToLocation);
         }
@@ -260,11 +254,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         // Register map-filling code for when arcade model loads current arcades
         arcadesModel.getArcadeLocations().observe(this, this::fillMap);
 
-        mClusterManager.setOnClusterItemClickListener(actionModeEnabler);
-        mClusterManager.setOnClusterItemInfoWindowClickListener(moreInfoListener);
+        mClusterManager.setOnClusterItemClickListener(onClusterItemClickListener);
 
         mMap.setOnCameraIdleListener(cameraIdleListener);
-        mMap.setOnMapClickListener(actionModeDisabler);
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(mClusterManager);
     }
@@ -272,17 +264,14 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     /**
      * Listener class that stores the current map location and requests a map update.
      */
-    private final GoogleMap.OnCameraIdleListener cameraIdleListener = new GoogleMap.OnCameraIdleListener() {
-        @Override
-        public void onCameraIdle() {
-            // Store the last moved-to coordinates, to use as starting point on next app launch.
-            // This is especially relevant to those who have the location permission disabled.
-            final CameraPosition currentPosition = mMap.getCameraPosition();
-            saveCameraToState(currentPosition);
+    private final GoogleMap.OnCameraIdleListener cameraIdleListener = () -> {
+        // Store the last moved-to coordinates, to use as starting point on next app launch.
+        // This is especially relevant to those who have the location permission disabled.
+        final CameraPosition currentPosition = mMap.getCameraPosition();
+        saveCameraToState(currentPosition);
 
-            mClusterManager.onCameraIdle();
-            updateMap(false);
-        }
+        mClusterManager.onCameraIdle();
+        updateMap(false);
     };
 
     /**
@@ -362,31 +351,12 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private void fillMap(@Nullable List<ArcadeLocation> newLocations) {
         if (newLocations == null) return;
 
-        // If a location is currently selected, use an additive marker adding method
-        // (to avoid destroying the selected location, which would dismiss the info window),
-        // otherwise destroy all markers first
-        // and add all (saves diff calculations and removes off-screen markers)
-        if (selectedLocation != null) {
-            final List<ArcadeLocation> locationsToAdd = new ArrayList<>();
-            for (ArcadeLocation loc : newLocations) {
-                if (!loadedLocationIds.contains(loc.getId())) {
-                    locationsToAdd.add(loc);
-                    loadedLocationIds.add(loc.getId());
-                }
-            }
-
-            if (locationsToAdd.size() > 0) {
-                mClusterManager.addItems(locationsToAdd);
-                mClusterManager.cluster();
-            }
-        } else {
-            mClusterManager.clearItems();
-            loadedLocationIds.clear();
-            mClusterManager.addItems(newLocations);
-            for (ArcadeLocation loc : newLocations) loadedLocationIds.add(loc.getId());
-            mClusterManager.cluster();
-        }
-        Log.d("LoadedLocations", String.valueOf(loadedLocationIds.size()));
+        // Destroy all markers first then add all
+        // (saves diff calculations and removes off-screen markers)
+        mClusterManager.clearItems();
+        mClusterManager.addItems(newLocations);
+        mClusterManager.cluster();
+        Log.d("LoadedLocations", String.valueOf(newLocations.size()));
     }
 
     /**
@@ -535,123 +505,23 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     /**
-     * Listener class that activates the action bar on marker click.
+     * Listener class that activates the bottom action sheet on marker click.
      */
-    private final ClusterManager.OnClusterItemClickListener<ArcadeLocation> actionModeEnabler =
-            new ClusterManager.OnClusterItemClickListener<ArcadeLocation>() {
-        @Override
-        public boolean onClusterItemClick(ArcadeLocation location) {
-            if (actionMode == null) {
-                actionMode = startSupportActionMode(actionModeCallback);
-            }
-            selectedLocation = location;
-            trackMapAction(Analytics.Event.MAP_MARKER_SELECTED, location);
-            return false; // keep the default action of moving view and showing info window
-        }
-    };
+    private final ClusterManager.OnClusterItemClickListener<ArcadeLocation>
+            onClusterItemClickListener = arcadeLocation -> {
+        trackMapAction(Analytics.Event.MAP_MARKER_SELECTED, arcadeLocation);
 
-    /**
-     * Listener class that de-activates the action bar on clicking elsewhere.
-     */
-    private final GoogleMap.OnMapClickListener actionModeDisabler = new GoogleMap.OnMapClickListener() {
-        @Override
-        public void onMapClick(LatLng coords) {
-            if (actionMode != null) {
-                actionMode.finish();
-            }
-        }
-    };
+        selectedLocationModel.setSelectedLocation(arcadeLocation,
+                arcadesModel.getSource(arcadeLocation));
 
-    /**
-     * Handles action mode creation, destruction, and actions.
-     * Template: https://developer.android.com/guide/topics/ui/menus.html#CAB
-     */
-    private ActionMode actionMode = null;
-    private ArcadeLocation selectedLocation = null;
-    private final ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
-        // Called when the action mode is created; startSupportActionMode() was called
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.context_menu, menu);
+        // animateCamera is too jittery to look good here
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(arcadeLocation.getPosition()));
 
-            // Set status bar color to match action mode background color.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(
-                        ThemeUtil.getThemeColor(getTheme(), R.attr.actionModeStatusBarColor));
-            }
+        if (locationActionsDialog == null) locationActionsDialog = new LocationActionsDialog();
+        locationActionsDialog.show(getSupportFragmentManager(),
+                LocationActionsDialog.class.getSimpleName());
 
-            return true;
-        }
-
-        // Called each time the action mode is shown. Always called after onCreateActionMode, but
-        // may be called multiple times if the mode is invalidated.
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false; // Return false if nothing is done
-        }
-
-        // Called when the user selects a contextual menu item
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            if (selectedLocation == null) return false;
-
-            final LocationActions actions =
-                    new LocationActions(selectedLocation, arcadesModel.getSource(selectedLocation));
-
-            switch (item.getItemId()) {
-                case R.id.action_navigate:
-                    actions.navigate(MapViewer.this);
-                    return true;
-                case R.id.action_moreinfo:
-                    final boolean useCustomTabs = sharedPref
-                            .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
-                    actions.moreInfo(MapViewer.this, useCustomTabs);
-                    return true;
-                case R.id.action_copygps:
-                    final boolean copySuccess = actions.copyGps(MapViewer.this);
-                    if (copySuccess) showMessage(R.string.copy_complete);
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        // Called when the user exits the action mode
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            actionMode = null;
-            if (selectedLocation != null) {
-                final Marker selectedMarker = mClusterRenderer.getMarker(selectedLocation);
-                if (selectedMarker != null) selectedMarker.hideInfoWindow();
-                trackMapAction(Analytics.Event.MAP_MARKER_DESELECTED, selectedLocation);
-                selectedLocation = null;
-            }
-
-            // Set status bar color back to default app color.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(
-                        ThemeUtil.getThemeColor(getTheme(), android.R.attr.colorPrimaryDark));
-            }
-        }
-
-    };
-
-    /**
-     * Info window click listener which triggers the "More Info" action.
-     */
-    private final ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation> moreInfoListener =
-            new ClusterManager.OnClusterItemInfoWindowClickListener<ArcadeLocation>() {
-        @Override
-        public void onClusterItemInfoWindowClick(ArcadeLocation location) {
-            final DataSource source = arcadesModel.getSource(location);
-            final LocationActions actions = new LocationActions(location, source);
-            trackMapAction(Analytics.Event.MAP_INFOWINDOW_CLICKED, source);
-            final boolean useCustomTabs = sharedPref
-                    .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
-            actions.moreInfo(MapViewer.this, useCustomTabs);
-        }
+        return true; // cancel the default behavior
     };
 
     /** Track a user-initiated map action with the given active data source */

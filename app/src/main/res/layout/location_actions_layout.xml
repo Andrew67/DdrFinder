@@ -9,8 +9,9 @@
         android:id="@+id/location_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:paddingEnd="80dp"
+        android:paddingStart="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,7 +35,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"
         app:layout_constraintBottom_toBottomOf="@+id/location_name"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="12.5km" />
+        tools:text="99,999.99 km" />
 
     <ImageView
         style="@style/BottomSheetListIcon"

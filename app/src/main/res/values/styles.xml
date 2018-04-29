@@ -20,7 +20,8 @@
         <item name="actionModeStatusBarColor">@color/material_purple_500_dark</item>
 
         <item name="pinColor">@color/material_purple_500_light</item>
-        <item name="pinColorHasDDR">@color/material_yellow_600</item>
+        <item name="pinColorHasDDR">@color/material_yellow_600_light</item>
+        <item name="pinColorSelected">@color/material_amber_700_dark</item>
 
         <item name="windowActionModeOverlay">true</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>

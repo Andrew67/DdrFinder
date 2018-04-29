@@ -15,6 +15,10 @@
     <color name="material_yellow_600_light">#ffff6b</color>
     <color name="material_yellow_600_dark">#c6a700</color>
 
+    <color name="material_amber_700">#ffa000</color>
+    <color name="material_amber_700_light">#ffd149</color>
+    <color name="material_amber_700_dark">#c67100</color>
+
     <color name="material_blue_grey_900_">#263238</color>
     <color name="material_blue_grey_900_light">#4f5b62</color>
     <color name="material_blue_grey_900_dark">#000a12</color>

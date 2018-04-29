@@ -20,6 +20,10 @@
     <string name="error_api_unexpected">Unexpected connection error</string>
     <string name="area_no_results">No arcades found in this area</string>
 
+    <!-- Arcade location info sheet -->
+    <string name="distance_km" translatable="false">%1$s km</string>
+    <string name="coordinates" translatable="false">%1$s°, %2$s°</string>
+
     <!-- Preferences -->
     <string name="settings_src">Data Source</string>
     <string-array name="settings_src_entries">
