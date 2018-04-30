@@ -89,7 +89,7 @@ public class PlaceAutocompleteModel extends ViewModel {
     public LiveData<PlaceAutocompleteResponse> startPlaceAutocomplete(@NonNull Activity activity) {
         try {
             final AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_GEOCODE)
                     .build();
             final Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                     .setFilter(typeFilter)
