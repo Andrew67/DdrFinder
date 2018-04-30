@@ -45,7 +45,7 @@ public class LocationActionsDialog extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.location_actions_layout, container);
+        final View view = inflater.inflate(R.layout.location_actions, container);
 
         arcadeName = view.findViewById(R.id.location_name);
         arcadeCity = view.findViewById(R.id.location_city);
