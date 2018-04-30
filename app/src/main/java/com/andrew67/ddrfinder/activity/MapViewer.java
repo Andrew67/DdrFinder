@@ -117,7 +117,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         state = getSharedPreferences("state", MODE_PRIVATE);
 
