@@ -209,14 +209,14 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                 System.currentTimeMillis() - state.getLong(KEY_LAST_CAMERA_TIMESTAMP, 0) >
                         TimeUnit.HOURS.toMillis(4) &&
                 placeAutocompleteModel.getAutocompleteResponse().getValue() == null) {
-            myLocationModel.requestMyLocationSilently(this, this::zoomToLocation);
+            myLocationModel.requestMyLocationSilently(this, this::moveToLocation);
         }
 
         // Register success and failure listeners for the My Location data and permission.
         myLocationModel.getLocationResponse().observe(this, myLocationResponse -> {
             if (myLocationResponse != null) {
                 firebaseAnalytics.logEvent(Analytics.Event.LOCATION_FOUND, null);
-                zoomToLocation(myLocationResponse.latLng);
+                moveToLocation(myLocationResponse.latLng);
             }
         });
         myLocationModel.getPermissionGranted().observe(this, (permissionGranted -> {
@@ -360,11 +360,11 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     /**
-     * Zooms and moves the map to the given location, increasing zoom to base zoom if necessary.
+     * Instantly moves the map to the given location, increasing zoom to base zoom if necessary
      */
-    private void zoomToLocation(@NonNull LatLng latLng) {
+    private void moveToLocation(@NonNull LatLng latLng) {
         final float currentZoom = mMap.getCameraPosition().zoom;
-        mMap.animateCamera(
+        mMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
                         new LatLng(latLng.latitude,
                                 latLng.longitude),
@@ -490,7 +490,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         if (viewportCameraUpdate != null) {
             try {
                 Log.d("MapViewer", "Places API using viewport: " + viewport.toString());
-                mMap.animateCamera(viewportCameraUpdate);
+                mMap.moveCamera(viewportCameraUpdate);
                 success = true;
             } catch (IllegalStateException e) {
                 // This exception is thrown when map layout has not yet occurred.
@@ -500,7 +500,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         }
         if (!success) {
             Log.d("MapViewer", "Places API using latLng: " + latLng.toString());
-            mMap.animateCamera(latLngCameraUpdate);
+            mMap.moveCamera(latLngCameraUpdate);
         }
     }
 
