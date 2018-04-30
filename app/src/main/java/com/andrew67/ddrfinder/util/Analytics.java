@@ -37,10 +37,9 @@ public class Analytics {
         public static final String MAP_ACTION_RELOAD = "map_action_reload";
         /** The user has selected a map marker */
         public static final String MAP_MARKER_SELECTED = "map_marker_selected";
-        /** The user has deselected a map marker */
-        public static final String MAP_MARKER_DESELECTED = "map_marker_deselected";
-        /** The user has clicked the marker infowindow */
-        public static final String MAP_INFOWINDOW_CLICKED = "map_infowindow_clicked";
+
+        /** The user has dismissed the location actions dialog */
+        public static final String LOCATION_ACTIONS_DISMISSED = "location_actions_dismissed";
 
         /** The user has copied a location's GPS coordinates */
         public static final String LOCATION_ACTION_COPYGPS = "location_action_copygps";
@@ -48,6 +47,8 @@ public class Analytics {
         public static final String LOCATION_ACTION_NAVIGATE = "location_action_navigate";
         /** The user has clicked the more info button for a location */
         public static final String LOCATION_ACTION_MOREINFO = "location_action_moreinfo";
+        /** An exception was thrown while trying to load a browser for the more info action */
+        public static final String LOCATION_MOREINFO_EXCEPTION = "location_moreinfo_exception";
 
         /** The user has requested their own location on the map */
         public static final String LOCATION_REQUESTED = "location_requested";
@@ -69,12 +70,15 @@ public class Analytics {
     public static class Param {
         public static final String PREFERENCE_KEY = "preference_key";
         public static final String PREFERENCE_VALUE = "preference_value";
+        public static final String EXCEPTION_MESSAGE = "exception_message";
+    }
+
+    public static class UserProperty {
         /**
          * Data source active while performing a map/location action.
          * Tracking this can help segment user actions by data source.
          */
         public static final String ACTIVE_DATASRC = "active_datasrc";
-        public static final String EXCEPTION_MESSAGE = "exception_message";
     }
 
 }

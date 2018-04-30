@@ -56,7 +56,6 @@ import java.util.List;
 public class LocationActions {
 	private final ArcadeLocation location;
 	private final DataSource source;
-	private final Bundle analyticsParams;
 
     /**
      * Set up a new location action helper.
@@ -66,9 +65,6 @@ public class LocationActions {
     public LocationActions(@NonNull ArcadeLocation location, @Nullable DataSource source) {
         this.location = location;
         this.source = (source != null) ? source : DataSource.getFallback();
-
-        this.analyticsParams = new Bundle();
-        this.analyticsParams.putString(Analytics.Param.ACTIVE_DATASRC, this.source.getShortName());
     }
 
     /**
@@ -77,6 +73,9 @@ public class LocationActions {
      * @return Success status of copying to clipboard. Can be used to show "Copied" message
      */
     public boolean copyGps(@NonNull Context context) {
+        FirebaseAnalytics.getInstance(context)
+                .logEvent(Analytics.Event.LOCATION_ACTION_COPYGPS, null);
+
         final LatLng coordinates = location.getPosition();
         final ClipboardManager clipboard =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -87,8 +86,6 @@ public class LocationActions {
                     coordinates.latitude + ", " + coordinates.longitude));
             success = true;
         }
-        FirebaseAnalytics.getInstance(context)
-                .logEvent(Analytics.Event.LOCATION_ACTION_COPYGPS, analyticsParams);
         return success;
     }
 
@@ -97,6 +94,9 @@ public class LocationActions {
      * @param context The context which provides the ability to start activities.
      */
     public void navigate(@NonNull Context context) {
+        FirebaseAnalytics.getInstance(context)
+                .logEvent(Analytics.Event.LOCATION_ACTION_NAVIGATE, null);
+
         final LatLng coordinates = location.getPosition();
         try {
             final String label = URLEncoder.encode(location.getName(), "UTF-8");
@@ -104,8 +104,6 @@ public class LocationActions {
                     Uri.parse("geo:" + coordinates.latitude + "," +
                             coordinates.longitude + "?q=" + coordinates.latitude +
                             "," + coordinates.longitude + "(" + label + ")")));
-            FirebaseAnalytics.getInstance(context)
-                    .logEvent(Analytics.Event.LOCATION_ACTION_NAVIGATE, analyticsParams);
         } catch (UnsupportedEncodingException e) {
             // UTF-8 should always be a supported encoding
             e.printStackTrace();
@@ -122,6 +120,9 @@ public class LocationActions {
      * @param useCustomTabs Whether to attempt to use a Chrome Custom Tab intent.
      */
     public void moreInfo(@NonNull Context context, boolean useCustomTabs) {
+        FirebaseAnalytics.getInstance(context)
+                .logEvent(Analytics.Event.LOCATION_ACTION_MOREINFO, null);
+
         final String infoURL = source.getInfoURL()
                 .replace("${id}", "" + location.getId())
                 .replace("${sid}", location.getSid());
@@ -156,10 +157,12 @@ public class LocationActions {
 
                 customTabsIntent.launchUrl(context, infoURI);
             }
-
-            FirebaseAnalytics.getInstance(context)
-                    .logEvent(Analytics.Event.LOCATION_ACTION_MOREINFO, analyticsParams);
         } catch (Exception e) {
+            final Bundle params = new Bundle();
+            params.putString(Analytics.Param.EXCEPTION_MESSAGE, e.getMessage());
+            FirebaseAnalytics.getInstance(context)
+                    .logEvent(Analytics.Event.LOCATION_MOREINFO_EXCEPTION, params);
+
             // Launch built-in WebView browser if there's an exception thrown attempting to launch a regular browser activity.
             Log.e("LocationActions", "Error launching Intent for HTTP(S) link; using built-in browser.", e);
             BrowserActivity.start(context, infoURL);

@@ -85,7 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
+            firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity());
         }
 
         @Override

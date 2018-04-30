@@ -2,6 +2,7 @@ package com.andrew67.ddrfinder.arcades.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -19,7 +20,9 @@ import com.andrew67.ddrfinder.activity.SettingsActivity;
 import com.andrew67.ddrfinder.arcades.util.LocationActions;
 import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel;
 import com.andrew67.ddrfinder.mylocation.MyLocationModel;
+import com.andrew67.ddrfinder.util.Analytics;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.text.NumberFormat;
 
@@ -27,7 +30,9 @@ public class LocationActionsDialog extends BottomSheetDialogFragment {
 
     private SelectedLocationModel selectedLocationModel;
     private MyLocationModel myLocationModel;
+
     private LocationActions locationActions;
+    private FirebaseAnalytics firebaseAnalytics;
 
     private NumberFormat distanceFormat; // 2 decimal digits
     private NumberFormat latLngFormat; // 5 decimal digits (good for 1m precision)
@@ -74,6 +79,8 @@ public class LocationActionsDialog extends BottomSheetDialogFragment {
                 .observe(this, onSelectedLocationUpdated);
 
         myLocationModel = ViewModelProviders.of(requireActivity()).get(MyLocationModel.class);
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity());
     }
 
     @Override
@@ -81,6 +88,12 @@ public class LocationActionsDialog extends BottomSheetDialogFragment {
         super.onDestroyView();
         // https://medium.com/@BladeCoder/architecture-components-pitfalls-part-1-9300dd969808
         selectedLocationModel.getSelectedLocation().removeObserver(onSelectedLocationUpdated);
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        firebaseAnalytics.logEvent(Analytics.Event.LOCATION_ACTIONS_DISMISSED, null);
     }
 
     /**

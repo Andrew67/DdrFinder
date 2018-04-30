@@ -36,7 +36,6 @@ import com.andrew67.ddrfinder.arcades.ui.LocationClusterRenderer;
 import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel;
 import com.andrew67.ddrfinder.mylocation.MyLocationModel;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
-import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
@@ -342,7 +341,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         arcadesModel.requestLocations(box, datasrc, force);
 
         // Track forced refreshes by data source.
-        if (force) trackMapAction(Analytics.Event.MAP_ACTION_RELOAD, datasrc);
+        if (force) firebaseAnalytics.logEvent(Analytics.Event.MAP_ACTION_RELOAD, null);
     }
 
     /**
@@ -453,6 +452,10 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         // Re-check in case dataSrc was changed
         if (mMap != null) updateMap(false);
+
+        // Set user property for "Active Datasource" for user segmentation
+        firebaseAnalytics.setUserProperty(Analytics.UserProperty.ACTIVE_DATASRC,
+                sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""));
     }
 
     @Override
@@ -509,7 +512,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     private final ClusterManager.OnClusterItemClickListener<ArcadeLocation>
             onClusterItemClickListener = arcadeLocation -> {
-        trackMapAction(Analytics.Event.MAP_MARKER_SELECTED, arcadeLocation);
+        firebaseAnalytics.logEvent(Analytics.Event.MAP_MARKER_SELECTED, null);
 
         selectedLocationModel.setSelectedLocation(arcadeLocation,
                 arcadesModel.getSource(arcadeLocation));
@@ -523,19 +526,4 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         return true; // cancel the default behavior
     };
-
-    /** Track a user-initiated map action with the given active data source */
-    private void trackMapAction(@NonNull String event, @NonNull String activeSource) {
-        Bundle params = new Bundle();
-        params.putString(Analytics.Param.ACTIVE_DATASRC, activeSource);
-        firebaseAnalytics.logEvent(event, params);
-    }
-    /** Track a user-initiated map action with the given active data source */
-    private void trackMapAction(@NonNull String event, @NonNull DataSource activeSource) {
-        trackMapAction(event, activeSource.getShortName());
-    }
-    /** Track a user-initiated map action with the source from the given location */
-    private void trackMapAction(@NonNull String event, @NonNull ArcadeLocation location) {
-        trackMapAction(event, arcadesModel.getSource(location));
-    }
 }
