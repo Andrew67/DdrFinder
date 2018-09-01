@@ -172,12 +172,13 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setIndoorEnabled(false);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
-        // Load custom "Icy Blue" style
+        // Load custom "Aubergine" style
         try {
-            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_icy_blue));
+            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_aubergine));
         } catch (Resources.NotFoundException e) {
             // Do nothing; default map style is used.
         }
