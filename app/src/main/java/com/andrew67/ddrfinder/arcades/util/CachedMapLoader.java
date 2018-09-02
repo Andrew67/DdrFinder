@@ -43,7 +43,7 @@ import java.util.Set;
  * As locations come in, results are cached and re-used for locations already loaded before
  */
 public class CachedMapLoader {
-    private static final String TAG = CachedMapLoader.class.getSimpleName();
+    private static final String TAG = "CachedMapLoader";
     private final List<ApiResult> resultsCache = Collections
             .synchronizedList(new ArrayList<ApiResult>());
 
