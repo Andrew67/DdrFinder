@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.andrew67.ddrfinder.R;
+import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.andrew67.ddrfinder.arcades.ui.LocationActionsDialog;
 import com.andrew67.ddrfinder.arcades.vm.ArcadesModel;
 import com.andrew67.ddrfinder.arcades.ui.LocationClusterRenderer;
@@ -96,6 +97,10 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private PlaceAutocompleteModel placeAutocompleteModel;
     /** ViewModel that shares which is the currently selected arcade location */
     private SelectedLocationModel selectedLocationModel;
+    /** savedInstanceState key for the selected arcade location */
+    private final String KEY_SELECTED_ARCADE = "selectedArcade";
+    /** savedInstanceState key for the selected arcade location's data source */
+    private final String KEY_SELECTED_ARCADE_SOURCE = "selectedArcadeSource";
 
     // Map
     private GoogleMap mMap;
@@ -156,6 +161,17 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
 
+        // Restore selected arcade location across process death
+        if (savedInstanceState != null) {
+            final ArcadeLocation selectedLocation = savedInstanceState
+                    .getParcelable(KEY_SELECTED_ARCADE);
+            final DataSource selectedLocationSource = savedInstanceState
+                    .getParcelable(KEY_SELECTED_ARCADE_SOURCE);
+            if (selectedLocation != null && selectedLocationSource != null) {
+                selectedLocationModel.setSelectedLocation(selectedLocation, selectedLocationSource);
+            }
+        }
+
         // For clients upgrading from <= 3.0.5/17 that had the now-removed "Custom" option selected, move to default.
         if (SettingsActivity.API_SRC_CUSTOM.equals(sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""))) {
             sharedPref.edit().putString(SettingsActivity.KEY_PREF_API_SRC,
@@ -165,10 +181,24 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Persist currently selected arcade location across process death
+        final SelectedLocationModel.CompositeArcade selectedArcade =
+                selectedLocationModel.getSelectedLocation().getValue();
+        if (selectedArcade != null) {
+            outState.putParcelable(KEY_SELECTED_ARCADE, selectedArcade.arcadeLocation);
+            outState.putParcelable(KEY_SELECTED_ARCADE_SOURCE, selectedArcade.dataSource);
+        }
+    }
+
+    /** Stores the savedInstanceState bundle received in onCreate, to be used by onMapReady */
+    private Bundle onCreateSavedInstanceState = null;
     /**
      * Finalize initialization steps that depend on GoogleMap (previously in onCreate).
      */
-    private Bundle onCreateSavedInstanceState = null;
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -257,6 +287,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         mClusterManager.setOnClusterItemClickListener(onClusterItemClickListener);
 
         mMap.setOnCameraIdleListener(cameraIdleListener);
+        mMap.setOnMapClickListener(onMapClickListener);
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(mClusterManager);
     }
@@ -527,4 +558,10 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         return true; // cancel the default behavior
     };
+
+    /**
+     * Listener class that clears the currently selected location on map (non-marker) click
+     */
+    private final GoogleMap.OnMapClickListener onMapClickListener =
+            point -> selectedLocationModel.clearSelectedLocation();
 }

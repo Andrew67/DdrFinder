@@ -72,18 +72,17 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
      * then updates the previous location's marker back to the non-selected color, as appropriate
      */
     private void updateSelectedMarker(@Nullable SelectedLocationModel.CompositeArcade selectedArcadeData) {
-        if (selectedArcadeData == null) return;
-        final ArcadeLocation selectedLocation = selectedArcadeData.arcadeLocation;
-        if (selectedLocation.equals(previousSelectedLocation)) return;
-
-        final Marker marker = getMarker(selectedLocation);
-        if (marker != null) marker.setIcon(getIconForLocation(selectedLocation));
-
         if (previousSelectedLocation != null) {
             final Marker previousMarker = getMarker(previousSelectedLocation);
             if (previousMarker != null)
                 previousMarker.setIcon(getIconForLocation(previousSelectedLocation));
         }
+
+        if (selectedArcadeData == null) return;
+        final ArcadeLocation selectedLocation = selectedArcadeData.arcadeLocation;
+
+        final Marker marker = getMarker(selectedLocation);
+        if (marker != null) marker.setIcon(getIconForLocation(selectedLocation));
 
         previousSelectedLocation = selectedLocation;
     }

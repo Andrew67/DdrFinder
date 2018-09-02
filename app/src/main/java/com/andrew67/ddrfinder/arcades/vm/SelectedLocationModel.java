@@ -55,6 +55,13 @@ public class SelectedLocationModel extends ViewModel {
     }
 
     /**
+     * Clear the currently selected location
+     */
+    public void clearSelectedLocation() {
+        selectedLocation.setValue(null);
+    }
+
+    /**
      * Update the user's current location.
      * This will re-calculate distance to the currently selected arcade, then emit an updated obj.
      */

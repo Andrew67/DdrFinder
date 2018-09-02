@@ -152,10 +152,12 @@ public class LocationActionsDialog extends BottomSheetDialogFragment {
     }
 
     private void onNavigateClicked(@SuppressWarnings("unused") View v) {
+        if (locationActions == null) return;
         locationActions.navigate(requireActivity());
     }
 
     private void onMoreInfoClicked(@SuppressWarnings("unused") View v) {
+        if (locationActions == null) return;
         final boolean useCustomTabs = PreferenceManager
                 .getDefaultSharedPreferences(requireActivity())
                 .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
@@ -163,6 +165,7 @@ public class LocationActionsDialog extends BottomSheetDialogFragment {
     }
 
     private void onCopyClicked(@SuppressWarnings("unused") View v) {
+        if (locationActions == null) return;
         final boolean copySuccess = locationActions.copyGps(requireActivity());
         if (copySuccess)
             Toast.makeText(requireActivity(), R.string.copy_complete, Toast.LENGTH_SHORT).show();
