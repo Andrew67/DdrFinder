@@ -34,22 +34,25 @@
 
     <!-- Custom style for bottom-sheet list images/text -->
     <style name="BottomSheetListItem" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
+        <item name="android:paddingStart">72dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Menu</item>
+    </style>
+    <style name="BottomSheetListIcon" parent="AppTheme">
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">48dp</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
-    </style>
-    <style name="BottomSheetListIcon" parent="BottomSheetListItem">
-        <item name="android:layout_width">56dp</item>
         <item name="android:alpha">.54</item>
         <item name="android:background">?attr/selectableItemBackground</item>
-    </style>
-    <style name="BottomSheetListText" parent="BottomSheetListItem">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Menu</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
     </style>
 
 </resources>

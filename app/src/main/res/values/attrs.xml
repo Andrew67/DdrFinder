@@ -6,4 +6,9 @@
     <attr name="pinColorSelected" format="reference"/>
     <attr name="attributionTextColor" format="reference"/>
     <attr name="attributionBgColor" format="reference"/>
+
+    <declare-styleable name="OutlineTextView" >
+        <attr name="outlineColor" format="color" />
+        <attr name="outlineWidth" format="dimension" />
+    </declare-styleable>
 </resources>

@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.arcades.model.DataSource;
-import com.andrew67.ddrfinder.arcades.ui.LocationActionsDialog;
 import com.andrew67.ddrfinder.arcades.vm.ArcadesModel;
 import com.andrew67.ddrfinder.arcades.ui.LocationClusterRenderer;
 import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel;
@@ -40,6 +39,7 @@ import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
+import com.andrew67.ddrfinder.widget.OutlineTextView;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -69,6 +69,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -77,7 +78,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
@@ -109,8 +109,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     // UI
     private MenuItem reloadButton;
     private ProgressBar progressBar;
-    private TextView attributionText;
-    private LocationActionsDialog locationActionsDialog;
+    private OutlineTextView attributionText;
+    private BottomSheetBehavior locationActionsBehavior;
 
     // Helpers
     private FirebaseAnalytics firebaseAnalytics;
@@ -131,6 +131,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         attributionText = findViewById(R.id.attribution);
         progressBar = findViewById(R.id.progressBar);
+        locationActionsBehavior = BottomSheetBehavior.from(findViewById(R.id.locationActions));
+        locationActionsBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
         onCreateSavedInstanceState = savedInstanceState;
 
         // Parse out location/zoom from a passed in app link.
@@ -142,7 +145,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         arcadesModel = ViewModelProviders.of(this).get(ArcadesModel.class);
 
         arcadesModel.getAttribution().observe(this, s -> {
-            if (s != null) attributionText.setText(s);
+            if (s != null) attributionText.setOutlinedText(s);
         });
 
         arcadesModel.getProgress().observe(this, aBoolean -> {
@@ -157,6 +160,17 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         myLocationModel = ViewModelProviders.of(this).get(MyLocationModel.class);
         placeAutocompleteModel = ViewModelProviders.of(this).get(PlaceAutocompleteModel.class);
         selectedLocationModel = ViewModelProviders.of(this).get(SelectedLocationModel.class);
+
+        // Observe the selected location state and reveal/hide the location actions
+        selectedLocationModel.getSelectedLocation().observe(this, selected -> {
+            if (selected == null) {
+                locationActionsBehavior.setHideable(true);
+                locationActionsBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            } else {
+                locationActionsBehavior.setHideable(false);
+                locationActionsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
 
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
@@ -213,6 +227,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             // Do nothing; default map style is used.
         }
 
+        // Set up marker cluster manager
         mClusterManager = new ClusterManager<>(this, mMap);
         mClusterManager.setRenderer(
                 new LocationClusterRenderer(this, mMap, mClusterManager));
@@ -246,6 +261,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         myLocationModel.getLocationResponse().observe(this, myLocationResponse -> {
             if (myLocationResponse != null) {
                 firebaseAnalytics.logEvent(Analytics.Event.LOCATION_FOUND, null);
+                selectedLocationModel.clearSelectedLocation();
                 moveToLocation(myLocationResponse.latLng);
             }
         });
@@ -266,6 +282,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         placeAutocompleteModel.getAutocompleteResponse().observe(this, response -> {
             if (response == null) return;
 
+            selectedLocationModel.clearSelectedLocation();
             moveMapToAutocompletedPlace(response.place);
             firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_COMPLETE, null);
         });
@@ -286,10 +303,26 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         mClusterManager.setOnClusterItemClickListener(onClusterItemClickListener);
 
+        mMap.setOnCameraMoveStartedListener(cameraMoveStartedListener);
         mMap.setOnCameraIdleListener(cameraIdleListener);
         mMap.setOnMapClickListener(onMapClickListener);
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(mClusterManager);
+
+        // Adjust map padding whenever location actions bottom sheet appears/disappears
+        locationActionsBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                MapViewer.this.adjustMapPadding(newState);
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+        // Seed with initial value (otherwise doesn't survive configuration changes)
+        adjustMapPadding(locationActionsBehavior.getState());
     }
 
     /**
@@ -304,6 +337,45 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         mClusterManager.onCameraIdle();
         updateMap(false);
     };
+
+    /**
+     * Listener class that collapses the location actions sheet whenever the user pans the map etc
+     */
+    private final GoogleMap.OnCameraMoveStartedListener cameraMoveStartedListener = reason -> {
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE &&
+                locationActionsBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            locationActionsBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
+    };
+
+    /**
+     * Adjusts map/attribution padding and camera based on bottom sheet state.
+     */
+    private void adjustMapPadding(int bottomSheetState) {
+        // Don't adjust until sheet movement completes
+        if (bottomSheetState == BottomSheetBehavior.STATE_DRAGGING ||
+                bottomSheetState == BottomSheetBehavior.STATE_SETTLING) return;
+
+        int bottomPadding = 0;
+        if (bottomSheetState == BottomSheetBehavior.STATE_COLLAPSED) {
+            bottomPadding = (int) getResources().getDimension(R.dimen.locationActionsPeekHeight);
+        } else if (bottomSheetState == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomPadding = (int) getResources().getDimension(R.dimen.locationActionsFullHeight);
+        }
+        mMap.setPadding(0, 0, 0, bottomPadding);
+        attributionText.setPaddingRelative(0, 0, 0, bottomPadding);
+
+        // Map refresh in case the bottom bar was previously covering areas with arcades
+        updateMap(false);
+
+        // If expanded and an arcade is selected, pan to center it
+        // This also helps us have correct centering after map padding is adjusted
+        if (bottomSheetState == BottomSheetBehavior.STATE_EXPANDED &&
+                selectedLocationModel.getSelectedLocation().getValue() != null) {
+            animateToLocation(selectedLocationModel.getSelectedLocation().getValue()
+                    .arcadeLocation.getPosition());
+        }
+    }
 
     /**
      * Pops open the share chooser populated with an AppLink that represents the current state.
@@ -369,6 +441,12 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     private void updateMap(boolean force) {
         final LatLngBounds box = mMap.getProjection().getVisibleRegion().latLngBounds;
+
+        // During app startup, an unnecessary request is being made for (0,0), (0,0)
+        // Let's suppress it here (saves network request and error message)
+        final LatLng zeroZero = new LatLng(0, 0);
+        if (box.northeast.equals(zeroZero) && box.southwest.equals(zeroZero)) return;
+
         final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
         arcadesModel.requestLocations(box, datasrc, force);
 
@@ -396,10 +474,14 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private void moveToLocation(@NonNull LatLng latLng) {
         final float currentZoom = mMap.getCameraPosition().zoom;
         mMap.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(latLng.latitude,
-                                latLng.longitude),
-                        Math.max(currentZoom, BASE_ZOOM)));
+                CameraUpdateFactory.newLatLngZoom(latLng, Math.max(currentZoom, BASE_ZOOM)));
+    }
+
+    /**
+     * Animates the map to the given location, without changing the zoom level
+     */
+    private void animateToLocation(@NonNull LatLng latLng) {
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     private void showProgressBar() {
@@ -549,19 +631,16 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         selectedLocationModel.setSelectedLocation(arcadeLocation,
                 arcadesModel.getSource(arcadeLocation));
 
-        // animateCamera is too jittery to look good here
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(arcadeLocation.getPosition()));
-
-        if (locationActionsDialog == null) locationActionsDialog = new LocationActionsDialog();
-        locationActionsDialog.show(getSupportFragmentManager(),
-                LocationActionsDialog.class.getSimpleName());
-
-        return true; // cancel the default behavior
+        // Return value false moves the map; true suppresses it
+        // We handle moving the map but only if locationActionsBehavior isn't already expanded
+        return locationActionsBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED;
     };
 
     /**
      * Listener class that clears the currently selected location on map (non-marker) click
      */
-    private final GoogleMap.OnMapClickListener onMapClickListener =
-            point -> selectedLocationModel.clearSelectedLocation();
+    private final GoogleMap.OnMapClickListener onMapClickListener = point -> {
+        selectedLocationModel.clearSelectedLocation();
+        firebaseAnalytics.logEvent(Analytics.Event.LOCATION_ACTIONS_DISMISSED, null);
+    };
 }

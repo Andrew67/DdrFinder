@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="50dp"
+    android:paddingEnd="50dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_actions"
+        android:clickable="true"
+        android:focusable="true">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/location_name"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:layout_marginTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+            android:maxLines="1"
+            android:gravity="bottom"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Awesome Arcade" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/location_city"
+            android:layout_width="match_parent"
+            android:layout_height="22dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+            android:maxLines="1"
+            android:gravity="top"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/location_name"
+            tools:text="Orlando, FL" />
+
+        <TextView
+            android:id="@+id/location_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+            android:alpha=".54"
+            app:layout_constraintTop_toTopOf="@+id/action_navigate"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="99,999.99 km" />
+
+        <ImageView
+            style="@style/BottomSheetListIcon"
+            android:id="@+id/action_navigate"
+            android:contentDescription="@string/location_actions_navigate"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/location_city"
+            app:srcCompat="@drawable/ic_navigation_black_24dp" />
+
+        <ImageView
+            style="@style/BottomSheetListIcon"
+            android:id="@+id/action_moreinfo"
+            android:contentDescription="@string/location_actions_info"
+            app:layout_constraintStart_toEndOf="@+id/action_navigate"
+            app:layout_constraintTop_toTopOf="@+id/action_navigate"
+            app:srcCompat="@drawable/ic_info_outline_black_24dp" />
+
+        <ImageView
+            style="@style/BottomSheetListIcon"
+            android:id="@+id/action_copygps"
+            android:contentDescription="@string/location_actions_copy"
+            app:layout_constraintStart_toEndOf="@+id/action_moreinfo"
+            app:layout_constraintTop_toTopOf="@+id/action_moreinfo"
+            app:srcCompat="@drawable/ic_content_copy_black_24dp" />
+    </android.support.constraint.ConstraintLayout>
+
+</LinearLayout>

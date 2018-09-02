@@ -1,17 +1,37 @@
+/*
+ * Copyright (c) 2018 Andrés Cordero
+ * Web: https://github.com/Andrew67/DdrFinder
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package com.andrew67.ddrfinder.arcades.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,19 +40,16 @@ import com.andrew67.ddrfinder.activity.SettingsActivity;
 import com.andrew67.ddrfinder.arcades.util.LocationActions;
 import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel;
 import com.andrew67.ddrfinder.mylocation.MyLocationModel;
-import com.andrew67.ddrfinder.util.Analytics;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.text.NumberFormat;
 
-public class LocationActionsDialog extends BottomSheetDialogFragment {
+public class LocationActionsFragment extends Fragment {
 
     private SelectedLocationModel selectedLocationModel;
     private MyLocationModel myLocationModel;
 
     private LocationActions locationActions;
-    private FirebaseAnalytics firebaseAnalytics;
 
     private NumberFormat distanceFormat; // 2 decimal digits
     private NumberFormat latLngFormat; // 5 decimal digits (good for 1m precision)
@@ -51,19 +68,13 @@ public class LocationActionsDialog extends BottomSheetDialogFragment {
         arcadeCity = view.findViewById(R.id.location_city);
         arcadeDistance = view.findViewById(R.id.location_distance);
 
-        final ImageView icNavigate = view.findViewById(R.id.ic_action_navigate);
-        icNavigate.setOnClickListener(this::onNavigateClicked);
-        final TextView navigate = view.findViewById(R.id.action_navigate);
+        final View navigate = view.findViewById(R.id.action_navigate);
         navigate.setOnClickListener(this::onNavigateClicked);
 
-        final ImageView icMoreInfo = view.findViewById(R.id.ic_action_moreinfo);
-        icMoreInfo.setOnClickListener(this::onMoreInfoClicked);
-        final TextView moreInfo = view.findViewById(R.id.action_moreinfo);
+        final View moreInfo = view.findViewById(R.id.action_moreinfo);
         moreInfo.setOnClickListener(this::onMoreInfoClicked);
 
-        final ImageView icCopyGps = view.findViewById(R.id.ic_action_copygps);
-        icCopyGps.setOnClickListener(this::onCopyClicked);
-        final TextView copyGps = view.findViewById(R.id.action_copygps);
+        final View copyGps = view.findViewById(R.id.action_copygps);
         copyGps.setOnClickListener(this::onCopyClicked);
 
         return view;
@@ -79,8 +90,6 @@ public class LocationActionsDialog extends BottomSheetDialogFragment {
                 .observe(this, onSelectedLocationUpdated);
 
         myLocationModel = ViewModelProviders.of(requireActivity()).get(MyLocationModel.class);
-
-        firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity());
     }
 
     @Override
@@ -88,12 +97,6 @@ public class LocationActionsDialog extends BottomSheetDialogFragment {
         super.onDestroyView();
         // https://medium.com/@BladeCoder/architecture-components-pitfalls-part-1-9300dd969808
         selectedLocationModel.getSelectedLocation().removeObserver(onSelectedLocationUpdated);
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        firebaseAnalytics.logEvent(Analytics.Event.LOCATION_ACTIONS_DISMISSED, null);
     }
 
     /**
