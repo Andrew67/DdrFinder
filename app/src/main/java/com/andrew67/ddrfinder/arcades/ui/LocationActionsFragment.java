@@ -167,10 +167,14 @@ public class LocationActionsFragment extends Fragment {
         locationActions.moreInfo(requireActivity(), useCustomTabs);
     }
 
+    private Toast copiedToast = null;
     private void onCopyClicked(@SuppressWarnings("unused") View v) {
         if (locationActions == null) return;
         final boolean copySuccess = locationActions.copyGps(requireActivity());
-        if (copySuccess)
-            Toast.makeText(requireActivity(), R.string.copy_complete, Toast.LENGTH_SHORT).show();
+        if (copySuccess) {
+            if (copiedToast == null) copiedToast = Toast.makeText(requireActivity(),
+                    R.string.copy_complete, Toast.LENGTH_SHORT);
+            copiedToast.show();
+        }
     }
 }
