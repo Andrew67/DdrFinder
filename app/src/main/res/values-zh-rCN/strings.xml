@@ -20,21 +20,12 @@
     <string name="error_api_unexpected">未知连接错误</string>
     <string name="area_no_results">这个区域没有找到游戏厅</string>
 
-    <!-- Arcade location info sheet -->
-    <string name="distance_km" translatable="false">%1$s km</string>
-    <string name="coordinates" translatable="false">%1$s°, %2$s°</string>
-
     <!-- Preferences -->
     <string name="settings_src">数据源</string>
     <string-array name="settings_src_entries">
         <item>Zenius -I- vanisher.com (全球)</item>
         <item>DDR-Navi (日本)</item>
     </string-array>
-    <string-array name="settings_src_entryValues" translatable="false">
-        <item>ziv</item>
-        <item>navi</item>
-    </string-array>
-    <string name="settings_src_default" translatable="false">ziv</string>
     <string name="settings_category_basic">基本设置</string>
     <string name="settings_category_advanced">高级设置</string>
     <string name="settings_analytics">使用分析</string>
