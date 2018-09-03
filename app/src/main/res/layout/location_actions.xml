@@ -1,104 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_actions"
-    android:clickable="true"
-    android:focusable="true">
+    android:clipToPadding="false"
+    android:clipChildren="false"
+    android:paddingTop="4dp">
 
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/location_name"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="28dp"
-        android:layout_marginTop="8dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
-        android:maxLines="1"
-        android:gravity="bottom"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Awesome Arcade" />
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_actions"
+        android:elevation="16dp"
+        android:clickable="true"
+        android:focusable="true">
 
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/location_city"
-        android:layout_width="match_parent"
-        android:layout_height="22dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
-        android:maxLines="1"
-        android:gravity="top"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/location_name"
-        tools:text="Orlando, FL" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/location_name"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:layout_marginTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+            android:maxLines="1"
+            android:gravity="bottom"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Awesome Arcade" />
 
-    <TextView
-        android:id="@+id/location_distance"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center_vertical"
-        android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
-        android:alpha=".54"
-        app:layout_constraintTop_toTopOf="@+id/action_navigate"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="99,999.99 km" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/location_city"
+            android:layout_width="match_parent"
+            android:layout_height="22dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+            android:maxLines="1"
+            android:gravity="top"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/location_name"
+            tools:text="Orlando, FL" />
 
-    <ImageView
-        style="@style/BottomSheetListIcon"
-        android:id="@+id/ic_action_navigate"
-        android:contentDescription="@string/location_actions_navigate"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/location_city"
-        app:srcCompat="@drawable/ic_navigation_black_24dp" />
+        <TextView
+            android:id="@+id/location_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+            android:alpha=".54"
+            app:layout_constraintTop_toTopOf="@+id/action_navigate"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="99,999.99 km" />
 
-    <TextView
-        style="@style/BottomSheetListItem"
-        android:id="@+id/action_navigate"
-        android:text="@string/location_actions_navigate"
-        app:layout_constraintBottom_toBottomOf="@+id/ic_action_navigate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ic_action_navigate" />
+        <ImageView
+            style="@style/BottomSheetListIcon"
+            android:id="@+id/ic_action_navigate"
+            android:contentDescription="@string/location_actions_navigate"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/location_city"
+            app:srcCompat="@drawable/ic_navigation_black_24dp" />
 
-    <ImageView
-        style="@style/BottomSheetListIcon"
-        android:id="@+id/ic_action_moreinfo"
-        android:contentDescription="@string/location_actions_info"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_action_navigate"
-        app:srcCompat="@drawable/ic_info_outline_black_24dp" />
+        <TextView
+            style="@style/BottomSheetListItem"
+            android:id="@+id/action_navigate"
+            android:text="@string/location_actions_navigate"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_action_navigate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ic_action_navigate" />
 
-    <TextView
-        style="@style/BottomSheetListItem"
-        android:id="@+id/action_moreinfo"
-        android:text="@string/location_actions_info"
-        app:layout_constraintBottom_toBottomOf="@+id/ic_action_moreinfo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ic_action_moreinfo" />
+        <ImageView
+            style="@style/BottomSheetListIcon"
+            android:id="@+id/ic_action_moreinfo"
+            android:contentDescription="@string/location_actions_info"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_action_navigate"
+            app:srcCompat="@drawable/ic_info_outline_black_24dp" />
 
-    <ImageView
-        style="@style/BottomSheetListIcon"
-        android:id="@+id/ic_action_copygps"
-        android:contentDescription="@string/location_actions_copy"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_action_moreinfo"
-        app:srcCompat="@drawable/ic_content_copy_black_24dp" />
+        <TextView
+            style="@style/BottomSheetListItem"
+            android:id="@+id/action_moreinfo"
+            android:text="@string/location_actions_info"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_action_moreinfo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ic_action_moreinfo" />
 
-    <TextView
-        style="@style/BottomSheetListItem"
-        android:id="@+id/action_copygps"
-        android:text="@string/location_actions_copy"
-        app:layout_constraintBottom_toBottomOf="@+id/ic_action_copygps"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ic_action_copygps" />
+        <ImageView
+            style="@style/BottomSheetListIcon"
+            android:id="@+id/ic_action_copygps"
+            android:contentDescription="@string/location_actions_copy"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_action_moreinfo"
+            app:srcCompat="@drawable/ic_content_copy_black_24dp" />
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            style="@style/BottomSheetListItem"
+            android:id="@+id/action_copygps"
+            android:text="@string/location_actions_copy"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_action_copygps"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ic_action_copygps" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</LinearLayout>
