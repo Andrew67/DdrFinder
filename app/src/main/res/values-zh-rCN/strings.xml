@@ -40,7 +40,7 @@
     <string name="settings_analytics">使用分析</string>
     <string name="settings_analytics_summary">分享匿名使用数据来帮助我更好地提高此应用</string>
     <string name="settings_location">开启定位服务</string>
-    <string name="settings_location_dialog_message">如需开启定位服务，请打开系统设置 - 权限 - 然后开启“位置”。</string>
+    <string name="settings_location_dialog_message">如需开启定位服务，请打开手机系统设置 - 权限 - 然后开启“位置”。</string>
     <string name="settings_location_dialog_positive">设置</string>
     <string name="settings_location_dialog_negative">取消</string>
     <string name="settings_custom_tabs">在应用中打开网页</string>
