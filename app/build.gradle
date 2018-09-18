@@ -8,7 +8,7 @@ android {
         versionName "3.0.12"
         minSdkVersion 17
         targetSdkVersion 27
-        resConfigs "en", "es", "ja"
+        resConfigs "en", "es", "ja", "zh-rCN"
         vectorDrawables.useSupportLibrary = true
 
         buildConfigField 'String', 'API_BASE_URL', '"https://ddrfinder.andrew67.com/locate.php"'
