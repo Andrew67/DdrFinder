@@ -481,7 +481,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      * Animates the map to the given location, without changing the zoom level
      */
     private void animateToLocation(@NonNull LatLng latLng) {
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng), 300, null);
     }
 
     private void showProgressBar() {

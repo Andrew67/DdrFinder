@@ -23,6 +23,7 @@
 
 package com.andrew67.ddrfinder.arcades.ui;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -40,7 +41,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 /**
- * Custom ClusterRenderer class for arcade locations to handle setting up marker color
+ * Custom ClusterRenderer class for arcade locations to handle setting up markers
  */
 public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocation> {
 
@@ -48,8 +49,11 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
     private final float hasDDRPinColor;
     private final float selectedPinColor;
 
+    private final LifecycleOwner lifecycleOwner;
     private final SelectedLocationModel selectedLocationModel;
-    private ArcadeLocation previousSelectedLocation;
+    private final ClusterManager<ArcadeLocation> clusterManager;
+
+    private int selectedLocationId = -1;
 
     public LocationClusterRenderer(FragmentActivity context, GoogleMap map,
                                    ClusterManager<ArcadeLocation> clusterManager) {
@@ -58,47 +62,79 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
         hasDDRPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.pinColorHasDDR);
         selectedPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.pinColorSelected);
 
-        selectedLocationModel = ViewModelProviders.of(context).get(SelectedLocationModel.class);
-        selectedLocationModel.getSelectedLocation().observeForever(this::updateSelectedMarker);
+        this.lifecycleOwner = context;
+        this.selectedLocationModel = ViewModelProviders.of(context).get(SelectedLocationModel.class);
+        this.clusterManager = clusterManager;
+    }
+
+    @Override
+    public void onAdd() {
+        super.onAdd();
+        // Waiting until we're attached to the cluster manager is essential to avoid
+        // an NPE during e.g. rotation if an arcade was already selected,
+        // which would cause an early triggering of the event if based solely on activity lifecycle
+        selectedLocationModel.getSelectedLocation().observe(lifecycleOwner, this::updateMarkers);
+    }
+
+    @Override
+    public void onRemove() {
+        super.onRemove();
+        selectedLocationModel.getSelectedLocation().removeObserver(this::updateMarkers);
     }
 
     @Override
     protected void onBeforeClusterItemRendered(ArcadeLocation loc, MarkerOptions markerOptions) {
         markerOptions.icon(getIconForLocation(loc));
+        markerOptions.alpha(getAlphaForLocation(loc));
+        markerOptions.zIndex(getZIndexForLocation(loc));
     }
 
     /**
      * Updates the marker for the given location to the "selected" color,
      * then updates the previous location's marker back to the non-selected color, as appropriate
      */
-    private void updateSelectedMarker(@Nullable SelectedLocationModel.CompositeArcade selectedArcadeData) {
-        if (previousSelectedLocation != null) {
-            final Marker previousMarker = getMarker(previousSelectedLocation);
-            if (previousMarker != null)
-                previousMarker.setIcon(getIconForLocation(previousSelectedLocation));
+    private void updateMarkers(@Nullable SelectedLocationModel.CompositeArcade selectedArcadeData) {
+        selectedLocationId = (selectedArcadeData == null) ?
+                -1 : selectedArcadeData.arcadeLocation.getId();
+
+        for (Marker marker : clusterManager.getMarkerCollection().getMarkers()) {
+            final ArcadeLocation location = getClusterItem(marker);
+            if (location != null) {
+                marker.setIcon(getIconForLocation(location));
+                marker.setAlpha(getAlphaForLocation(location));
+                marker.setZIndex(getZIndexForLocation(location));
+            }
         }
-
-        if (selectedArcadeData == null) return;
-        final ArcadeLocation selectedLocation = selectedArcadeData.arcadeLocation;
-
-        final Marker marker = getMarker(selectedLocation);
-        if (marker != null) marker.setIcon(getIconForLocation(selectedLocation));
-
-        previousSelectedLocation = selectedLocation;
     }
 
+    /**
+     * Set marker color to accent color or DDR location color,
+     * or selected color if currently selected
+     */
     private BitmapDescriptor getIconForLocation(ArcadeLocation loc) {
-        // Set marker color to accent color or DDR location color,
-        // or selected color if currently selected
         float hue = defaultPinColor;
         if (loc.hasDDR()) hue = hasDDRPinColor;
-
-        final SelectedLocationModel.CompositeArcade selectedArcade =
-                selectedLocationModel.getSelectedLocation().getValue();
-        if (selectedArcade != null && selectedArcade.arcadeLocation.getId() == loc.getId())
-            hue = selectedPinColor;
+        if (loc.getId() == selectedLocationId) hue = selectedPinColor;
 
         return BitmapDescriptorFactory.defaultMarker(hue);
+    }
+
+    /**
+     * Set alpha to default if no arcades selected or is currently selected,
+     * otherwise dim the marker
+     */
+    private float getAlphaForLocation(ArcadeLocation loc) {
+        float alpha = 1.0f;
+        if (selectedLocationId >= 0 && loc.getId() != selectedLocationId) alpha = 0.8f;
+
+        return alpha;
+    }
+
+    /**
+     * Set currently selected arcade to show its marker above all others
+     */
+    private float getZIndexForLocation(ArcadeLocation loc) {
+        return loc.getId() == selectedLocationId ? 1 : 0;
     }
 
 }
