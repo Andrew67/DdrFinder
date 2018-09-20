@@ -16,11 +16,21 @@
         android:clickable="true"
         android:focusable="true">
 
+        <FrameLayout
+            android:id="@+id/location_drag_handle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            <View style="@style/DragHandle"/>
+        </FrameLayout>
+
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/location_name"
             android:layout_width="match_parent"
             android:layout_height="28dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
@@ -28,7 +38,7 @@
             android:gravity="bottom"
             app:autoSizeTextType="uniform"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/location_drag_handle"
             tools:text="Awesome Arcade" />
 
         <android.support.v7.widget.AppCompatTextView

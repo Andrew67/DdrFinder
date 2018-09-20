@@ -32,6 +32,14 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <!-- Custom style to create a drag handle for the bottom sheet -->
+    <style name="DragHandle" parent="AppTheme">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">4dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:background">@drawable/drag_handle</item>
+    </style>
+
     <!-- Custom style for bottom-sheet list images/text -->
     <style name="BottomSheetListItem" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>

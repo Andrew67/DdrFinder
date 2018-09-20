@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="attributionTextPadding">5dp</dimen>
-    <dimen name="locationActionsPeekHeight">72dp</dimen>
-    <dimen name="locationActionsFullHeight">216dp</dimen>
+    <dimen name="locationActionsPeekHeight">80dp</dimen>
+    <dimen name="locationActionsFullHeight">224dp</dimen>
 </resources>
