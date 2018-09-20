@@ -86,7 +86,6 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
     protected void onBeforeClusterItemRendered(ArcadeLocation loc, MarkerOptions markerOptions) {
         markerOptions.icon(getIconForLocation(loc));
         markerOptions.alpha(getAlphaForLocation(loc));
-        markerOptions.zIndex(getZIndexForLocation(loc));
     }
 
     /**
@@ -102,7 +101,6 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
             if (location != null) {
                 marker.setIcon(getIconForLocation(location));
                 marker.setAlpha(getAlphaForLocation(location));
-                marker.setZIndex(getZIndexForLocation(location));
             }
         }
     }
@@ -128,13 +126,6 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
         if (selectedLocationId >= 0 && loc.getId() != selectedLocationId) alpha = 0.8f;
 
         return alpha;
-    }
-
-    /**
-     * Set currently selected arcade to show its marker above all others
-     */
-    private float getZIndexForLocation(ArcadeLocation loc) {
-        return loc.getId() == selectedLocationId ? 1 : 0;
     }
 
 }
