@@ -57,6 +57,7 @@ public class LocationActionsFragment extends Fragment {
     private TextView arcadeName;
     private TextView arcadeCity;
     private TextView arcadeDistance;
+    private TextView arcadeHasDDR;
 
     @Nullable
     @Override
@@ -67,6 +68,7 @@ public class LocationActionsFragment extends Fragment {
         arcadeName = view.findViewById(R.id.location_name);
         arcadeCity = view.findViewById(R.id.location_city);
         arcadeDistance = view.findViewById(R.id.location_distance);
+        arcadeHasDDR = view.findViewById(R.id.location_has_ddr);
 
         final View navigate = view.findViewById(R.id.action_navigate);
         navigate.setOnClickListener(this::onNavigateClicked);
@@ -130,6 +132,15 @@ public class LocationActionsFragment extends Fragment {
                     } else {
                         arcadeDistance.setText(getString(R.string.distance_km,
                                 formatDistance(selectedLocation.distanceKm)));
+                    }
+
+                    // If DDR availability is available, update with the appropriate text.
+                    // Otherwise, set it back to blank.
+                    if (!selectedLocation.dataSource.hasDDR()) {
+                        arcadeHasDDR.setText("");
+                    } else {
+                        arcadeHasDDR.setText(selectedLocation.arcadeLocation.hasDDR() ?
+                                R.string.has_ddr_yes : R.string.has_ddr_no);
                     }
 
                     // Set up LocationActions object that enables the available actions
