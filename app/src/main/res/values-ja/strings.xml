@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DDR ファインダー</string>
+    <string name="app_name">DDR 検索</string>
     <string name="action_reload">リロード</string>
     <string name="action_settings">設定</string>
     <string name="location_actions_copy">GPS座標をコピー</string>
