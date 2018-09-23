@@ -7,11 +7,13 @@
             android:key="api_src"
             android:title="@string/settings_src"
             android:entries="@array/settings_src_entries"
-            android:entryValues="@array/settings_src_entryValues"/>
+            android:entryValues="@array/settings_src_entryValues"
+            android:icon="@drawable/ic_speaker_notes_black54_24dp"/>
         <CheckBoxPreference
             android:key="customtabs"
             android:defaultValue="true"
-            android:title="@string/settings_custom_tabs"/>
+            android:title="@string/settings_custom_tabs"
+            android:icon="@drawable/ic_open_in_browser_black54_24dp"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_advanced">
@@ -19,6 +21,7 @@
             android:key="analyticsEnabled"
             android:defaultValue="true"
             android:title="@string/settings_analytics"
-            android:summary="@string/settings_analytics_summary"/>
+            android:summary="@string/settings_analytics_summary"
+            android:icon="@drawable/ic_trending_up_black54_24dp"/>
     </PreferenceCategory>
 </PreferenceScreen>
