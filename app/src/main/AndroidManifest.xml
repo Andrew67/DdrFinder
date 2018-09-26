@@ -49,6 +49,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GOOGLE_MAPS_API_KEY"/>
 
+        <!-- Firebase Analytics: Disable Advertising ID collection -->
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+
         <!-- Split window meta-data -->
         <meta-data android:name="com.lge.support.SPLIT_WINDOW" android:value="true" />
         <uses-library android:required="false" android:name="com.sec.android.app.multiwindow" />
