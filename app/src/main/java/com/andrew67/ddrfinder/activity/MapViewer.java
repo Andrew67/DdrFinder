@@ -29,6 +29,7 @@ package com.andrew67.ddrfinder.activity;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.andrew67.ddrfinder.arcades.vm.ArcadesModel;
@@ -64,6 +65,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -537,6 +539,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             return true;
         case R.id.action_settings:
             startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        case R.id.action_privacy_policy:
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.PRIVACY_POLICY_URL)));
             return true;
         default:
             return super.onOptionsItemSelected(item);
