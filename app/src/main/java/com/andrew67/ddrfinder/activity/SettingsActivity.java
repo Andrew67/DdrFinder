@@ -26,7 +26,9 @@
 
 package com.andrew67.ddrfinder.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -36,6 +38,7 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -98,6 +101,16 @@ public class SettingsActivity extends AppCompatActivity {
             findPreference(KEY_PREF_API_SRC).setSummary(
                     getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                             sharedPref.getString(KEY_PREF_API_SRC, "")));
+
+            // Set "About" and "Privacy Policy" listeners
+            findPreference("action_about").setOnPreferenceClickListener(preference -> {
+                startActivity(new Intent(requireActivity(), About.class));
+                return true;
+            });
+            findPreference("action_privacy_policy").setOnPreferenceClickListener(preference -> {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.PRIVACY_POLICY_URL)));
+                return true;
+            });
         }
 
         @Override

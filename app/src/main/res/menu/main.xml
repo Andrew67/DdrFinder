@@ -30,17 +30,5 @@
         app:showAsAction="never"
         android:icon="@drawable/ic_settings_white_24dp"
         android:title="@string/action_settings" />
-    
-    <item
-        android:id="@+id/action_about"
-        app:showAsAction="never"
-        android:icon="@drawable/ic_info_outline_white_24dp"
-        android:title="@string/action_about" />
-
-    <item
-        android:id="@+id/action_privacy_policy"
-        app:showAsAction="never"
-        android:icon="@drawable/ic_info_outline_white_24dp"
-        android:title="@string/action_privacy_policy" />
 
 </menu>

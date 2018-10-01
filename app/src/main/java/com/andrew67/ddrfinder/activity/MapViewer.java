@@ -534,14 +534,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         case R.id.action_reload:
             if (mMap != null) updateMap(true);
             return true;
-        case R.id.action_about:
-            startActivity(new Intent(this, About.class));
-            return true;
         case R.id.action_settings:
             startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        case R.id.action_privacy_policy:
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.PRIVACY_POLICY_URL)));
             return true;
         default:
             return super.onOptionsItemSelected(item);
