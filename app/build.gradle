@@ -4,8 +4,8 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
-        versionCode 25
-        versionName "3.0.13"
+        versionCode 26
+        versionName "3.0.14"
         minSdkVersion 19
         targetSdkVersion 28
         resConfigs "en", "es", "ja", "zh-rCN"
