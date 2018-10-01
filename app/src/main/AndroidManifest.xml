@@ -59,6 +59,9 @@
         <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W" android:value="632.0dip" />
         <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H" android:value="598.0dip" />
         <meta-data android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable" android:value="true" />
-       </application>
+
+        <!-- Google Maps Android SDK is relying on Apache HTTP Legacy library -->
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+    </application>
 
 </manifest>
