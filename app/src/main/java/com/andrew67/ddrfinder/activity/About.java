@@ -39,7 +39,7 @@ import com.andrew67.ddrfinder.R;
 import okhttp3.HttpUrl;
 
 public class About extends AppCompatActivity {
-    private static final HttpUrl aboutBaseUrl = HttpUrl.parse(BuildConfig.ABOUT_BASE_URL);
+    private static final HttpUrl aboutBaseUrl = HttpUrl.get(BuildConfig.ABOUT_BASE_URL);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,6 @@ public class About extends AppCompatActivity {
         }
 
         final WebView webview = findViewById(R.id.webview);
-        assert aboutBaseUrl != null;
         webview.loadUrl(aboutBaseUrl.newBuilder()
                 .addQueryParameter("c", String.valueOf(BuildConfig.VERSION_CODE))
                 .addQueryParameter("n", BuildConfig.VERSION_NAME)

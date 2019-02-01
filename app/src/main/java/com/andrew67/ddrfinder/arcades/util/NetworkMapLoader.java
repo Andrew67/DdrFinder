@@ -46,7 +46,7 @@ import okhttp3.ResponseBody;
  * Loads arcades for given bounds box and data source using the DDR Finder API on the server
  */
 public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
-    private static final HttpUrl apiUrl = HttpUrl.parse(BuildConfig.API_BASE_URL);
+    private static final HttpUrl apiUrl = HttpUrl.get(BuildConfig.API_BASE_URL);
     private static final OkHttpClient client = new OkHttpClient();
     private static final JsonAdapter<ApiResult> jsonAdapter = new Moshi.Builder().build()
             .adapter(ApiResult.class);
@@ -78,7 +78,6 @@ public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
             if (boxes.length == 0) throw new IllegalArgumentException("No boxes passed to doInBackground");
             final LatLngBounds box = boxes[0];
 
-            assert apiUrl != null;
             final HttpUrl requestUrl = apiUrl.newBuilder()
                     .addQueryParameter("version", "30")
                     .addQueryParameter("canHandleLargeDataset", "")
