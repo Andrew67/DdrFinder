@@ -5,7 +5,7 @@ android {
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
         versionCode 26
-        versionName "3.0.14"
+        versionName "3.0.15"
         minSdkVersion 19
         targetSdkVersion 28
         resConfigs "en", "es", "ja", "zh-rCN"
@@ -37,12 +37,11 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-base:15.0.1'
-    implementation 'com.google.android.gms:play-services-maps:15.0.1'
-    implementation 'com.google.android.gms:play-services-places:15.0.1'
-    implementation 'com.google.android.gms:play-services-location:15.0.1'
-    implementation 'com.google.firebase:firebase-core:16.0.3'
-    implementation 'com.google.firebase:firebase-analytics:16.0.3'
+    implementation 'com.google.android.gms:play-services-base:16.1.0'
+    implementation 'com.google.android.gms:play-services-maps:16.0.0'
+    implementation 'com.google.android.gms:play-services-places:16.0.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.6'
     implementation 'com.google.maps.android:android-maps-utils:0.5'
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'
