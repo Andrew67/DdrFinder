@@ -31,6 +31,10 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+    </style>
+
     <!-- Custom style to create a drag handle for the bottom sheet -->
     <style name="DragHandle" parent="AppTheme">
         <item name="android:layout_width">24dp</item>

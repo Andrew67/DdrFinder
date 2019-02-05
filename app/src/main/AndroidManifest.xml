@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="true"
         android:resizeableActivity="true">
-        <activity android:name=".activity.MapViewer">
+        <activity android:name=".activity.MapViewer" android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
