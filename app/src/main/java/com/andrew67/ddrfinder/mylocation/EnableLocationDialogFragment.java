@@ -23,7 +23,6 @@
 
 package com.andrew67.ddrfinder.mylocation;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,6 +31,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 
 import com.andrew67.ddrfinder.R;
 
@@ -49,23 +49,19 @@ public class EnableLocationDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // From https://developer.android.com/guide/topics/ui/dialogs.html#DialogFragment
         // Use the Builder class for convenient dialog construction
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
 
         builder.setMessage(R.string.settings_location_dialog_message)
                 .setTitle(R.string.settings_location)
-                .setPositiveButton(R.string.settings_location_dialog_positive, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Recipe from http://stackoverflow.com/a/32983128
-                        Intent i = new Intent();
-                        i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        i.setData(Uri.fromParts("package", getActivity().getPackageName(), null));
-                        startActivity(i);
-                    }
+                .setPositiveButton(R.string.settings_location_dialog_positive, (dialog, id) -> {
+                    // Recipe from http://stackoverflow.com/a/32983128
+                    Intent i = new Intent();
+                    i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    i.setData(Uri.fromParts("package", requireActivity().getPackageName(), null));
+                    startActivity(i);
                 })
-                .setNegativeButton(R.string.settings_location_dialog_negative, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (cancelListener != null) cancelListener.onCancel();
-                    }
+                .setNegativeButton(R.string.settings_location_dialog_negative, (dialog, id) -> {
+                    if (cancelListener != null) cancelListener.onCancel();
                 });
         // Create the AlertDialog object and return it
         return builder.create();
