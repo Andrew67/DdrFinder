@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <ListPreference
         android:defaultValue="@string/settings_src_default"
         android:key="api_src"
         android:title="@string/settings_src"
         android:entries="@array/settings_src_entries"
         android:entryValues="@array/settings_src_entryValues"
-        android:icon="@drawable/ic_speaker_notes_black54_24dp"/>
+        app:icon="@drawable/ic_speaker_notes_black54_24dp"/>
     <CheckBoxPreference
         android:key="customtabs"
         android:defaultValue="true"
         android:title="@string/settings_custom_tabs"
-        android:icon="@drawable/ic_open_in_browser_black54_24dp"/>
+        app:icon="@drawable/ic_open_in_browser_black54_24dp"/>
     <CheckBoxPreference
         android:key="analyticsEnabled"
         android:defaultValue="true"
         android:title="@string/settings_analytics"
         android:summary="@string/settings_analytics_summary"
-        android:icon="@drawable/ic_trending_up_black54_24dp"/>
+        app:icon="@drawable/ic_trending_up_black54_24dp"/>
     <Preference
         android:key="action_about"
         android:persistent="false"

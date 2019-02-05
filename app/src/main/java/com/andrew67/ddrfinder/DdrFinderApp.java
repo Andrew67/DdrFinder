@@ -25,6 +25,7 @@ package com.andrew67.ddrfinder;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.andrew67.ddrfinder.activity.SettingsActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -34,6 +35,8 @@ public class DdrFinderApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         // Disable Firebase Analytics if user had previously disabled analytics when using Piwik (<= 3.0.6)
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
