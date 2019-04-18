@@ -4,8 +4,8 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
-        versionCode 27
-        versionName "3.0.15"
+        versionCode 28
+        versionName "3.0.16"
         minSdkVersion 19
         targetSdkVersion 28
         resConfigs "en", "es", "ja", "zh-rCN"
@@ -38,10 +38,10 @@ android {
 
 dependencies {
     implementation 'com.google.android.gms:play-services-base:16.1.0'
-    implementation 'com.google.android.gms:play-services-maps:16.0.0'
+    implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.gms:play-services-places:16.0.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
-    implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
     implementation 'com.google.maps.android:android-maps-utils:0.5'
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'
@@ -51,8 +51,8 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     implementation 'android.arch.lifecycle:common-java8:1.1.1'
-    implementation 'com.squareup.moshi:moshi:1.6.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    implementation 'com.squareup.moshi:moshi:1.8.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.2'
 }
 
 apply plugin: 'com.google.gms.google-services'
