@@ -4,15 +4,15 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
-        versionCode 28
-        versionName "3.0.16"
+        versionCode 29
+        versionName "3.0.17"
         minSdkVersion 19
         targetSdkVersion 28
         resConfigs "en", "es", "ja", "zh-rCN"
         vectorDrawables.useSupportLibrary = true
 
         buildConfigField 'String', 'API_BASE_URL', '"https://ddrfinder.andrew67.com/locate.php"'
-        buildConfigField 'String', 'ABOUT_BASE_URL', '"https://ddrfinder.andrew67.com/about.php"'
+        buildConfigField 'String', 'ABOUT_BASE_URL', '"https://ddrfinder.andrew67.com/android/about.php"'
         buildConfigField 'String', 'PRIVACY_POLICY_URL', '"https://ddrfinder.andrew67.com/android/privacy-policy.html"'
         buildConfigField 'String', 'APPLINK_BASE_URL', '"https://ddrfinder.andrew67.com/app"'
         buildConfigField 'String', 'FALLBACK_INFO_URL', '"https://ddrfinder.andrew67.com/info.php?id=${id}&android=1"'
