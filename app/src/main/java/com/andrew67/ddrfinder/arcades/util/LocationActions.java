@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018 Andrés Cordero
+ * Copyright (c) 2013-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,12 +23,12 @@
 
 package com.andrew67.ddrfinder.arcades.util;
 
-import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.activity.BrowserActivity;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.andrew67.ddrfinder.util.Analytics;
-import com.andrew67.ddrfinder.util.ThemeUtil;
+import com.andrew67.ddrfinder.util.CustomTabsUtil;
+import com.andrew67.ddrfinder.util.GeoUriBuilder;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -37,18 +37,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
 import android.util.Log;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
 
 /**
  * Helper class for location actions.
@@ -99,18 +91,14 @@ public class LocationActions {
 
         final LatLng coordinates = location.getPosition();
         try {
-            final String label = URLEncoder.encode(location.getName(), "UTF-8");
             context.startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("geo:" + coordinates.latitude + "," +
-                            coordinates.longitude + "?q=" + coordinates.latitude +
-                            "," + coordinates.longitude + "(" + label + ")")));
-        } catch (UnsupportedEncodingException e) {
-            // UTF-8 should always be a supported encoding
-            e.printStackTrace();
+                    GeoUriBuilder.showMarkerAt(coordinates.latitude, coordinates.longitude,
+                            location.getName())));
         } catch (ActivityNotFoundException e) {
             // Thrown when user has no installed map applications that handle geo: URIs
             context.startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=com.google.android.apps.maps")));
+                    GeoUriBuilder.googleMapsMarkerAt(coordinates.latitude, coordinates.longitude,
+                            location.getName())));
         }
     }
 
@@ -128,35 +116,7 @@ public class LocationActions {
                 .replace("${sid}", location.getSid());
 
         try {
-            final Uri infoURI = Uri.parse(infoURL);
-
-            if (!useCustomTabs) {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, infoURI));
-            } else {
-                final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                        .setShowTitle(true)
-                        .addDefaultShareMenuItem()
-                        .setToolbarColor(ThemeUtil.getThemeColor(
-                                context.getTheme(), R.attr.colorPrimary))
-                        .build();
-
-                // Chrome detection recipe based on http://stackoverflow.com/a/32656019
-                // Otherwise, setPackage is not called, and falls back to user-selected browser.
-                final String CHROME_PACKAGE_NAME = "com.android.chrome";
-                customTabsIntent.intent.setData(infoURI);
-                PackageManager packageManager = context.getPackageManager();
-                List<ResolveInfo> resolveInfoList = packageManager.queryIntentActivities(
-                        customTabsIntent.intent, PackageManager.MATCH_DEFAULT_ONLY);
-
-                for (ResolveInfo resolveInfo : resolveInfoList) {
-                    if (CHROME_PACKAGE_NAME.equals(resolveInfo.activityInfo.packageName)) {
-                        customTabsIntent.intent.setPackage(CHROME_PACKAGE_NAME);
-                        break;
-                    }
-                }
-
-                customTabsIntent.launchUrl(context, infoURI);
-            }
+            CustomTabsUtil.launchUrl(context, infoURL, useCustomTabs);
         } catch (Exception e) {
             final Bundle params = new Bundle();
             params.putString(Analytics.Param.EXCEPTION_MESSAGE, e.getMessage());
