@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2015-2018 Andrés Cordero
+ * Copyright (c) 2015-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,11 +26,10 @@
 
 package com.andrew67.ddrfinder.activity;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.Preference;
@@ -41,9 +40,12 @@ import android.view.MenuItem;
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.util.Analytics;
+import com.andrew67.ddrfinder.util.CustomTabsUtil;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Arrays;
+
+import okhttp3.HttpUrl;
 
 // Based on https://developer.android.com/guide/topics/ui/settings.html#Fragment
 public class SettingsActivity extends AppCompatActivity {
@@ -71,13 +73,19 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private static String getAboutUrl() {
+        return HttpUrl.get(BuildConfig.ABOUT_BASE_URL).newBuilder()
+                .addQueryParameter("c", String.valueOf(BuildConfig.VERSION_CODE))
+                .addQueryParameter("n", BuildConfig.VERSION_NAME)
+                .build()
+                .toString();
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat
@@ -104,11 +112,13 @@ public class SettingsActivity extends AppCompatActivity {
 
             // Set "About" and "Privacy Policy" listeners
             findPreference("action_about").setOnPreferenceClickListener(preference -> {
-                startActivity(new Intent(requireActivity(), About.class));
+                CustomTabsUtil.launchUrl(requireActivity(), getAboutUrl(),
+                        sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
                 return true;
             });
             findPreference("action_privacy_policy").setOnPreferenceClickListener(preference -> {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.PRIVACY_POLICY_URL)));
+                CustomTabsUtil.launchUrl(requireActivity(), BuildConfig.PRIVACY_POLICY_URL,
+                        sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
                 return true;
             });
         }
@@ -171,7 +181,7 @@ public class SettingsActivity extends AppCompatActivity {
          * @param key Preference key (use one of the constants).
          * @param value String value (may require casting).
          */
-        private void trackPreferenceChanged(@NonNull String key, @NonNull String value) {
+        private void trackPreferenceChanged(@NonNull String key, @Nullable String value) {
             Bundle params = new Bundle();
             params.putString(Analytics.Param.PREFERENCE_KEY, key);
             params.putString(Analytics.Param.PREFERENCE_VALUE, value);

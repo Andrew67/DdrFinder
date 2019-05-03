@@ -37,7 +37,6 @@
                 <data android:pathPrefix="/app/map/@"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.About"/>
         <activity android:name=".activity.SettingsActivity"/>
         <activity android:name=".activity.BrowserActivity"/>
 
