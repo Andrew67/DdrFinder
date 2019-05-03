@@ -85,8 +85,7 @@ public class PlaceAutocompleteModel extends ViewModel {
      * Starts the place autocomplete overlay activity (with filter for regions).
      * If Google Play Services requires an update, shows actionable error message to user
      */
-    @NonNull
-    public LiveData<PlaceAutocompleteResponse> startPlaceAutocomplete(@NonNull Activity activity) {
+    public void startPlaceAutocomplete(@NonNull Activity activity) {
         try {
             final AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
                     .setTypeFilter(AutocompleteFilter.TYPE_FILTER_GEOCODE)
@@ -105,7 +104,6 @@ public class PlaceAutocompleteModel extends ViewModel {
                     .getErrorDialog(activity, e.getConnectionStatusCode(), PLACE_AUTOCOMPLETE_REQUEST_CODE);
             if (errorDialog != null) errorDialog.show();
         }
-        return autocompleteResponse;
     }
 
     /**

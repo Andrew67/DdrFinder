@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2013-2018 Andrés Cordero
+ * Copyright (c) 2013-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -172,8 +172,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-        ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                .getMapAsync(this);
+        final SupportMapFragment supportMapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if (supportMapFragment != null) supportMapFragment.getMapAsync(this);
 
         // Restore selected arcade location across process death
         if (savedInstanceState != null) {
@@ -448,6 +449,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         if (box.northeast.equals(zeroZero) && box.southwest.equals(zeroZero)) return;
 
         final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
+        assert datasrc != null;
         arcadesModel.requestLocations(box, datasrc, force);
 
         // Track forced refreshes by data source.
@@ -571,7 +573,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
+                                           @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         myLocationModel.onRequestPermissionsResult(this,
                 requestCode, permissions, grantResults);

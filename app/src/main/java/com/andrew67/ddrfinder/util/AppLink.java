@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Andrés Cordero
+ * Copyright (c) 2018-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,6 +24,7 @@
 package com.andrew67.ddrfinder.util;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.andrew67.ddrfinder.BuildConfig;
@@ -40,13 +41,13 @@ import java.util.regex.Pattern;
  */
 public class AppLink {
 
-    private static int ACTIVITY = 1;
-    private static String ACTIVITY_MAP = "map";
+    private static final int ACTIVITY = 1;
+    private static final String ACTIVITY_MAP = "map";
 
-    private static Pattern LAT_LNG_ZOOM = Pattern.compile("@(.*),(.*),(.*)z");
-    private static int LAT = 1;
-    private static int LNG = 2;
-    private static int ZOOM = 3;
+    private static final Pattern LAT_LNG_ZOOM = Pattern.compile("@(.*),(.*),(.*)z");
+    private static final int LAT = 1;
+    private static final int LNG = 2;
+    private static final int ZOOM = 3;
 
     private final LatLng position;
     private final Float zoom;
@@ -137,6 +138,7 @@ public class AppLink {
      * @return Absolute URL to the app with the state represented by this AppLink.
      */
     @Override
+    @NonNull
     public String toString() {
         StringBuilder url = new StringBuilder(BuildConfig.APPLINK_BASE_URL);
         url.append("/map"); // Append activity; currently only map is available.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018 Andrés Cordero
+ * Copyright (c) 2015-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -92,7 +92,7 @@ public final class ArcadeLocation implements Parcelable, ClusterItem {
 
     @Override
     public boolean equals(Object that) {
-        return that != null && that instanceof ArcadeLocation && this.hashCode() == that.hashCode();
+        return that instanceof ArcadeLocation && this.hashCode() == that.hashCode();
     }
 
     @Override

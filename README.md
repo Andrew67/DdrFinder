@@ -15,7 +15,7 @@ Developing your own version
 ---------------------------
 * Modify `applicationId` in `build.gradle` and package in `AndroidManifest.xml`.
 * Request a Google Maps V2 API Key from the [Google API Developer Console](https://code.google.com/apis/console/) using the new package names.
-* Modify `GOOGLE_MAPS_API_KEY` in `build.gradle` with your new key.
+* Modify `GOOGLE_MAPS_API_KEY` in `app/src/main/res/values/strings.xml` with your new key.
 * Deploy your own version of [ddr-finder](https://github.com/Andrew67/ddr-finder) or compatible.
 * Modify `API_BASE_URL` in `build.gradle` to point to your API endpoint.
 * Modify `ABOUT_BASE_URL` in `build.gradle` to point to your about page.

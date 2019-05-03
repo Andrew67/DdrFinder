@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018 Andrés Cordero
+ * Copyright (c) 2015-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,7 +25,6 @@ package com.andrew67.ddrfinder.arcades.model;
 
 import android.support.annotation.NonNull;
 
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.Collections;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Andrés Cordero
+ * Copyright (c) 2018-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -44,8 +44,7 @@ import java.util.Set;
  */
 public class CachedMapLoader {
     private static final String TAG = "CachedMapLoader";
-    private final List<ApiResult> resultsCache = Collections
-            .synchronizedList(new ArrayList<ApiResult>());
+    private final List<ApiResult> resultsCache = Collections.synchronizedList(new ArrayList<>());
 
     // Singleton pattern
     private CachedMapLoader() { }

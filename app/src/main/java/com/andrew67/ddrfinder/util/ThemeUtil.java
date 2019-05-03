@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Andrés Cordero
+ * Copyright (c) 2017-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,7 @@ package com.andrew67.ddrfinder.util;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.AttrRes;
-import android.support.annotation.ColorRes;
+import android.support.annotation.ColorInt;
 import android.util.TypedValue;
 
 public class ThemeUtil {
@@ -37,6 +37,7 @@ public class ThemeUtil {
      * @param theme Theme to extract color from
      * @param attr Reference to the color name, from R.attr
      */
+    @ColorInt
     public static int getThemeColor(Resources.Theme theme, @AttrRes int attr) {
         TypedValue typedValue = new TypedValue();
         theme.resolveAttribute(attr, typedValue, true);

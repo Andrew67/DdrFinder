@@ -93,8 +93,7 @@ public class MyLocationModel extends ViewModel {
      * a permission denied event.
      * If the permission is denied, attempts to guide the user to enabling it, before giving up
      */
-    @NonNull
-    public LiveData<MyLocationResponse> requestMyLocation(@NonNull Activity activity) {
+    public void requestMyLocation(@NonNull Activity activity) {
         if (ContextCompat.checkSelfPermission(activity,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             loadLocation(activity, updateLocationResponse);
@@ -103,7 +102,6 @@ public class MyLocationModel extends ViewModel {
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_LOCATION);
         }
-        return locationResponse;
     }
 
     /**
