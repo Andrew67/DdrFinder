@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <string name="app_name">DDR Finder</string>
+    <string name="GOOGLE_MAPS_API_KEY" translatable="false">AIzaSyCd56mJAgfzpvF4yL-YXj9S8JsQyCd84tc</string>
+
     <string name="action_reload">Reload</string>
     <string name="action_share">Share</string>
     <string name="action_search">Search</string>
@@ -47,4 +49,5 @@
     <string name="settings_location_dialog_positive">Settings</string>
     <string name="settings_location_dialog_negative">Cancel</string>
     <string name="settings_custom_tabs">Open web pages in app</string>
+    <string name="error_opening_browser">Could not open browser</string>
 </resources>

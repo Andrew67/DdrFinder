@@ -34,4 +34,5 @@
     <string name="action_search">Búsqueda</string>
     <string name="action_my_location">Mi localización</string>
     <string name="action_privacy_policy">Política de privacidad</string>
+    <string name="error_opening_browser">Navegador no pudo ser lanzado</string>
 </resources>

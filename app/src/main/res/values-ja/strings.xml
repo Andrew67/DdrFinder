@@ -34,4 +34,5 @@
     <string name="action_search">検索</string>
     <string name="action_my_location">現在位置</string>
     <string name="action_privacy_policy">個人情報保護方針</string>
+    <string name="error_opening_browser">ブラウザをオープン出来ませんでした</string>
 </resources>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Andrés Cordero
+ * Copyright (c) 2018-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -170,12 +170,18 @@ public class LocationActionsFragment extends Fragment {
         locationActions.navigate(requireActivity());
     }
 
+    private Toast moreInfoErrorToast = null;
     private void onMoreInfoClicked(@SuppressWarnings("unused") View v) {
         if (locationActions == null) return;
         final boolean useCustomTabs = PreferenceManager
                 .getDefaultSharedPreferences(requireActivity())
                 .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
-        locationActions.moreInfo(requireActivity(), useCustomTabs);
+        final boolean moreInfoOpenSuccess = locationActions.moreInfo(requireActivity(), useCustomTabs);
+        if (!moreInfoOpenSuccess) {
+            if (moreInfoErrorToast == null) moreInfoErrorToast = Toast.makeText(requireActivity(),
+                    R.string.error_opening_browser, Toast.LENGTH_LONG);
+            moreInfoErrorToast.show();
+        }
     }
 
     private Toast copiedToast = null;

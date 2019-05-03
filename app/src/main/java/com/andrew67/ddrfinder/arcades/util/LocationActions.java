@@ -23,7 +23,6 @@
 
 package com.andrew67.ddrfinder.arcades.util;
 
-import com.andrew67.ddrfinder.activity.BrowserActivity;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.arcades.model.DataSource;
 import com.andrew67.ddrfinder.util.Analytics;
@@ -106,8 +105,9 @@ public class LocationActions {
      * Launches a web browser, pointed to the location's more information URL.
      * @param context The context which provides the ability to start activities.
      * @param useCustomTabs Whether to attempt to use a Chrome Custom Tab intent.
+     * @return Success status of copying to clipboard. Can be used to show error message
      */
-    public void moreInfo(@NonNull Context context, boolean useCustomTabs) {
+    public boolean moreInfo(@NonNull Context context, boolean useCustomTabs) {
         FirebaseAnalytics.getInstance(context)
                 .logEvent(Analytics.Event.LOCATION_ACTION_MOREINFO, null);
 
@@ -117,15 +117,15 @@ public class LocationActions {
 
         try {
             CustomTabsUtil.launchUrl(context, infoURL, useCustomTabs);
+            return true;
         } catch (Exception e) {
             final Bundle params = new Bundle();
             params.putString(Analytics.Param.EXCEPTION_MESSAGE, e.getMessage());
             FirebaseAnalytics.getInstance(context)
                     .logEvent(Analytics.Event.LOCATION_MOREINFO_EXCEPTION, params);
 
-            // Launch built-in WebView browser if there's an exception thrown attempting to launch a regular browser activity.
-            Log.e("LocationActions", "Error launching Intent for HTTP(S) link; using built-in browser.", e);
-            BrowserActivity.start(context, infoURL);
+            Log.e("LocationActions", "Error launching Intent for HTTP(S) link", e);
+            return false;
         }
     }
 }
