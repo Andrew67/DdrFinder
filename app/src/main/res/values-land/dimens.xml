@@ -2,5 +2,6 @@
 <resources>
     <dimen name="locationActionsPeekHeight">72dp</dimen>
     <dimen name="locationActionsFullHeight">152dp</dimen>
-    <dimen name="locationActionsSideMargins">50dp</dimen>
+    <dimen name="locationActionsBottomMargin">24dp</dimen>
+    <dimen name="locationActionsSideMargins">68dp</dimen>
 </resources>

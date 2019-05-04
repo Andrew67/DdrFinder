@@ -63,6 +63,7 @@ import android.arch.lifecycle.SnackbarMessage;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -105,6 +106,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     // Map
     private GoogleMap mMap;
     private ClusterManager<ArcadeLocation> mClusterManager;
+    private View mapView;
 
     // UI
     private MenuItem reloadButton;
@@ -161,7 +163,10 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         placeAutocompleteModel = ViewModelProviders.of(this).get(PlaceAutocompleteModel.class);
         selectedLocationModel = ViewModelProviders.of(this).get(SelectedLocationModel.class);
 
-        // Observe the selected location state and reveal/hide the location actions
+        // Observe the selected location state and reveal/hide the location actions, as well as move
+        // the map to the location
+        // For some reason, putting this code in onMapReady causes the bottom sheet to fly from
+        // above, instead of the correct behavior of popping up from underneath
         selectedLocationModel.getSelectedLocation().observe(this, selected -> {
             if (selected == null) {
                 locationActionsBehavior.setHideable(true);
@@ -169,9 +174,19 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             } else {
                 locationActionsBehavior.setHideable(false);
                 locationActionsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                if (mMap != null) {
+                    final double bottomPadding = getResources().getDimension(R.dimen.locationActionsFullHeight);
+                    final LatLng originalLocation = selected.arcadeLocation.getPosition();
+                    final LatLng adjustedLocation = new LatLng(
+                            originalLocation.latitude - convertPxHeightToLat(bottomPadding) / 2,
+                            originalLocation.longitude);
+                    animateToLocation(adjustedLocation);
+                }
             }
         });
 
+        mapView = findViewById(R.id.map);
         final SupportMapFragment supportMapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         if (supportMapFragment != null) supportMapFragment.getMapAsync(this);
@@ -310,11 +325,18 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(mClusterManager);
 
-        // Adjust map padding whenever location actions bottom sheet appears/disappears
+        // Adjust map padding whenever location actions bottom sheet is collapsed
+        // While the sheet no longer covers attributions while expanded, it still does
+        // while collapsed (in portrait view where we don't use too much side margin)
+        // This keeps the Google attribution in view
         locationActionsBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                MapViewer.this.adjustMapPadding(newState);
+                if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
+                    final int bottomPadding = (newState == BottomSheetBehavior.STATE_COLLAPSED) ?
+                            (int) getResources().getDimension(R.dimen.locationActionsPeekHeight) : 0;
+                    mMap.setPadding(0, 0, 0, bottomPadding);
+                }
             }
 
             @Override
@@ -322,8 +344,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
             }
         });
-        // Seed with initial value (otherwise doesn't survive configuration changes)
-        adjustMapPadding(locationActionsBehavior.getState());
     }
 
     /**
@@ -350,32 +370,17 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     };
 
     /**
-     * Adjusts map/attribution padding and camera based on bottom sheet state.
+     * Converts the given height in pixels (usually a bottom padding) into an amount of latitude,
+     * in order to adjust the coordinates that we animate the map towards while the bottom sheet
+     * is open. We don't use GoogleMap.setPadding due to unintended side-effects that are more
+     * suited towards a static padding.
      */
-    private void adjustMapPadding(int bottomSheetState) {
-        // Don't adjust until sheet movement completes
-        if (bottomSheetState == BottomSheetBehavior.STATE_DRAGGING ||
-                bottomSheetState == BottomSheetBehavior.STATE_SETTLING) return;
-
-        int bottomPadding = 0;
-        if (bottomSheetState == BottomSheetBehavior.STATE_COLLAPSED) {
-            bottomPadding = (int) getResources().getDimension(R.dimen.locationActionsPeekHeight);
-        } else if (bottomSheetState == BottomSheetBehavior.STATE_EXPANDED) {
-            bottomPadding = (int) getResources().getDimension(R.dimen.locationActionsFullHeight);
-        }
-        mMap.setPadding(0, 0, 0, bottomPadding);
-        attributionText.setPaddingRelative(0, 0, 0, bottomPadding);
-
-        // Map refresh in case the bottom bar was previously covering areas with arcades
-        updateMap(false);
-
-        // If expanded and an arcade is selected, pan to center it
-        // This also helps us have correct centering after map padding is adjusted
-        if (bottomSheetState == BottomSheetBehavior.STATE_EXPANDED &&
-                selectedLocationModel.getSelectedLocation().getValue() != null) {
-            animateToLocation(selectedLocationModel.getSelectedLocation().getValue()
-                    .arcadeLocation.getPosition());
-        }
+    private double convertPxHeightToLat(double heightInPx) {
+        final double mapContainerHeightInPx = mapView.getHeight();
+        final LatLngBounds mapContainerLatLngBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+        final double mapContainerHeightInLat = Math.abs(mapContainerLatLngBounds.northeast.latitude - mapContainerLatLngBounds.southwest.latitude);
+        final double mapContainerScaleFactor = mapContainerHeightInLat / mapContainerHeightInPx;
+        return mapContainerScaleFactor * heightInPx;
     }
 
     /**
@@ -631,8 +636,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                 arcadesModel.getSource(arcadeLocation));
 
         // Return value false moves the map; true suppresses it
-        // We handle moving the map but only if locationActionsBehavior isn't already expanded
-        return locationActionsBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED;
+        return true;
     };
 
     /**
