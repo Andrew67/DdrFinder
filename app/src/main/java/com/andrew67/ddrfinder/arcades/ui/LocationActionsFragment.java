@@ -89,16 +89,9 @@ public class LocationActionsFragment extends Fragment {
         selectedLocationModel = ViewModelProviders.of(requireActivity())
                 .get(SelectedLocationModel.class);
         selectedLocationModel.getSelectedLocation()
-                .observe(this, onSelectedLocationUpdated);
+                .observe(getViewLifecycleOwner(), onSelectedLocationUpdated);
 
         myLocationModel = ViewModelProviders.of(requireActivity()).get(MyLocationModel.class);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        // https://medium.com/@BladeCoder/architecture-components-pitfalls-part-1-9300dd969808
-        selectedLocationModel.getSelectedLocation().removeObserver(onSelectedLocationUpdated);
     }
 
     /**
