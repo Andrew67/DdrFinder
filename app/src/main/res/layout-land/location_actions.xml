@@ -7,8 +7,9 @@
     android:clipToPadding="false"
     android:clipChildren="false"
     android:paddingTop="4dp"
-    android:paddingStart="50dp"
-    android:paddingEnd="50dp">
+    android:paddingBottom="@dimen/locationActionsBottomMargin"
+    android:paddingStart="@dimen/locationActionsSideMargins"
+    android:paddingEnd="@dimen/locationActionsSideMargins">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

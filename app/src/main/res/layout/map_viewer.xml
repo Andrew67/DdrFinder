@@ -45,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
+                android:padding="@dimen/attributionTextPadding"
                 android:textSize="12sp"
                 android:textColor="@color/white"
                 android:text=""

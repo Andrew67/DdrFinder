@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="locationActionsPeekHeight">72dp</dimen>
-    <dimen name="locationActionsFullHeight">120dp</dimen>
+    <dimen name="locationActionsFullHeight">152dp</dimen>
+    <dimen name="locationActionsSideMargins">50dp</dimen>
 </resources>
