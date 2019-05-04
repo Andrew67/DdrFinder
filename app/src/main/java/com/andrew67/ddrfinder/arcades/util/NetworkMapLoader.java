@@ -104,6 +104,7 @@ public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
                 final ResponseBody responseBody = response.body();
                 assert responseBody != null;
                 result = jsonAdapter.fromJson(responseBody.source());
+                responseBody.close();
                 assert result != null;
                 result.setBounds(box);
                 Log.d("api", "Response JSON parse complete");
