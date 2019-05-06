@@ -3,7 +3,7 @@
     <!-- Solution from https://stackoverflow.com/a/17252203 for TextView background color. -->
     <item>
         <shape>
-            <solid android:color="@color/white"/>
+            <solid android:color="@color/background_white"/>
 
             <!-- https://developer.android.com/guide/topics/resources/drawable-resource#Shape -->
             <corners android:radius="8dp"/>

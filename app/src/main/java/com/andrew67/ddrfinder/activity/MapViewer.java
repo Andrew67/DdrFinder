@@ -121,6 +121,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, true);

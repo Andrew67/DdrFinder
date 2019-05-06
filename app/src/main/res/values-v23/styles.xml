@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Base.V23.SettingsTheme" parent="Base.V19.SettingsTheme">
+        <item name="colorPrimaryDark">@color/background_white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+    <style name="Base.SettingsTheme" parent="Base.V23.SettingsTheme"/>
+</resources>

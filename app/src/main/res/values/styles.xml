@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -10,8 +10,13 @@
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
+    </style>
 
-        <!-- Base Theme: inspired by DDR (2013) White Cabinet color scheme; updated to use Material Palette -->
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+
+        <!-- Theme inspired by DDR (2013) White Cabinet color scheme -->
         <item name="colorPrimary">@color/material_blue_700</item>
         <item name="colorPrimaryDark">?colorPrimary</item> <!-- Used as statusBarColor -->
 
@@ -26,13 +31,20 @@
         <item name="windowActionModeOverlay">true</item>
     </style>
 
-    <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-    </style>
-
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">?colorPrimary</item>
+    </style>
+
+    <!-- Settings screen theme. Attempts to be full-white like new Material Design -->
+    <style name="Base.V19.SettingsTheme" parent="AppTheme">
+        <!-- API-specific customizations -->
+        <item name="colorPrimaryDark">@color/material_grey_300_dark</item>
+    </style>
+    <style name="Base.SettingsTheme" parent="Base.V19.SettingsTheme"/>
+    <style name="SettingsTheme" parent="Base.SettingsTheme">
+        <!-- Non-API-specific customizations -->
+        <item name="colorPrimary">@color/background_white</item>
     </style>
 
     <!-- Custom style to create a drag handle for the bottom sheet -->

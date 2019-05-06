@@ -28,4 +28,8 @@
     <color name="material_blue_grey_900_">#263238</color>
     <color name="material_blue_grey_900_light">#4f5b62</color>
     <color name="material_blue_grey_900_dark">#000a12</color>
+
+    <!-- Theme.AppCompat.Light's true white background color -->
+    <color name="material_grey_50_">#fffafafa</color>
+    <color name="background_white">@color/material_grey_50_</color>
 </resources>
