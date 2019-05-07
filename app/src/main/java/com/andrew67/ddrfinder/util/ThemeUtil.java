@@ -25,8 +25,8 @@ package com.andrew67.ddrfinder.util;
 
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
 import android.util.TypedValue;
 
 public class ThemeUtil {

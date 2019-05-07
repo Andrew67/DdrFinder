@@ -24,7 +24,7 @@
 package com.andrew67.ddrfinder.util;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

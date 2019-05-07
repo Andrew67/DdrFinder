@@ -24,8 +24,8 @@
 package com.andrew67.ddrfinder.util;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.google.android.gms.maps.model.LatLng;

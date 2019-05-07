@@ -1,7 +1,7 @@
 package com.andrew67.ddrfinder.arcades.util;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.andrew67.ddrfinder.arcades.model.ApiResult;
 

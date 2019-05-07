@@ -25,7 +25,7 @@ package com.andrew67.ddrfinder;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatDelegate;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.andrew67.ddrfinder.activity.SettingsActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;

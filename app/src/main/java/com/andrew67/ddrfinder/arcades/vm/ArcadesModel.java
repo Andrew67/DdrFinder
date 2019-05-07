@@ -23,12 +23,12 @@
 
 package com.andrew67.ddrfinder.arcades.vm;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.SingleLiveEvent;
-import android.arch.lifecycle.SnackbarMessage;
-import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.SingleLiveEvent;
+import androidx.lifecycle.SnackbarMessage;
+import androidx.lifecycle.ViewModel;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.andrew67.ddrfinder.arcades.model.ApiResult;

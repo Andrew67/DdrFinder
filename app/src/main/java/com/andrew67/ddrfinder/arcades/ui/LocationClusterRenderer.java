@@ -23,10 +23,10 @@
 
 package com.andrew67.ddrfinder.arcades.ui;
 
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;

@@ -11,7 +11,7 @@
     android:paddingStart="@dimen/locationActionsSideMargins"
     android:paddingEnd="@dimen/locationActionsSideMargins">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bg_actions"
@@ -19,7 +19,7 @@
         android:clickable="true"
         android:focusable="true">
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/location_name"
             android:layout_width="match_parent"
             android:layout_height="28sp"
@@ -34,7 +34,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Awesome Arcade" />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/location_city"
             android:layout_width="match_parent"
             android:layout_height="22sp"
@@ -86,6 +86,6 @@
             app:layout_constraintStart_toEndOf="@+id/action_moreinfo"
             app:layout_constraintTop_toTopOf="@+id/action_moreinfo"
             app:srcCompat="@drawable/ic_content_copy_black_24dp" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

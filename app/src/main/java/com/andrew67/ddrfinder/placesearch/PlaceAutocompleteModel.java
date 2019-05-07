@@ -25,13 +25,13 @@ package com.andrew67.ddrfinder.placesearch;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.SingleLiveEvent;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.SingleLiveEvent;
+import androidx.lifecycle.ViewModel;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.common.GoogleApiAvailability;
