@@ -647,4 +647,17 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         selectedLocationModel.clearSelectedLocation();
         firebaseAnalytics.logEvent(Analytics.Event.LOCATION_ACTIONS_DISMISSED, null);
     };
+
+    /**
+     * Overrides back button to dismiss location pop-up first before letting the app close.
+     */
+    @Override
+    public void onBackPressed() {
+        if (selectedLocationModel.getSelectedLocation().getValue() != null) {
+            selectedLocationModel.clearSelectedLocation();
+            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_ACTIONS_DISMISSED, null);
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
