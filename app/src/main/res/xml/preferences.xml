@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="filter_ddr_only"
+        android:title="@string/settings_filter"
+        android:summary="@string/settings_filter_ddr_only"
+        app:icon="@drawable/ic_filter_list_black54_24dp"/>
     <ListPreference
         android:defaultValue="@string/settings_src_default"
         android:key="api_src"
@@ -8,12 +14,12 @@
         android:entries="@array/settings_src_entries"
         android:entryValues="@array/settings_src_entryValues"
         app:icon="@drawable/ic_speaker_notes_black54_24dp"/>
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="customtabs"
         android:defaultValue="true"
         android:title="@string/settings_custom_tabs"
         app:icon="@drawable/ic_open_in_browser_black54_24dp"/>
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="analyticsEnabled"
         android:defaultValue="true"
         android:title="@string/settings_analytics"

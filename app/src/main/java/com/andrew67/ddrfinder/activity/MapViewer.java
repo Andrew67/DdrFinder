@@ -454,9 +454,10 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         final LatLng zeroZero = new LatLng(0, 0);
         if (box.northeast.equals(zeroZero) && box.southwest.equals(zeroZero)) return;
 
+        final boolean hasDDROnly = sharedPref.getBoolean(SettingsActivity.KEY_PREF_FILTER_DDR_ONLY, false);
         final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
         assert datasrc != null;
-        arcadesModel.requestLocations(box, datasrc, force);
+        arcadesModel.requestLocations(box, datasrc, hasDDROnly, force);
 
         // Track forced refreshes by data source.
         if (force) firebaseAnalytics.logEvent(Analytics.Event.MAP_ACTION_RELOAD, null);
@@ -575,6 +576,11 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         // Set user property for "Active Datasource" for user segmentation
         firebaseAnalytics.setUserProperty(Analytics.UserProperty.ACTIVE_DATASRC,
                 sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""));
+
+        // Set user property for "Filter" for user segmentation
+        firebaseAnalytics.setUserProperty(Analytics.UserProperty.FILTER,
+                sharedPref.getBoolean(SettingsActivity.KEY_PREF_FILTER_DDR_ONLY, false) ?
+                        "ddr" : "none");
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Andrés Cordero
+ * Copyright (c) 2018-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,6 +39,7 @@ import com.andrew67.ddrfinder.arcades.util.CachedMapLoader;
 import com.andrew67.ddrfinder.arcades.util.MapLoaderCallback;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +87,43 @@ public class ArcadesModel extends ViewModel {
      */
     public void requestLocations(@NonNull LatLngBounds bounds,
                                  @NonNull String dataSrc,
+                                 boolean hasDDROnly,
                                  boolean force) {
-        cachedMapLoader.requestLocations(bounds, dataSrc, force, mapLoaderCallback);
+        cachedMapLoader.requestLocations(bounds, dataSrc, force, new MapLoaderCallback() {
+            @Override
+            public void onPreLoad() {
+                inProgress.setValue(true);
+            }
+
+            @Override
+            public void onLocationsLoaded(@NonNull ApiResult result) {
+                List<ArcadeLocation> locations = result.getLocations();
+                if (hasDDROnly) {
+                    locations = new ArrayList<>();
+                    for (ArcadeLocation location : result.getLocations()) {
+                        if (location.hasDDR()) locations.add(location);
+                    }
+                    Log.d("ArcadesModel", "DDR filter enabled; filtered " +
+                            (result.getLocations().size() - locations.size()) + " locations");
+                }
+                arcadeLocations.setValue(locations);
+
+                dataSources.clear();
+                for (DataSource src : result.getSources()) dataSources.put(src.getShortName(), src);
+
+                attribution.setValue(AttributionGenerator.fromSources(result.getSources()));
+            }
+
+            @Override
+            public void onError(int errorCode, int errorMessageResourceId) {
+                errorMessage.setValue(errorMessageResourceId);
+            }
+
+            @Override
+            public void onFinish() {
+                inProgress.setValue(false);
+            }
+        });
     }
 
     /**
@@ -107,31 +143,4 @@ public class ArcadesModel extends ViewModel {
             }
         }
     }
-
-    private final MapLoaderCallback mapLoaderCallback = new MapLoaderCallback() {
-        @Override
-        public void onPreLoad() {
-            inProgress.setValue(true);
-        }
-
-        @Override
-        public void onLocationsLoaded(@NonNull ApiResult result) {
-            arcadeLocations.setValue(result.getLocations());
-
-            dataSources.clear();
-            for (DataSource src : result.getSources()) dataSources.put(src.getShortName(), src);
-
-            attribution.setValue(AttributionGenerator.fromSources(result.getSources()));
-        }
-
-        @Override
-        public void onError(int errorCode, int errorMessageResourceId) {
-            errorMessage.setValue(errorMessageResourceId);
-        }
-
-        @Override
-        public void onFinish() {
-            inProgress.setValue(false);
-        }
-    };
 }

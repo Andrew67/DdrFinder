@@ -50,4 +50,6 @@
     <string name="settings_location_dialog_negative">Cancel</string>
     <string name="settings_custom_tabs">Open web pages in app</string>
     <string name="error_opening_browser">Could not open browser</string>
+    <string name="settings_filter">Filter</string>
+    <string name="settings_filter_ddr_only">Only show arcades that have DDR</string>
 </resources>

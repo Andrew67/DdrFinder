@@ -23,7 +23,7 @@
     <string name="error_api_ver">サーバーはこのアプリのAPIレベルが理解できませんでした</string>
     <string name="browser_actions_copy">リンクをコピー</string>
     <string name="settings_analytics">アナリティクス</string>
-    <string name="settings_analytics_summary">アプリをもっとよくように匿名の使用データをシェアします。</string>
+    <string name="settings_analytics_summary">アプリをもっとよくように匿名の使用データをシェアします</string>
     <string name="settings_location_dialog_positive">設定</string>
     <string name="settings_location_dialog_negative">キャンセル</string>
     <string name="settings_location">現在位置を使用</string>
@@ -35,4 +35,6 @@
     <string name="action_my_location">現在位置</string>
     <string name="action_privacy_policy">個人情報保護方針</string>
     <string name="error_opening_browser">ブラウザをオープン出来ませんでした</string>
+    <string name="settings_filter">フィルター</string>
+    <string name="settings_filter_ddr_only">DDRを持つゲームセンターしか指示されません</string>
 </resources>

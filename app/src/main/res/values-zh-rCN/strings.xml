@@ -37,4 +37,6 @@
     <string name="settings_custom_tabs">在应用中打开网页</string>
     <string name="action_privacy_policy">用户隐私协议</string>
     <string name="error_opening_browser">无法打开浏览器</string>
+    <string name="settings_filter">筛选</string>
+    <string name="settings_filter_ddr_only">只显示有DDR的游戏厅</string>
 </resources>

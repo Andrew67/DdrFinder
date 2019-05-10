@@ -50,6 +50,7 @@ import okhttp3.HttpUrl;
 // Based on https://developer.android.com/guide/topics/ui/settings.html#Fragment
 public class SettingsActivity extends AppCompatActivity {
 
+    public static final String KEY_PREF_FILTER_DDR_ONLY = "filter_ddr_only";
     public static final String KEY_PREF_API_SRC = "api_src";
     public static final String API_SRC_CUSTOM = "custom";
 
@@ -142,6 +143,10 @@ public class SettingsActivity extends AppCompatActivity {
             final Preference pref = findPreference(key);
             if (pref != null) {
                 switch (key) {
+                    case KEY_PREF_FILTER_DDR_ONLY:
+                        boolean filterDDROnly = sharedPref.getBoolean(key, false);
+                        trackPreferenceChanged("filter", filterDDROnly ? "ddr" : "none");
+                        break;
                     case KEY_PREF_API_SRC:
                         String newSrc = sharedPref.getString(key, "");
                         pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,

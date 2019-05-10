@@ -74,11 +74,11 @@ public class Analytics {
     }
 
     public static class UserProperty {
-        /**
-         * Data source active while performing a map/location action.
-         * Tracking this can help segment user actions by data source.
-         */
+        /** Data source active while performing a map/location action. */
         public static final String ACTIVE_DATASRC = "active_datasrc";
+
+        /** Filter by game/game version. */
+        public static final String FILTER = "filter";
     }
 
 }
