@@ -375,9 +375,12 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      * in order to adjust the coordinates that we animate the map towards while the bottom sheet
      * is open. We don't use GoogleMap.setPadding due to unintended side-effects that are more
      * suited towards a static padding.
+     * Returns 0 if the map has not completed layout (hitting occasionally when activity destroyed).
      */
     private double convertPxHeightToLat(double heightInPx) {
         final double mapContainerHeightInPx = mapView.getHeight();
+        if (mapContainerHeightInPx == 0) return 0;
+
         final LatLngBounds mapContainerLatLngBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
         final double mapContainerHeightInLat = Math.abs(mapContainerLatLngBounds.northeast.latitude - mapContainerLatLngBounds.southwest.latitude);
         final double mapContainerScaleFactor = mapContainerHeightInLat / mapContainerHeightInPx;
