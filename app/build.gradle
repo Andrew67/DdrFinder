@@ -39,8 +39,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-base:17.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
-    implementation 'com.google.android.libraries.places:places-compat:1.1.0'
-    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.google.android.libraries.places:places-compat:2.0.0'
+    implementation 'com.google.firebase:firebase-core:17.0.1'
     implementation 'com.google.maps.android:android-maps-utils:0.5'
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -52,7 +52,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.0.0'
 
     implementation 'com.squareup.moshi:moshi:1.8.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.12.2'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.3'
 }
 
 apply plugin: 'com.google.gms.google-services'
