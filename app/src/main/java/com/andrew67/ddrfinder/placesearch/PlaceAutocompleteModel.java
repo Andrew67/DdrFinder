@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Andrés Cordero
+ * Copyright (c) 2018-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,22 +24,24 @@
 package com.andrew67.ddrfinder.placesearch;
 
 import android.app.Activity;
-import android.app.Dialog;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.SingleLiveEvent;
 import androidx.lifecycle.ViewModel;
-import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
 
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.libraries.places.compat.AutocompleteFilter;
-import com.google.android.libraries.places.compat.Place;
-import com.google.android.libraries.places.compat.ui.PlaceAutocomplete;
+import com.andrew67.ddrfinder.R;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -86,41 +88,31 @@ public class PlaceAutocompleteModel extends ViewModel {
      * If Google Play Services requires an update, shows actionable error message to user
      */
     public void startPlaceAutocomplete(@NonNull Activity activity) {
-        try {
-            final AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_GEOCODE)
-                    .build();
-            final Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                    .setFilter(typeFilter)
-                    .build(activity);
-            activity.startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // This exception is not actionable
-            e.printStackTrace();
-            autocompleteError.setValue(PlaceAutocompleteError.withError(e.getMessage()));
-        } catch (GooglePlayServicesRepairableException e) {
-            // This exception is actionable; display Play Services update dialog to user
-            final Dialog errorDialog = GoogleApiAvailability.getInstance()
-                    .getErrorDialog(activity, e.getConnectionStatusCode(), PLACE_AUTOCOMPLETE_REQUEST_CODE);
-            if (errorDialog != null) errorDialog.show();
+        if (!Places.isInitialized()) {
+            Places.initialize(activity.getApplicationContext(),
+                    activity.getString(R.string.GOOGLE_MAPS_API_KEY));
         }
+        final List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
+                Place.Field.LAT_LNG, Place.Field.VIEWPORT);
+        final Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                .setTypeFilter(TypeFilter.GEOCODE)
+                .build(activity);
+        activity.startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
     }
 
     /**
      * This method must be called from the activity's own onActivityResult,
      * so that it can handle the result of the places autocomplete request
      */
-    public void onActivityResult(@NonNull Context activity,
-                                 int requestCode, int resultCode,
-                                 Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                final Place place = PlaceAutocomplete.getPlace(activity, data);
+                final Place place = Autocomplete.getPlaceFromIntent(data);
                 autocompleteResponse.setValue(PlaceAutocompleteResponse.withPlace(place));
             } else if (resultCode == RESULT_CANCELED) {
                 autocompleteError.setValue(PlaceAutocompleteError.CANCELED);
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                final String statusMessage = PlaceAutocomplete.getStatus(activity, data).getStatusMessage();
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                final String statusMessage = Autocomplete.getStatusFromIntent(data).getStatusMessage();
                 Log.e("PlaceAutocompleteModel", statusMessage);
                 autocompleteError.setValue(PlaceAutocompleteError.withError(statusMessage));
             }
@@ -157,13 +149,12 @@ public class PlaceAutocompleteModel extends ViewModel {
      */
     public static final class PlaceAutocompleteError {
         /**
-         * Result code from the {@link PlaceAutocomplete} call to {@link #onActivityResult}
+         * Result code from the {@link Autocomplete} call to {@link #onActivityResult}
          */
         public final int resultCode;
 
         /**
-         * Error message, when result code is RESULT_ERROR,
-         * or a {@link GooglePlayServicesNotAvailableException} was thrown
+         * Error message, when result code is RESULT_ERROR
          */
         public final @Nullable String errorMessage;
 
@@ -178,7 +169,7 @@ public class PlaceAutocompleteModel extends ViewModel {
 
         /** Represents an error response */
         static PlaceAutocompleteError withError(@Nullable String errorMessage) {
-            return new PlaceAutocompleteError(PlaceAutocomplete.RESULT_ERROR, errorMessage);
+            return new PlaceAutocompleteError(AutocompleteActivity.RESULT_ERROR, errorMessage);
         }
     }
 }

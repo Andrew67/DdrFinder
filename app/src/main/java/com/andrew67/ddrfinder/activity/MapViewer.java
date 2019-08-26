@@ -43,8 +43,6 @@ import com.andrew67.ddrfinder.widget.OutlineTextView;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.libraries.places.compat.Place;
-import com.google.android.libraries.places.compat.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,6 +53,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.security.ProviderInstaller;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -308,7 +308,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
             if (error.resultCode == RESULT_CANCELED) {
                 firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_CANCELED, null);
-            } else if (error.resultCode == PlaceAutocomplete.RESULT_ERROR) {
+            } else if (error.resultCode == AutocompleteActivity.RESULT_ERROR) {
                 final Bundle params = new Bundle();
                 params.putString(Analytics.Param.EXCEPTION_MESSAGE, error.errorMessage);
                 firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_ERROR, params);
@@ -433,8 +433,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private CameraPosition loadCameraFromState() {
         // Default: Dallas, TX, US
         // Old zoomed-out default caused too much CPU stress on slower devices
-        Long rawLatitude = state.getLong(KEY_LATITUDE, Long.MIN_VALUE);
-        Long rawLongitude = state.getLong(KEY_LONGITUDE, Long.MIN_VALUE);
+        final long rawLatitude = state.getLong(KEY_LATITUDE, Long.MIN_VALUE);
+        final long rawLongitude = state.getLong(KEY_LONGITUDE, Long.MIN_VALUE);
         final float zoom = state.getFloat(KEY_ZOOM, 9);
 
         final double latitude = (rawLatitude == Long.MIN_VALUE) ? 32.7157 :
@@ -602,7 +602,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        placeAutocompleteModel.onActivityResult(this, requestCode, resultCode, data);
+        placeAutocompleteModel.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -620,7 +620,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         // If LatLngBounds are available, move to those; otherwise use LatLng as center with base zoom.
         if (viewportCameraUpdate != null) {
             try {
-                Log.d("MapViewer", "Places API using viewport: " + viewport.toString());
+                Log.d("MapViewer", "Places API using viewport: " + viewport);
                 mMap.moveCamera(viewportCameraUpdate);
                 success = true;
             } catch (IllegalStateException e) {
@@ -630,7 +630,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             }
         }
         if (!success) {
-            Log.d("MapViewer", "Places API using latLng: " + latLng.toString());
+            Log.d("MapViewer", "Places API using latLng: " + latLng);
             mMap.moveCamera(latLngCameraUpdate);
         }
     }
