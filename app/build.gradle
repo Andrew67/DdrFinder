@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
         versionCode 30
         versionName "3.0.18"
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 29
         resConfigs "en", "es", "ja", "zh-rCN"
         vectorDrawables.useSupportLibrary = true
 
@@ -40,7 +40,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.android.libraries.places:places:2.0.0'
-    implementation 'com.google.firebase:firebase-core:17.1.0'
+    implementation 'com.google.firebase:firebase-core:17.2.0'
     implementation 'com.google.maps.android:android-maps-utils:0.5'
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
