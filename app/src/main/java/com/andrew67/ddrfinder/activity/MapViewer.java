@@ -213,7 +213,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         // Persist currently selected arcade location across process death
@@ -459,7 +459,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         final boolean hasDDROnly = sharedPref.getBoolean(SettingsActivity.KEY_PREF_FILTER_DDR_ONLY, false);
         final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
-        assert datasrc != null;
         arcadesModel.requestLocations(box, datasrc, hasDDROnly, force);
 
         // Track forced refreshes by data source.
@@ -602,7 +601,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        placeAutocompleteModel.onActivityResult(requestCode, resultCode, data);
+        if (!placeAutocompleteModel.onActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     /**

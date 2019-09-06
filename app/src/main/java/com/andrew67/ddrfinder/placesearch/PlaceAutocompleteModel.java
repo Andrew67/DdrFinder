@@ -103,8 +103,9 @@ public class PlaceAutocompleteModel extends ViewModel {
     /**
      * This method must be called from the activity's own onActivityResult,
      * so that it can handle the result of the places autocomplete request
+     * @return Whether the activity result was handled
      */
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 final Place place = Autocomplete.getPlaceFromIntent(data);
@@ -113,10 +114,12 @@ public class PlaceAutocompleteModel extends ViewModel {
                 autocompleteError.setValue(PlaceAutocompleteError.CANCELED);
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 final String statusMessage = Autocomplete.getStatusFromIntent(data).getStatusMessage();
-                Log.e("PlaceAutocompleteModel", statusMessage);
+                Log.e("PlaceAutocompleteModel", "Error status message: " + statusMessage);
                 autocompleteError.setValue(PlaceAutocompleteError.withError(statusMessage));
             }
+            return true;
         }
+        return false;
     }
 
     /**
