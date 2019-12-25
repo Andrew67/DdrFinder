@@ -35,7 +35,6 @@ import android.util.Log;
 import com.andrew67.ddrfinder.R;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
@@ -95,7 +94,6 @@ public class PlaceAutocompleteModel extends ViewModel {
         final List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
                 Place.Field.LAT_LNG, Place.Field.VIEWPORT);
         final Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-                .setTypeFilter(TypeFilter.GEOCODE)
                 .build(activity);
         activity.startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
     }
