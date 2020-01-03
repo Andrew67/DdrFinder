@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppBaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Theme inspired by DDR (2013) White Cabinet color scheme -->
+        <item name="colorPrimary">@color/material_blue_200</item>
+        <item name="colorSurface">@color/material_blue_200_bg_dark</item>
+        <item name="colorAccent">@color/material_purple_200</item>
+
+        <item name="pinColor">@color/material_purple_500_light</item>
+        <item name="pinColorHasDDR">@color/material_yellow_600_light</item>
+        <item name="pinColorSelected">@color/material_amber_700_light</item>
+    </style>
+</resources>

@@ -37,4 +37,10 @@
     <string name="error_opening_browser">ブラウザをオープン出来ませんでした</string>
     <string name="settings_filter">フィルター</string>
     <string name="settings_filter_ddr_only">DDRを持つゲームセンターしか指示されません</string>
+    <string name="settings_theme">テーマ</string>
+    <string-array name="settings_theme_entries">
+        <item>システムのテーマに従う</item>
+        <item>ライト</item>
+        <item>ダーク</item>
+    </string-array>
 </resources>

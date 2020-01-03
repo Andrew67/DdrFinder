@@ -1,50 +1,34 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!--
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        Base application theme, dependent on configuration. This theme is replaced
+        by AppBaseTheme from res/values-XX/styles.xml in different configurations.
     -->
-    <style name="AppBaseTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!--
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        -->
+    <style name="AppBaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Theme inspired by DDR (2013) White Cabinet color scheme -->
+        <item name="colorPrimary">@color/material_blue_700</item>
+        <item name="colorAccent">@color/material_purple_500</item>
+
+        <item name="pinColor">@color/material_purple_500_dark</item>
+        <item name="pinColorHasDDR">@color/material_yellow_600_dark</item>
+        <item name="pinColorSelected">@color/material_amber_700_dark</item>
     </style>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-
-        <!-- Theme inspired by DDR (2013) White Cabinet color scheme -->
-        <item name="colorPrimary">@color/material_blue_700</item>
-        <item name="colorPrimaryDark">?colorPrimary</item> <!-- Used as statusBarColor -->
-
-        <item name="colorAccent">@color/material_purple_500</item>
-        <item name="actionModeBackground">?colorAccent</item>
-        <item name="actionModeStatusBarColor">@color/material_purple_500_dark</item>
-
-        <item name="pinColor">@color/material_purple_500_light</item>
-        <item name="pinColorHasDDR">@color/material_yellow_600_light</item>
-        <item name="pinColorSelected">@color/material_amber_700_dark</item>
-
-        <item name="windowActionModeOverlay">true</item>
+        <!-- All customizations that are NOT specific to a particular configuration can go here. -->
+        <item name="colorPrimaryDark">?colorPrimarySurface</item> <!-- Used as statusBarColor -->
+        <item name="android:navigationBarColor">?colorPrimarySurface</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/bg_splash</item>
-        <item name="android:navigationBarColor" tools:targetApi="21">?colorPrimary</item>
     </style>
 
-    <!-- Settings screen theme. Attempts to be full-white like new Material Design -->
-    <style name="Base.V19.SettingsTheme" parent="AppTheme">
-        <!-- API-specific customizations -->
-        <item name="colorPrimaryDark">@color/material_grey_300_dark</item>
-    </style>
-    <style name="Base.SettingsTheme" parent="Base.V19.SettingsTheme"/>
+    <!-- Settings screen theme. Colors the navigation bar with surface color where possible. -->
+    <style name="Base.SettingsTheme" parent="AppTheme"/>
     <style name="SettingsTheme" parent="Base.SettingsTheme">
-        <!-- Non-API-specific customizations -->
-        <item name="colorPrimary">@color/background_white</item>
+        <item name="android:windowBackground">?colorSurface</item>
     </style>
 
     <!-- Custom style to create a drag handle for the bottom sheet -->
@@ -76,6 +60,7 @@
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
+        <item name="tint">?colorOnSurface</item>
     </style>
     <style name="BottomSheetListDetail" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>

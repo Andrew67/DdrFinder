@@ -52,4 +52,16 @@
     <string name="error_opening_browser">Could not open browser</string>
     <string name="settings_filter">Filter</string>
     <string name="settings_filter_ddr_only">Only show arcades that have DDR</string>
+    <string name="settings_theme">Theme</string>
+    <string-array name="settings_theme_entries">
+        <item>Follow device theme</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="settings_theme_entryValues" translatable="false">
+        <item>auto</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+    <string name="settings_theme_default" translatable="false">auto</string>
 </resources>

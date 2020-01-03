@@ -237,11 +237,15 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
-        // Load custom "Aubergine" style
-        try {
-            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_aubergine));
-        } catch (Resources.NotFoundException e) {
-            // Do nothing; default map style is used.
+        // Load custom "Aubergine" style when device is in dark mode
+        if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES) {
+            try {
+                mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(this, R.raw.style_aubergine));
+            } catch (Resources.NotFoundException e) {
+                // Do nothing; default map style is used.
+            }
         }
 
         // Set up marker cluster manager

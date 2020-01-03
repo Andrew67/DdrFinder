@@ -93,7 +93,7 @@ public class PlaceAutocompleteModel extends ViewModel {
         }
         final List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
                 Place.Field.LAT_LNG, Place.Field.VIEWPORT);
-        final Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+        final Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
                 .build(activity);
         activity.startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
     }

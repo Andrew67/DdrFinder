@@ -27,6 +27,9 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import android.util.TypedValue;
 
 public class ThemeUtil {
@@ -55,5 +58,15 @@ public class ThemeUtil {
         float[] hsv = new float[3];
         Color.colorToHSV(rgbColor, hsv);
         return hsv[0];
+    }
+
+    /**
+     * Converts the given theme preference string into an AppCompatDelegate mode.
+     */
+    public static int getAppCompatDelegateMode(@NonNull String themePreference) {
+        int newMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+        if (themePreference.equals("dark")) newMode = AppCompatDelegate.MODE_NIGHT_YES;
+        else if (themePreference.equals("light")) newMode = AppCompatDelegate.MODE_NIGHT_NO;
+        return newMode;
     }
 }

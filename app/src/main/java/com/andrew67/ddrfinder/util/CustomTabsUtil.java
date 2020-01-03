@@ -56,8 +56,9 @@ public class CustomTabsUtil {
             final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
                     .setShowTitle(true)
                     .addDefaultShareMenuItem()
+                    // TODO: Use setColorScheme and setColorSchemeParams
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorPrimary))
+                            context.getTheme(), R.attr.colorPrimarySurface))
                     .build();
 
             // Chrome detection recipe based on http://stackoverflow.com/a/32656019

@@ -39,4 +39,10 @@
     <string name="error_opening_browser">无法打开浏览器</string>
     <string name="settings_filter">筛选</string>
     <string name="settings_filter_ddr_only">只显示有DDR的游戏厅</string>
+    <string name="settings_theme">主题背景</string>
+    <string-array name="settings_theme_entries">
+        <item>遵从系统设置</item>
+        <item>浅色调</item>
+        <item>深色调</item>
+    </string-array>
 </resources>

@@ -37,4 +37,10 @@
     <string name="error_opening_browser">Navegador no pudo ser lanzado</string>
     <string name="settings_filter">Filtro</string>
     <string name="settings_filter_ddr_only">Sólo mostrar salas de videojuegos quienes cuentan con DDR</string>
+    <string name="settings_theme">Tema</string>
+    <string-array name="settings_theme_entries">
+        <item>Seguir el tema del dispositivo</item>
+        <item>Claro</item>
+        <item>Oscuro</item>
+    </string-array>
 </resources>

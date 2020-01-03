@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Andrés Cordero
+ * Copyright (c) 2016-2019 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,6 +28,7 @@ import android.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.andrew67.ddrfinder.activity.SettingsActivity;
+import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class DdrFinderApp extends Application {
@@ -38,8 +39,12 @@ public class DdrFinderApp extends Application {
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
-        // Disable Firebase Analytics if user had previously disabled analytics when using Piwik (<= 3.0.6)
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        // Auto/Light/Dark theme preference is not persisted automatically across process restarts
+        final String theme = sharedPref.getString(SettingsActivity.KEY_PREF_THEME, "auto");
+        AppCompatDelegate.setDefaultNightMode(ThemeUtil.getAppCompatDelegateMode(theme));
+
+        // Disable Firebase Analytics if user had previously disabled analytics when using Piwik (<= 3.0.6)
         final boolean analyticsEnabled = sharedPref.getBoolean(SettingsActivity.KEY_PREF_ANALYTICS, true);
         FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(analyticsEnabled);
     }

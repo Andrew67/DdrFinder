@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.appcompat.widget.Toolbar;
@@ -41,6 +42,7 @@ import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.CustomTabsUtil;
+import com.andrew67.ddrfinder.util.ThemeUtil;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Arrays;
@@ -54,6 +56,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String KEY_PREF_API_SRC = "api_src";
     public static final String API_SRC_CUSTOM = "custom";
 
+    public static final String KEY_PREF_THEME = "theme";
     public static final String KEY_PREF_ANALYTICS = "analyticsEnabled";
     public static final String KEY_PREF_CUSTOMTABS = "customtabs";
 
@@ -110,6 +113,9 @@ public class SettingsActivity extends AppCompatActivity {
             findPreference(KEY_PREF_API_SRC).setSummary(
                     getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                             sharedPref.getString(KEY_PREF_API_SRC, "")));
+            findPreference(KEY_PREF_THEME).setSummary(
+                    getPrefSummary(R.array.settings_theme_entryValues, R.array.settings_theme_entries,
+                            sharedPref.getString(KEY_PREF_THEME, "")));
 
             // Set "About" and "Privacy Policy" listeners
             findPreference("action_about").setOnPreferenceClickListener(preference -> {
@@ -152,6 +158,14 @@ public class SettingsActivity extends AppCompatActivity {
                         pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                                 newSrc));
                         trackPreferenceChanged(key, newSrc);
+                        break;
+                    case KEY_PREF_THEME:
+                        String newTheme = sharedPref.getString(key, "");
+                        pref.setSummary(getPrefSummary(R.array.settings_theme_entryValues, R.array.settings_theme_entries,
+                                newTheme));
+                        trackPreferenceChanged(key, newTheme);
+                        // TODO Track as user property
+                        AppCompatDelegate.setDefaultNightMode(ThemeUtil.getAppCompatDelegateMode(newTheme));
                         break;
                     case KEY_PREF_CUSTOMTABS:
                         boolean customTabsEnabled = sharedPref.getBoolean(key, true);
