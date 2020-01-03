@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="actionModeStatusBarColor" format="reference"/>
+    <attr name="colorPrimaryLightTheme" format="reference"/>
+    <attr name="colorSurfaceLightTheme" format="reference"/>
+    <attr name="colorSurfaceDarkTheme" format="reference"/>
+
     <attr name="pinColor" format="reference"/>
     <attr name="pinColorHasDDR" format="reference"/>
     <attr name="pinColorSelected" format="reference"/>
+
     <attr name="attributionTextColor" format="reference"/>
     <attr name="attributionBgColor" format="reference"/>
 

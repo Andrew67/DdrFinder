@@ -1,18 +1,40 @@
 <resources>
 
-    <!--
-        Base application theme, dependent on configuration. This theme is replaced
-        by AppBaseTheme from res/values-XX/styles.xml in different configurations.
-    -->
-    <style name="AppBaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Theme inspired by DDR (2013) White Cabinet color scheme -->
-        <item name="colorPrimary">@color/material_blue_700</item>
+    <!-- Base light/dark theme colors. -->
+    <style name="AppLightDarkBaseTheme"  parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customizations that need to be accessible from either active theme go here. -->
+        <!-- e.g. colorPrimary and colorSurface are sent as ColorSchemeParams for Custom Tabs. -->
+        <!-- Light theme -->
+        <item name="colorPrimaryLightTheme">@color/material_blue_700</item>
+        <item name="colorSurfaceLightTheme">@color/white</item>
+
+        <!-- Dark theme -->
+        <item name="colorSurfaceDarkTheme">@color/material_blue_200_bg_dark</item>
+    </style>
+
+    <!-- Light theme colors. -->
+    <style name="AppLightTheme" parent="AppLightDarkBaseTheme">
+        <!-- Theme inspired by DDR (2013) White Cabinet color scheme. -->
+        <item name="colorPrimary">?colorPrimaryLightTheme</item>
+        <item name="colorSurface">?colorSurfaceLightTheme</item>
         <item name="colorAccent">@color/material_purple_500</item>
 
         <item name="pinColor">@color/material_purple_500_dark</item>
         <item name="pinColorHasDDR">@color/material_yellow_600_dark</item>
         <item name="pinColorSelected">@color/material_amber_700_dark</item>
     </style>
+
+    <!-- Dark theme colors. -->
+    <style name="AppDarkTheme" parent="AppLightDarkBaseTheme">
+        <item name="colorPrimary">@color/material_blue_200</item>
+        <item name="colorSurface">?colorSurfaceDarkTheme</item>
+        <item name="colorAccent">@color/material_purple_200</item>
+
+        <item name="pinColor">@color/material_purple_500_light</item>
+        <item name="pinColorHasDDR">@color/material_yellow_600_light</item>
+        <item name="pinColorSelected">@color/material_amber_700_light</item>
+    </style>
+    <style name="AppBaseTheme" parent="AppLightTheme"/>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">

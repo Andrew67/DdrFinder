@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2019 Andrés Cordero
+ * Copyright (c) 2013-2020 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,6 +29,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import androidx.annotation.NonNull;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.andrew67.ddrfinder.R;
@@ -53,12 +54,30 @@ public class CustomTabsUtil {
         if (!useCustomTabs) {
             context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
         } else {
+            CustomTabColorSchemeParams lightParams = new CustomTabColorSchemeParams.Builder()
+                    .setToolbarColor(ThemeUtil.getThemeColor(
+                            context.getTheme(), R.attr.colorPrimaryLightTheme))
+                    .setNavigationBarColor(ThemeUtil.getThemeColor(
+                            context.getTheme(), R.attr.colorSurfaceLightTheme))
+                    .build();
+            CustomTabColorSchemeParams darkParams = new CustomTabColorSchemeParams.Builder()
+                    .setToolbarColor(ThemeUtil.getThemeColor(
+                            context.getTheme(), R.attr.colorSurfaceDarkTheme))
+                    .setNavigationBarColor(ThemeUtil.getThemeColor(
+                            context.getTheme(), R.attr.colorSurfaceDarkTheme))
+                    .build();
+
             final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
                     .setShowTitle(true)
                     .addDefaultShareMenuItem()
-                    // TODO: Use setColorScheme and setColorSchemeParams
+                    // Fallback colors for browsers that don't support color schemes yet
                     .setToolbarColor(ThemeUtil.getThemeColor(
                             context.getTheme(), R.attr.colorPrimarySurface))
+                    .setNavigationBarColor(ThemeUtil.getThemeColor(
+                            context.getTheme(), R.attr.colorSurface))
+                    .setColorScheme(ThemeUtil.getCustomTabsColorScheme())
+                    .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT, lightParams)
+                    .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, darkParams)
                     .build();
 
             // Chrome detection recipe based on http://stackoverflow.com/a/32656019

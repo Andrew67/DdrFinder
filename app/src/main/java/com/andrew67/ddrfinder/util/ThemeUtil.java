@@ -29,6 +29,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import android.util.TypedValue;
 
@@ -68,5 +69,26 @@ public class ThemeUtil {
         if (themePreference.equals("dark")) newMode = AppCompatDelegate.MODE_NIGHT_YES;
         else if (themePreference.equals("light")) newMode = AppCompatDelegate.MODE_NIGHT_NO;
         return newMode;
+    }
+
+    /**
+     * Converts the given AppCompatDelegate mode into a Custom Tabs color scheme.
+     */
+    public static int getCustomTabsColorScheme(int appCompatDelegateMode) {
+        switch (appCompatDelegateMode) {
+            case AppCompatDelegate.MODE_NIGHT_NO:
+                return CustomTabsIntent.COLOR_SCHEME_LIGHT;
+            case AppCompatDelegate.MODE_NIGHT_YES:
+                return CustomTabsIntent.COLOR_SCHEME_DARK;
+            default:
+                return CustomTabsIntent.COLOR_SCHEME_SYSTEM;
+        }
+    }
+
+    /**
+     * Obtains a Custom Tabs color scheme from the currently active AppCompatDelegate mode.
+     */
+    public static int getCustomTabsColorScheme() {
+        return getCustomTabsColorScheme(AppCompatDelegate.getDefaultNightMode());
     }
 }
