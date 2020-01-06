@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2015-2019 Andrés Cordero
+ * Copyright (c) 2015-2020 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -164,7 +164,7 @@ public class SettingsActivity extends AppCompatActivity {
                         pref.setSummary(getPrefSummary(R.array.settings_theme_entryValues, R.array.settings_theme_entries,
                                 newTheme));
                         trackPreferenceChanged(key, newTheme);
-                        // TODO Track as user property
+                        firebaseAnalytics.setUserProperty(Analytics.UserProperty.THEME, newTheme);
                         AppCompatDelegate.setDefaultNightMode(ThemeUtil.getAppCompatDelegateMode(newTheme));
                         break;
                     case KEY_PREF_CUSTOMTABS:

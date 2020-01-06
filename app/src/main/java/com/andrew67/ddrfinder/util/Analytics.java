@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Andrés Cordero
+ * Copyright (c) 2018-2020 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -79,6 +79,9 @@ public class Analytics {
 
         /** Filter by game/game version. */
         public static final String FILTER = "filter";
+
+        /** Theme preference. */
+        public static final String THEME = "theme";
     }
 
 }
