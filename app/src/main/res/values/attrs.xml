@@ -8,6 +8,9 @@
     <attr name="pinColorHasDDR" format="reference"/>
     <attr name="pinColorSelected" format="reference"/>
 
+    <attr name="detailsColorHasDDR" format="reference"/>
+    <attr name="detailsColorNoDDR" format="reference"/>
+
     <attr name="attributionTextColor" format="reference"/>
     <attr name="attributionBgColor" format="reference"/>
 

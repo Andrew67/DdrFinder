@@ -28,4 +28,10 @@
     <color name="material_grey_300_">#e0e0e0</color>
     <color name="material_grey_300_light">#ffffff</color>
     <color name="material_grey_300_dark">#aeaeae</color>
+
+    <color name="material_green_200">#a5d6a7</color>
+    <color name="material_green_700">#388e3c</color>
+
+    <color name="material_red_200">#ef9a9a</color>
+    <color name="material_red_700">#d32f2f</color>
 </resources>

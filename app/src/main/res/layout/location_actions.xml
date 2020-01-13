@@ -72,9 +72,26 @@
             <TextView
                 android:id="@+id/location_has_ddr"
                 style="@style/BottomSheetListDetail"
+                android:layout_marginEnd="4dp"
+                app:layout_constraintTop_toTopOf="@+id/action_moreinfo"
+                app:layout_constraintEnd_toStartOf="@+id/location_has_ddr_icon_yes"
+                android:text="@string/has_ddr" />
+
+            <ImageView
+                android:id="@+id/location_has_ddr_icon_yes"
+                style="@style/BottomSheetListDetail"
                 app:layout_constraintTop_toTopOf="@+id/action_moreinfo"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:text="DDR ✔️" />
+                app:srcCompat="@drawable/ic_check_black_24dp"
+                app:tint="?detailsColorHasDDR" />
+
+            <ImageView
+                android:id="@+id/location_has_ddr_icon_no"
+                style="@style/BottomSheetListDetail"
+                app:layout_constraintTop_toTopOf="@+id/action_moreinfo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_close_black_24dp"
+                app:tint="?detailsColorNoDDR" />
 
             <ImageView
                 style="@style/BottomSheetListIcon"

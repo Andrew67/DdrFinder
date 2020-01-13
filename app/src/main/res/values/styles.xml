@@ -22,6 +22,9 @@
         <item name="pinColor">@color/material_purple_500_dark</item>
         <item name="pinColorHasDDR">@color/material_yellow_600_dark</item>
         <item name="pinColorSelected">@color/material_amber_700_dark</item>
+
+        <item name="detailsColorHasDDR">@color/material_green_700</item>
+        <item name="detailsColorNoDDR">@color/material_red_700</item>
     </style>
 
     <!-- Dark theme colors. -->
@@ -33,6 +36,9 @@
         <item name="pinColor">@color/material_purple_500_light</item>
         <item name="pinColorHasDDR">@color/material_yellow_600_light</item>
         <item name="pinColorSelected">@color/material_amber_700_light</item>
+
+        <item name="detailsColorHasDDR">@color/material_green_200</item>
+        <item name="detailsColorNoDDR">@color/material_red_200</item>
     </style>
     <style name="AppBaseTheme" parent="AppLightTheme"/>
 
