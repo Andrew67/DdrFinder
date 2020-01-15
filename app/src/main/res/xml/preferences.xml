@@ -1,45 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
     <SwitchPreference
-        android:defaultValue="false"
-        android:key="filter_ddr_only"
-        android:title="@string/settings_filter"
-        android:summary="@string/settings_filter_ddr_only"
+        app:defaultValue="false"
+        app:key="filter_ddr_only"
+        app:title="@string/settings_filter"
+        app:summary="@string/settings_filter_ddr_only"
         app:iconSpaceReserved="false"/>
     <ListPreference
-        android:defaultValue="@string/settings_src_default"
-        android:key="api_src"
-        android:title="@string/settings_src"
-        android:entries="@array/settings_src_entries"
-        android:entryValues="@array/settings_src_entryValues"
+        app:defaultValue="@string/settings_src_default"
+        app:key="api_src"
+        app:title="@string/settings_src"
+        app:entries="@array/settings_src_entries"
+        app:entryValues="@array/settings_src_entryValues"
         app:iconSpaceReserved="false"/>
     <ListPreference
-        android:defaultValue="@string/settings_theme_default"
-        android:key="theme"
-        android:title="@string/settings_theme"
-        android:entries="@array/settings_theme_entries"
-        android:entryValues="@array/settings_theme_entryValues"
+        app:defaultValue="@string/settings_theme_default"
+        app:key="theme"
+        app:title="@string/settings_theme"
+        app:entries="@array/settings_theme_entries"
+        app:entryValues="@array/settings_theme_entryValues"
         app:iconSpaceReserved="false"/>
     <SwitchPreference
-        android:key="customtabs"
-        android:defaultValue="true"
-        android:title="@string/settings_custom_tabs"
+        app:key="customtabs"
+        app:defaultValue="true"
+        app:title="@string/settings_custom_tabs"
         app:iconSpaceReserved="false"/>
     <SwitchPreference
-        android:key="analyticsEnabled"
-        android:defaultValue="true"
-        android:title="@string/settings_analytics"
-        android:summary="@string/settings_analytics_summary"
+        app:key="analyticsEnabled"
+        app:defaultValue="true"
+        app:title="@string/settings_analytics"
+        app:summary="@string/settings_analytics_summary"
         app:iconSpaceReserved="false"/>
     <Preference
-        android:key="action_about"
-        android:persistent="false"
-        android:title="@string/action_about"
+        app:key="action_about"
+        app:persistent="false"
+        app:title="@string/action_about"
         app:iconSpaceReserved="false"/>
     <Preference
-        android:key="action_privacy_policy"
-        android:persistent="false"
-        android:title="@string/action_privacy_policy"
+        app:key="action_privacy_policy"
+        app:persistent="false"
+        app:title="@string/action_privacy_policy"
         app:iconSpaceReserved="false"/>
 </PreferenceScreen>

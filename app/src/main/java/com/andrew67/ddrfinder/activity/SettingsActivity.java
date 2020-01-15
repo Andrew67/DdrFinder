@@ -27,6 +27,7 @@
 package com.andrew67.ddrfinder.activity;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -107,6 +108,12 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             // Load the preferences from an XML resource
             setPreferencesFromResource(R.xml.preferences, rootKey);
+
+            // Hide the Theme preference on API < 24 until this bug is fixed:
+            // https://issuetracker.google.com/issues/131851825
+            if (Build.VERSION.SDK_INT < 24) {
+                findPreference(KEY_PREF_THEME).setVisible(false);
+            }
 
             // Set preference summaries to current values
             final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
