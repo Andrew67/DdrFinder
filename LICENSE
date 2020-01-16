@@ -76,7 +76,18 @@ THE SOFTWARE.
 Application Icon
 ================
 Arrow icon from StepMania default noteskin.
-See http://www.stepmania.com/
+    https://www.stepmania.com/
+
+Map Icons
+=========
+"Map Marker" icon (ic_map_marker_black_32dp.xml) by meghan hade from the Noun Project.
+    https://thenounproject.com/icon/25579/
+
+"arcade" icon (ic_arcade_black_16dp.xml) by Icon 54 from the Noun Project.
+    https://thenounproject.com/icon/237640/
+
+"Arrow" icon (ic_arrow_black_20dp.xml) by Al Haddad, ID from the Noun Project.
+    https://thenounproject.com/icon/3044571/
 
 
 SingleLiveEvent and SnackbarMessage
@@ -87,7 +98,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+    https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

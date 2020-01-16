@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Andrés Cordero
+ * Copyright (c) 2016-2020 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,6 +23,16 @@
 
 package com.andrew67.ddrfinder.arcades.ui;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.annotation.Nullable;
@@ -45,9 +55,11 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
  */
 public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocation> {
 
-    private final float defaultPinColor;
-    private final float hasDDRPinColor;
-    private final float selectedPinColor;
+    private final Bitmap defaultPin;
+    private final Bitmap selectedPin;
+
+    private final Bitmap ddrPin;
+    private final Bitmap ddrSelectedPin;
 
     private final LifecycleOwner lifecycleOwner;
     private final SelectedLocationModel selectedLocationModel;
@@ -58,13 +70,29 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
     public LocationClusterRenderer(FragmentActivity context, GoogleMap map,
                                    ClusterManager<ArcadeLocation> clusterManager) {
         super(context, map, clusterManager);
-        defaultPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.pinColor);
-        hasDDRPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.pinColorHasDDR);
-        selectedPinColor = ThemeUtil.getThemeColorHue(context.getTheme(), R.attr.pinColorSelected);
 
         this.lifecycleOwner = context;
         this.selectedLocationModel = ViewModelProviders.of(context).get(SelectedLocationModel.class);
         this.clusterManager = clusterManager;
+
+        final Resources.Theme theme = context.getTheme();
+        final int defaultPinColor = ThemeUtil.getThemeColor(theme, R.attr.colorPrimary);
+        final int selectedPinColor = ThemeUtil.getThemeColor(theme, R.attr.colorAccent);
+        final int iconColor = ThemeUtil.getThemeColor(theme, R.attr.colorOnPrimary);
+
+        defaultPin = getBitmapFromVector(context,
+                defaultPinColor,
+                R.drawable.ic_arcade_black_16dp, iconColor);
+        selectedPin = getBitmapFromVector(context,
+                selectedPinColor,
+                R.drawable.ic_arcade_black_16dp, iconColor);
+
+        ddrPin = getBitmapFromVector(context,
+                defaultPinColor,
+                R.drawable.ic_arrow_black_20dp, iconColor);
+        ddrSelectedPin = getBitmapFromVector(context,
+                selectedPinColor,
+                R.drawable.ic_arrow_black_20dp, iconColor);
     }
 
     @Override
@@ -110,11 +138,11 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
      * or selected color if currently selected
      */
     private BitmapDescriptor getIconForLocation(ArcadeLocation loc) {
-        float hue = defaultPinColor;
-        if (loc.hasDDR()) hue = hasDDRPinColor;
-        if (loc.getId() == selectedLocationId) hue = selectedPinColor;
+        Bitmap bitmap = defaultPin;
+        if (loc.getId() == selectedLocationId) bitmap = loc.hasDDR() ? ddrSelectedPin : selectedPin;
+        else if (loc.hasDDR()) bitmap = ddrPin;
 
-        return BitmapDescriptorFactory.defaultMarker(hue);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     /**
@@ -126,6 +154,36 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
         if (selectedLocationId >= 0 && loc.getId() != selectedLocationId) alpha = 0.8f;
 
         return alpha;
+    }
+
+    /**
+     * Generates a bitmap for the given vector atop the marker, with the given colors.
+     * Based on code snippet from https://stackoverflow.com/questions/42365658/custom-marker-in-google-maps-in-android-with-vector-asset-icon/48356646#48356646
+     */
+    private static Bitmap getBitmapFromVector(Context context, @ColorInt int markerColor,
+                                              @DrawableRes int icon, @ColorInt int iconColor) {
+        final Drawable background = ContextCompat.getDrawable(context,
+                R.drawable.ic_map_marker_black_32dp);
+        assert background != null;
+        background.setBounds(0, 0,
+                background.getIntrinsicWidth(), background.getIntrinsicHeight());
+        DrawableCompat.setTint(background, markerColor);
+
+        final Drawable vectorDrawable = ContextCompat.getDrawable(context, icon);
+        assert vectorDrawable != null;
+        final int left = (background.getIntrinsicWidth() - vectorDrawable.getIntrinsicWidth()) / 2;
+        final int top = (background.getIntrinsicHeight() - vectorDrawable.getIntrinsicHeight()) / 3;
+        vectorDrawable.setBounds(left, top,
+                left + vectorDrawable.getIntrinsicWidth(),
+                top + vectorDrawable.getIntrinsicHeight());
+        DrawableCompat.setTint(vectorDrawable, iconColor);
+
+        final Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(),
+                background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bitmap);
+        background.draw(canvas);
+        vectorDrawable.draw(canvas);
+        return bitmap;
     }
 
 }

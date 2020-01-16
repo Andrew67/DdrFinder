@@ -8,26 +8,13 @@
     <color name="material_blue_200_bg_dark">#1b2024</color><!-- 8% Material Blue 200 + #121212 -->
 
     <color name="material_blue_700">#1976d2</color>
-    <color name="material_blue_700_light">#63a4ff</color>
-    <color name="material_blue_700_dark">#004ba0</color>
 
     <color name="material_purple_200">#ce93d8</color>
 
     <color name="material_purple_500">#9c27b0</color>
-    <color name="material_purple_500_light">#d05ce3</color>
     <color name="material_purple_500_dark">#6a0080</color>
 
-    <color name="material_yellow_600">#fdd835</color>
-    <color name="material_yellow_600_light">#ffff6b</color>
-    <color name="material_yellow_600_dark">#c6a700</color>
-
-    <color name="material_amber_700">#ffa000</color>
-    <color name="material_amber_700_light">#ffd149</color>
-    <color name="material_amber_700_dark">#c67100</color>
-
     <color name="material_grey_300_">#e0e0e0</color>
-    <color name="material_grey_300_light">#ffffff</color>
-    <color name="material_grey_300_dark">#aeaeae</color>
 
     <color name="material_green_200">#a5d6a7</color>
     <color name="material_green_700">#388e3c</color>
