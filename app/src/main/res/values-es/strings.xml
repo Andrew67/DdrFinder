@@ -43,4 +43,6 @@
         <item>Claro</item>
         <item>Oscuro</item>
     </string-array>
+    <string name="has_ddr_yes">Sí</string>
+    <string name="has_ddr_no">No</string>
 </resources>

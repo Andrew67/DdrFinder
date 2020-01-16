@@ -45,4 +45,6 @@
         <item>浅色调</item>
         <item>深色调</item>
     </string-array>
+    <string name="has_ddr_yes">有</string>
+    <string name="has_ddr_no">没有</string>
 </resources>

@@ -27,6 +27,8 @@
     <string name="distance_km" translatable="false">%1$s km</string>
     <string name="coordinates" translatable="false">%1$s°, %2$s°</string>
     <string name="has_ddr" translatable="false">DDR️</string>
+    <string name="has_ddr_yes">Yes</string>
+    <string name="has_ddr_no">No</string>
 
     <!-- Preferences -->
     <string name="settings_src">Data Source</string>

@@ -69,6 +69,7 @@
 
             <ImageView
                 android:id="@+id/location_has_ddr_icon_yes"
+                android:contentDescription="@string/has_ddr_yes"
                 style="@style/BottomSheetListDetail"
                 app:layout_constraintTop_toTopOf="@+id/action_navigate"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -77,6 +78,7 @@
 
             <ImageView
                 android:id="@+id/location_has_ddr_icon_no"
+                android:contentDescription="@string/has_ddr_no"
                 style="@style/BottomSheetListDetail"
                 app:layout_constraintTop_toTopOf="@+id/action_navigate"
                 app:layout_constraintEnd_toEndOf="parent"
