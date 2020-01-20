@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2013-2019 Andrés Cordero
+ * Copyright (c) 2013-2020 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -334,7 +334,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         // While the sheet no longer covers attributions while expanded, it still does
         // while collapsed (in portrait view where we don't use too much side margin)
         // This keeps the Google attribution in view
-        locationActionsBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        locationActionsBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
@@ -462,7 +462,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         if (box.northeast.equals(zeroZero) && box.southwest.equals(zeroZero)) return;
 
         final boolean hasDDROnly = sharedPref.getBoolean(SettingsActivity.KEY_PREF_FILTER_DDR_ONLY, false);
-        final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "");
+        final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "ziv");
         arcadesModel.requestLocations(box, datasrc, hasDDROnly, force);
 
         // Track forced refreshes by data source.
