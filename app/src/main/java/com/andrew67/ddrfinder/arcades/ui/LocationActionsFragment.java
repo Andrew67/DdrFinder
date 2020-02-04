@@ -24,7 +24,7 @@ package com.andrew67.ddrfinder.arcades.ui;
 
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
@@ -90,13 +90,13 @@ public class LocationActionsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        final ViewModelProvider viewModelProvider = new ViewModelProvider(requireActivity());
 
-        selectedLocationModel = ViewModelProviders.of(requireActivity())
-                .get(SelectedLocationModel.class);
+        selectedLocationModel = viewModelProvider.get(SelectedLocationModel.class);
         selectedLocationModel.getSelectedLocation()
                 .observe(getViewLifecycleOwner(), onSelectedLocationUpdated);
 
-        myLocationModel = ViewModelProviders.of(requireActivity()).get(MyLocationModel.class);
+        myLocationModel = viewModelProvider.get(MyLocationModel.class);
     }
 
     /**

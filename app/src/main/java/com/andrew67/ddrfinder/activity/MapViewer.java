@@ -60,7 +60,7 @@ import com.google.maps.android.clustering.ClusterManager;
 
 import android.app.Dialog;
 import androidx.lifecycle.SnackbarMessage;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -145,7 +145,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         currentAppLink = appLink.buildUpon();
 
         // Set up arcades model and hook up attribution text, progress bar and errors to it
-        arcadesModel = ViewModelProviders.of(this).get(ArcadesModel.class);
+        final ViewModelProvider viewModelProvider = new ViewModelProvider(this);
+        arcadesModel = viewModelProvider.get(ArcadesModel.class);
 
         arcadesModel.getAttribution().observe(this, s -> {
             if (s != null) attributionText.setOutlinedText(s);
@@ -160,9 +161,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         arcadesModel.getErrorMessage().observe(this,
                 (SnackbarMessage.SnackbarObserver) this::showMessage);
 
-        myLocationModel = ViewModelProviders.of(this).get(MyLocationModel.class);
-        placeAutocompleteModel = ViewModelProviders.of(this).get(PlaceAutocompleteModel.class);
-        selectedLocationModel = ViewModelProviders.of(this).get(SelectedLocationModel.class);
+        myLocationModel = viewModelProvider.get(MyLocationModel.class);
+        placeAutocompleteModel = viewModelProvider.get(PlaceAutocompleteModel.class);
+        selectedLocationModel = viewModelProvider.get(SelectedLocationModel.class);
 
         // Observe the selected location state and reveal/hide the location actions, as well as move
         // the map to the location

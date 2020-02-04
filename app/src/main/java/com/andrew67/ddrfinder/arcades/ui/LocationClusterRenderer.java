@@ -34,7 +34,7 @@ import androidx.annotation.DrawableRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
@@ -72,7 +72,7 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
         super(context, map, clusterManager);
 
         this.lifecycleOwner = context;
-        this.selectedLocationModel = ViewModelProviders.of(context).get(SelectedLocationModel.class);
+        this.selectedLocationModel = new ViewModelProvider(context).get(SelectedLocationModel.class);
         this.clusterManager = clusterManager;
 
         final Resources.Theme theme = context.getTheme();
