@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 	
-    <!-- Used for Google Maps "My Location" layer
+    <!-- Used for "My Location" button and Google Maps "My Location" layer
     	See https://developers.google.com/maps/documentation/android-api/config#specify_android_permissions -->
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 		
@@ -19,6 +19,7 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="true"
         android:resizeableActivity="true">
+
         <activity android:name=".activity.MapViewer" android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -61,8 +62,6 @@
         <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H" android:value="598.0dip" />
         <meta-data android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable" android:value="true" />
 
-        <!-- Google Maps Android SDK is relying on Apache HTTP Legacy library -->
-        <uses-library android:name="org.apache.http.legacy" android:required="false" />
     </application>
 
 </manifest>
