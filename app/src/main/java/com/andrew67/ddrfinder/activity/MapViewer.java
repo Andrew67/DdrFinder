@@ -333,12 +333,12 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         // Adjust map padding whenever location actions bottom sheet is collapsed
         // While the sheet no longer covers attributions while expanded, it still does
-        // while collapsed (in portrait view where we don't use too much side margin)
+        // while collapsed (when width < 500dp where we don't use too much side margin)
         // This keeps the Google attribution in view
         locationActionsBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
+                if (getResources().getBoolean(R.bool.locationActionsPushAttributionUp)) {
                     final int bottomPadding = (newState == BottomSheetBehavior.STATE_COLLAPSED) ?
                             (int) getResources().getDimension(R.dimen.locationActionsPeekHeight) : 0;
                     mMap.setPadding(0, 0, 0, bottomPadding);

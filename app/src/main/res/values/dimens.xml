@@ -2,7 +2,8 @@
 <resources>
     <dimen name="attributionTextPadding">5dp</dimen>
     <dimen name="locationActionsPeekHeight">80dp</dimen>
-    <dimen name="locationActionsFullHeight">256dp</dimen>
+    <dimen name="locationActionsFullHeight">160dp</dimen>
     <dimen name="locationActionsBottomMargin">32dp</dimen>
     <dimen name="locationActionsSideMargins">4dp</dimen>
+    <bool name="locationActionsPushAttributionUp">true</bool>
 </resources>

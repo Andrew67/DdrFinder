@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="locationActionsSideMargins">68dp</dimen>
+    <bool name="locationActionsPushAttributionUp">false</bool>
+</resources>
