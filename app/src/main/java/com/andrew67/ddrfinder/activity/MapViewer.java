@@ -39,7 +39,6 @@ import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel;
 import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
-import com.andrew67.ddrfinder.widget.OutlineTextView;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -79,6 +78,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
@@ -111,7 +111,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     // UI
     private MenuItem reloadButton;
     private ProgressBar progressBar;
-    private OutlineTextView attributionText;
+    private TextView attributionText;
     private BottomSheetBehavior locationActionsBehavior;
 
     // Helpers
@@ -149,7 +149,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         arcadesModel = viewModelProvider.get(ArcadesModel.class);
 
         arcadesModel.getAttribution().observe(this, s -> {
-            if (s != null) attributionText.setOutlinedText(s);
+            if (s != null) attributionText.setText(s);
         });
 
         arcadesModel.getProgress().observe(this, aBoolean -> {

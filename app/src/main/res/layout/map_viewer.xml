@@ -37,7 +37,7 @@
                 android:layout_marginTop="-7dp"
                 android:indeterminate="true"
                 android:visibility="invisible"/>
-            <com.andrew67.ddrfinder.widget.OutlineTextView
+            <TextView
                 android:id="@+id/attribution"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,14 +45,12 @@
                 android:layout_alignParentEnd="true"
                 android:padding="@dimen/attributionTextPadding"
                 android:textSize="12sp"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorOnSurface"
                 android:text=""
-                android:shadowColor="@color/black"
+                android:shadowColor="?attr/colorSurface"
                 android:shadowDx="1"
                 android:shadowDy="1"
-                android:shadowRadius="1"
-                app:outlineColor="@color/black"
-                app:outlineWidth="1dp" />
+                android:shadowRadius="1" />
 
         </RelativeLayout>
 
