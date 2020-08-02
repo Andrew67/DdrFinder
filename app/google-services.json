@@ -2,8 +2,7 @@
   "project_info": {
     "project_number": "908908238003",
     "firebase_url": "https://andrew67-com-api-project-908908238003.firebaseio.com",
-    "project_id": "andrew67.com:api-project-908908238003",
-    "storage_bucket": "andrew67.com:api-project-908908238003.appspot.com"
+    "project_id": "andrew67.com:api-project-908908238003"
   },
   "client": [
     {
@@ -29,24 +28,17 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBg1zZmVtt2PZhYOXA8520kflYCCIWOOe0"
+          "current_key": "AIzaSyCd56mJAgfzpvF4yL-YXj9S8JsQyCd84tc"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "908908238003-vud2k05fecd811ghpebn4n68c862nqcs.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     },
@@ -73,24 +65,17 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBg1zZmVtt2PZhYOXA8520kflYCCIWOOe0"
+          "current_key": "AIzaSyCd56mJAgfzpvF4yL-YXj9S8JsQyCd84tc"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "908908238003-vud2k05fecd811ghpebn4n68c862nqcs.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }
