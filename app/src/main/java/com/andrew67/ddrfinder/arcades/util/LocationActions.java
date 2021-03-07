@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2019 Andrés Cordero
+ * Copyright (c) 2013-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,18 +25,16 @@ package com.andrew67.ddrfinder.arcades.util;
 
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.arcades.model.DataSource;
-import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.CustomTabsUtil;
 import com.andrew67.ddrfinder.util.GeoUriBuilder;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
@@ -64,9 +62,6 @@ public class LocationActions {
      * @return Success status of copying to clipboard. Can be used to show "Copied" message
      */
     public boolean copyGps(@NonNull Context context) {
-        FirebaseAnalytics.getInstance(context)
-                .logEvent(Analytics.Event.LOCATION_ACTION_COPYGPS, null);
-
         final LatLng coordinates = location.getPosition();
         final ClipboardManager clipboard =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -85,9 +80,6 @@ public class LocationActions {
      * @param context The context which provides the ability to start activities.
      */
     public void navigate(@NonNull Context context) {
-        FirebaseAnalytics.getInstance(context)
-                .logEvent(Analytics.Event.LOCATION_ACTION_NAVIGATE, null);
-
         final LatLng coordinates = location.getPosition();
         try {
             context.startActivity(new Intent(Intent.ACTION_VIEW,
@@ -108,9 +100,6 @@ public class LocationActions {
      * @return Success status of copying to clipboard. Can be used to show error message
      */
     public boolean moreInfo(@NonNull Context context, boolean useCustomTabs) {
-        FirebaseAnalytics.getInstance(context)
-                .logEvent(Analytics.Event.LOCATION_ACTION_MOREINFO, null);
-
         final String infoURL = source.getInfoURL()
                 .replace("${id}", "" + location.getId())
                 .replace("${sid}", location.getSid());
@@ -119,11 +108,7 @@ public class LocationActions {
             CustomTabsUtil.launchUrl(context, infoURL, useCustomTabs);
             return true;
         } catch (Exception e) {
-            final Bundle params = new Bundle();
-            params.putString(Analytics.Param.EXCEPTION_MESSAGE, e.getMessage());
-            FirebaseAnalytics.getInstance(context)
-                    .logEvent(Analytics.Event.LOCATION_MOREINFO_EXCEPTION, params);
-
+            // TODO: User-visible error or built-in WebView solution
             Log.e("LocationActions", "Error launching Intent for HTTP(S) link", e);
             return false;
         }

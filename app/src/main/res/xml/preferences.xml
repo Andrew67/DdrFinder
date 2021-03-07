@@ -25,12 +25,6 @@
         app:defaultValue="true"
         app:title="@string/settings_custom_tabs"
         app:iconSpaceReserved="false"/>
-    <SwitchPreference
-        app:key="analyticsEnabled"
-        app:defaultValue="true"
-        app:title="@string/settings_analytics"
-        app:summary="@string/settings_analytics_summary"
-        app:iconSpaceReserved="false"/>
     <Preference
         app:key="action_about"
         app:persistent="false"

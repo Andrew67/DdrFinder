@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2015-2020 Andrés Cordero
+ * Copyright (c) 2015-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,8 +28,6 @@ package com.andrew67.ddrfinder.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -40,10 +38,8 @@ import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.CustomTabsUtil;
 import com.andrew67.ddrfinder.util.ThemeUtil;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Arrays;
 
@@ -57,7 +53,6 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String API_SRC_CUSTOM = "custom";
 
     public static final String KEY_PREF_THEME = "theme";
-    public static final String KEY_PREF_ANALYTICS = "analyticsEnabled";
     public static final String KEY_PREF_CUSTOMTABS = "customtabs";
 
     @Override
@@ -94,14 +89,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static class SettingsFragment extends PreferenceFragmentCompat
             implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-        private FirebaseAnalytics firebaseAnalytics;
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity());
-        }
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -149,32 +136,16 @@ public class SettingsActivity extends AppCompatActivity {
             final Preference pref = findPreference(key);
             if (pref != null) {
                 switch (key) {
-                    case KEY_PREF_FILTER_DDR_ONLY:
-                        boolean filterDDROnly = sharedPref.getBoolean(key, false);
-                        trackPreferenceChanged("filter", filterDDROnly ? "ddr" : "none");
-                        break;
                     case KEY_PREF_API_SRC:
                         String newSrc = sharedPref.getString(key, "");
                         pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
                                 newSrc));
-                        trackPreferenceChanged(key, newSrc);
                         break;
                     case KEY_PREF_THEME:
                         String newTheme = sharedPref.getString(key, "");
                         pref.setSummary(getPrefSummary(R.array.settings_theme_entryValues, R.array.settings_theme_entries,
                                 newTheme));
-                        trackPreferenceChanged(key, newTheme);
-                        firebaseAnalytics.setUserProperty(Analytics.UserProperty.THEME, newTheme);
                         AppCompatDelegate.setDefaultNightMode(ThemeUtil.getAppCompatDelegateMode(newTheme));
-                        break;
-                    case KEY_PREF_CUSTOMTABS:
-                        boolean customTabsEnabled = sharedPref.getBoolean(key, true);
-                        trackPreferenceChanged(key, Boolean.toString(customTabsEnabled));
-                        break;
-                    case KEY_PREF_ANALYTICS:
-                        // Set changes to analytics option to set persistent opt-out flag in Firebase
-                        boolean analyticsEnabled = sharedPref.getBoolean(key, true);
-                        firebaseAnalytics.setAnalyticsCollectionEnabled(analyticsEnabled);
                         break;
                 }
             }
@@ -193,18 +164,6 @@ public class SettingsActivity extends AppCompatActivity {
             int idx = Arrays.asList(keys_arr).indexOf(key);
             if (idx == -1) return key;
             else return values_arr[idx];
-        }
-
-        /**
-         * Track a preference change in Firebase Analytics (when analytics are on).
-         * @param key Preference key (use one of the constants).
-         * @param value String value (may require casting).
-         */
-        private void trackPreferenceChanged(@NonNull String key, @Nullable String value) {
-            Bundle params = new Bundle();
-            params.putString(Analytics.Param.PREFERENCE_KEY, key);
-            params.putString(Analytics.Param.PREFERENCE_VALUE, value);
-            firebaseAnalytics.logEvent(Analytics.Event.SET_PREFERENCE, params);
         }
     }
 }

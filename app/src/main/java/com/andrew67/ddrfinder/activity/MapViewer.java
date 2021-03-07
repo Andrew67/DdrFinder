@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2013-2020 Andrés Cordero
+ * Copyright (c) 2013-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,7 +37,6 @@ import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel;
 import com.andrew67.ddrfinder.mylocation.MyLocationModel;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel;
-import com.andrew67.ddrfinder.util.Analytics;
 import com.andrew67.ddrfinder.util.AppLink;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -53,8 +52,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.ClusterManager;
 
 import android.app.Dialog;
@@ -115,7 +112,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private BottomSheetBehavior locationActionsBehavior;
 
     // Helpers
-    private FirebaseAnalytics firebaseAnalytics;
     private SharedPreferences sharedPref;
     private SharedPreferences state;
 
@@ -210,7 +206,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                     getResources().getString(R.string.settings_src_default)).apply();
         }
 
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     @Override
@@ -282,7 +277,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         // Register success and failure listeners for the My Location data and permission.
         myLocationModel.getLocationResponse().observe(this, myLocationResponse -> {
             if (myLocationResponse != null) {
-                firebaseAnalytics.logEvent(Analytics.Event.LOCATION_FOUND, null);
                 selectedLocationModel.clearSelectedLocation();
                 moveToLocation(myLocationResponse.latLng);
             }
@@ -295,7 +289,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                 try { mMap.setMyLocationEnabled(true); } catch (SecurityException ignored) { }
             }
             else {
-                firebaseAnalytics.logEvent(Analytics.Event.LOCATION_PERMISSION_DENIED, null);
                 showMessage(R.string.error_perm_loc);
             }
         }));
@@ -306,18 +299,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
             selectedLocationModel.clearSelectedLocation();
             moveMapToAutocompletedPlace(response.place);
-            firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_COMPLETE, null);
-        });
-        placeAutocompleteModel.getAutocompleteError().observe(this, error -> {
-            if (error == null) return;
-
-            if (error.resultCode == RESULT_CANCELED) {
-                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_CANCELED, null);
-            } else if (error.resultCode == AutocompleteActivity.RESULT_ERROR) {
-                final Bundle params = new Bundle();
-                params.putString(Analytics.Param.EXCEPTION_MESSAGE, error.errorMessage);
-                firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_ERROR, params);
-            }
         });
 
         // Register map-filling code for when arcade model loads current arcades
@@ -396,13 +377,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      * Pops open the share chooser populated with an AppLink that represents the current state.
      */
     private void shareCurrentAppLink() {
-        // Log share event for analytics.
-        Bundle params = new Bundle();
-        params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "map");
-        params.putString(FirebaseAnalytics.Param.ITEM_ID, "redacted");
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, params);
-
-        // Prepare and start share intent.
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_TEXT, currentAppLink.build().toString());
@@ -465,9 +439,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         final boolean hasDDROnly = sharedPref.getBoolean(SettingsActivity.KEY_PREF_FILTER_DDR_ONLY, false);
         final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, "ziv");
         arcadesModel.requestLocations(box, datasrc, hasDDROnly, force);
-
-        // Track forced refreshes by data source.
-        if (force) firebaseAnalytics.logEvent(Analytics.Event.MAP_ACTION_RELOAD, null);
     }
 
     /**
@@ -535,11 +506,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_search:
-            firebaseAnalytics.logEvent(Analytics.Event.PLACES_SEARCH_START, null);
             placeAutocompleteModel.startPlaceAutocomplete(this);
             return true;
         case R.id.action_my_location:
-            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_REQUESTED, null);
             myLocationModel.requestMyLocation(this);
             return true;
         case R.id.action_share:
@@ -579,15 +548,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         // Re-check in case dataSrc was changed
         if (mMap != null) updateMap(false);
-
-        // Set user property for "Active Datasource" for user segmentation
-        firebaseAnalytics.setUserProperty(Analytics.UserProperty.ACTIVE_DATASRC,
-                sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, ""));
-
-        // Set user property for "Filter" for user segmentation
-        firebaseAnalytics.setUserProperty(Analytics.UserProperty.FILTER,
-                sharedPref.getBoolean(SettingsActivity.KEY_PREF_FILTER_DDR_ONLY, false) ?
-                        "ddr" : "none");
     }
 
     @Override
@@ -646,8 +606,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     private final ClusterManager.OnClusterItemClickListener<ArcadeLocation>
             onClusterItemClickListener = arcadeLocation -> {
-        firebaseAnalytics.logEvent(Analytics.Event.MAP_MARKER_SELECTED, null);
-
         selectedLocationModel.setSelectedLocation(arcadeLocation,
                 arcadesModel.getSource(arcadeLocation));
 
@@ -660,7 +618,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     private final GoogleMap.OnMapClickListener onMapClickListener = point -> {
         selectedLocationModel.clearSelectedLocation();
-        firebaseAnalytics.logEvent(Analytics.Event.LOCATION_ACTIONS_DISMISSED, null);
     };
 
     /**
@@ -670,7 +627,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     public void onBackPressed() {
         if (selectedLocationModel.getSelectedLocation().getValue() != null) {
             selectedLocationModel.clearSelectedLocation();
-            firebaseAnalytics.logEvent(Analytics.Event.LOCATION_ACTIONS_DISMISSED, null);
         } else {
             super.onBackPressed();
         }
