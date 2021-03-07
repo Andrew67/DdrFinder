@@ -31,6 +31,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.appcompat.widget.Toolbar;
@@ -40,8 +41,6 @@ import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.util.CustomTabsUtil;
 import com.andrew67.ddrfinder.util.ThemeUtil;
-
-import java.util.Arrays;
 
 import okhttp3.HttpUrl;
 
@@ -87,8 +86,7 @@ public class SettingsActivity extends AppCompatActivity {
                 .toString();
     }
 
-    public static class SettingsFragment extends PreferenceFragmentCompat
-            implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static class SettingsFragment extends PreferenceFragmentCompat {
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -96,74 +94,41 @@ public class SettingsActivity extends AppCompatActivity {
             setPreferencesFromResource(R.xml.preferences, rootKey);
 
             // Set preference summaries to current values
-            final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
-            findPreference(KEY_PREF_API_SRC).setSummary(
-                    getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
-                            sharedPref.getString(KEY_PREF_API_SRC, "")));
-            findPreference(KEY_PREF_THEME).setSummary(
-                    getPrefSummary(R.array.settings_theme_entryValues, R.array.settings_theme_entries,
-                            sharedPref.getString(KEY_PREF_THEME, "")));
+            final Preference srcPref = findPreference(KEY_PREF_API_SRC);
+            if (srcPref != null) {
+                srcPref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+            }
+
+            final Preference themePref = findPreference(KEY_PREF_THEME);
+            if (themePref != null) {
+                themePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+                themePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                    AppCompatDelegate.setDefaultNightMode(
+                            ThemeUtil.getAppCompatDelegateMode(newValue.toString()));
+                    return true;
+                });
+            }
 
             // Set "About" and "Privacy Policy" listeners
-            findPreference("action_about").setOnPreferenceClickListener(preference -> {
-                CustomTabsUtil.launchUrl(requireActivity(), getAboutUrl(),
-                        sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
-                return true;
-            });
-            findPreference("action_privacy_policy").setOnPreferenceClickListener(preference -> {
-                CustomTabsUtil.launchUrl(requireActivity(), BuildConfig.PRIVACY_POLICY_URL,
-                        sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
-                return true;
-            });
-        }
+            final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
 
-        @Override
-        public void onResume() {
-            super.onResume();
-            getPreferenceScreen().getSharedPreferences()
-                    .registerOnSharedPreferenceChangeListener(this);
-        }
-
-        @Override
-        public void onPause() {
-            super.onPause();
-            getPreferenceScreen().getSharedPreferences()
-                    .unregisterOnSharedPreferenceChangeListener(this);
-        }
-
-        public void onSharedPreferenceChanged(SharedPreferences sharedPref,
-                                              String key) {
-            final Preference pref = findPreference(key);
-            if (pref != null) {
-                switch (key) {
-                    case KEY_PREF_API_SRC:
-                        String newSrc = sharedPref.getString(key, "");
-                        pref.setSummary(getPrefSummary(R.array.settings_src_entryValues, R.array.settings_src_entries,
-                                newSrc));
-                        break;
-                    case KEY_PREF_THEME:
-                        String newTheme = sharedPref.getString(key, "");
-                        pref.setSummary(getPrefSummary(R.array.settings_theme_entryValues, R.array.settings_theme_entries,
-                                newTheme));
-                        AppCompatDelegate.setDefaultNightMode(ThemeUtil.getAppCompatDelegateMode(newTheme));
-                        break;
-                }
+            final Preference aboutAction = findPreference("action_about");
+            if (aboutAction != null) {
+                aboutAction.setOnPreferenceClickListener(preference -> {
+                    CustomTabsUtil.launchUrl(requireActivity(), getAboutUrl(),
+                            sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
+                    return true;
+                });
             }
-        }
 
-        /**
-         * Find the user-friendly description of a ListPreference value key
-         * @param keys ID of keys array
-         * @param values ID of user-friendly values array
-         * @param key Current key
-         * @return User-friendly value description, or the key itself if not found
-         */
-        private String getPrefSummary(int keys, int values, String key) {
-            String[] keys_arr = getResources().getStringArray(keys);
-            String[] values_arr = getResources().getStringArray(values);
-            int idx = Arrays.asList(keys_arr).indexOf(key);
-            if (idx == -1) return key;
-            else return values_arr[idx];
+            final Preference privacyPolicyAction = findPreference("action_privacy_policy");
+            if (privacyPolicyAction != null) {
+                privacyPolicyAction.setOnPreferenceClickListener(preference -> {
+                    CustomTabsUtil.launchUrl(requireActivity(), BuildConfig.PRIVACY_POLICY_URL,
+                            sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
+                    return true;
+                });
+            }
         }
     }
 }
