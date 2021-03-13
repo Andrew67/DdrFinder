@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 Andrés Cordero
+ * Copyright (c) 2018-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Provides all the data fields needed to show a loaded map of arcades,
@@ -133,10 +134,11 @@ public class ArcadesModel extends ViewModel {
     @NonNull
     public DataSource getSource(@NonNull ArcadeLocation location) {
         if (dataSources.containsKey(location.getSrc()))
-            return dataSources.get(location.getSrc());
+            return Objects.requireNonNull(dataSources.get(location.getSrc()));
         else {
             Log.w("ArcadesModel", "Failed to get source: " + location.getSrc());
-            if (dataSources.containsKey("fallback")) return dataSources.get("fallback");
+            if (dataSources.containsKey("fallback"))
+                return Objects.requireNonNull(dataSources.get("fallback"));
             else {
                 Log.w("ArcadesModel", "Failed to get fallback source");
                 return DataSource.getFallback();

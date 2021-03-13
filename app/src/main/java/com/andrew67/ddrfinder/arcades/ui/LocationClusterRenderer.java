@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Andrés Cordero
+ * Copyright (c) 2016-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,6 +31,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.LifecycleOwner;
@@ -111,7 +112,8 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
     }
 
     @Override
-    protected void onBeforeClusterItemRendered(ArcadeLocation loc, MarkerOptions markerOptions) {
+    protected void onBeforeClusterItemRendered(@NonNull ArcadeLocation loc,
+                                               @NonNull MarkerOptions markerOptions) {
         markerOptions.icon(getIconForLocation(loc));
         markerOptions.alpha(getAlphaForLocation(loc));
     }

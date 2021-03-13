@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Andrés Cordero
+ * Copyright (c) 2018-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -68,7 +68,7 @@ public class EnableLocationDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onCancel(DialogInterface dialog) {
+    public void onCancel(@NonNull DialogInterface dialog) {
         if (cancelListener != null) cancelListener.onCancel();
     }
 

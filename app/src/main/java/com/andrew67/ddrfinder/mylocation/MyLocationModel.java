@@ -164,14 +164,11 @@ public class MyLocationModel extends ViewModel {
                 LocationServices.getFusedLocationProviderClient(activity);
         fusedLocationProviderClient.getLastLocation()
                 // Convert Location to LatLng when successful
-                .addOnSuccessListener(location -> {
-                    if (location != null) {
+                .addOnSuccessListener(location ->
                         onSuccessListener.onSuccess(new LatLng(
-                                location.getLatitude(),
-                                location.getLongitude()
-                        ));
-                    }
-                });
+                            location.getLatitude(),
+                            location.getLongitude()
+                )));
     }
 
     /**
@@ -179,7 +176,7 @@ public class MyLocationModel extends ViewModel {
      */
     private final OnSuccessListener<LatLng> updateLocationResponse = new OnSuccessListener<LatLng>() {
         @Override
-        public void onSuccess(LatLng latLng) {
+        public void onSuccess(@NonNull LatLng latLng) {
             locationResponse.postValue(MyLocationResponse.withLocation(latLng));
         }
     };
