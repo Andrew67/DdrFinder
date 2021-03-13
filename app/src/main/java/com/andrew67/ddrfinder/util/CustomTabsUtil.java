@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2020 Andrés Cordero
+ * Copyright (c) 2013-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,16 +25,12 @@ package com.andrew67.ddrfinder.util;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.andrew67.ddrfinder.R;
-
-import java.util.List;
 
 /**
  * Provides helper methods for dealing with the Custom Tabs Client library.
@@ -66,35 +62,22 @@ public class CustomTabsUtil {
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
                             context.getTheme(), R.attr.colorSurfaceDarkTheme))
                     .build();
-
-            final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                    .setShowTitle(true)
-                    .addDefaultShareMenuItem()
-                    // Fallback colors for browsers that don't support color schemes yet
+            // For browsers that don't handle color schemes yet, send based on current theme
+            CustomTabColorSchemeParams defaultParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
                             context.getTheme(), R.attr.colorPrimarySurface))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
                             context.getTheme(), R.attr.colorSurface))
+                    .build();
+
+            final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                    .setShowTitle(true)
+                    .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                     .setColorScheme(ThemeUtil.getCustomTabsColorScheme())
                     .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT, lightParams)
                     .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, darkParams)
+                    .setDefaultColorSchemeParams(defaultParams)
                     .build();
-
-            // Chrome detection recipe based on http://stackoverflow.com/a/32656019
-            // Otherwise, setPackage is not called, and falls back to user-selected browser.
-            final String CHROME_PACKAGE_NAME = "com.android.chrome";
-            customTabsIntent.intent.setData(uri);
-            PackageManager packageManager = context.getPackageManager();
-            List<ResolveInfo> resolveInfoList = packageManager.queryIntentActivities(
-                    customTabsIntent.intent, PackageManager.MATCH_DEFAULT_ONLY);
-
-            for (ResolveInfo resolveInfo : resolveInfoList) {
-                if (CHROME_PACKAGE_NAME.equals(resolveInfo.activityInfo.packageName)) {
-                    customTabsIntent.intent.setPackage(CHROME_PACKAGE_NAME);
-                    break;
-                }
-            }
-
             customTabsIntent.launchUrl(context, uri);
         }
     }
