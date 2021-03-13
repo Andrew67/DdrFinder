@@ -109,7 +109,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private MenuItem reloadButton;
     private ProgressBar progressBar;
     private TextView attributionText;
-    private BottomSheetBehavior locationActionsBehavior;
+    private BottomSheetBehavior<View> locationActionsBehavior;
 
     // Helpers
     private SharedPreferences sharedPref;
@@ -616,9 +616,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     /**
      * Listener class that clears the currently selected location on map (non-marker) click
      */
-    private final GoogleMap.OnMapClickListener onMapClickListener = point -> {
-        selectedLocationModel.clearSelectedLocation();
-    };
+    private final GoogleMap.OnMapClickListener onMapClickListener =
+            point -> selectedLocationModel.clearSelectedLocation();
 
     /**
      * Overrides back button to dismiss location pop-up first before letting the app close.

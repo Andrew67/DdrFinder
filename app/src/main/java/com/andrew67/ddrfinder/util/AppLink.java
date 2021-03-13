@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 Andrés Cordero
+ * Copyright (c) 2018-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -105,10 +106,10 @@ public class AppLink {
                     Matcher m = LAT_LNG_ZOOM.matcher(url.getLastPathSegment());
                     if (m.matches()) {
                         appLink.position(new LatLng(
-                                Double.valueOf(m.group(LAT)),
-                                Double.valueOf(m.group(LNG))
+                                Double.parseDouble(Objects.requireNonNull(m.group(LAT))),
+                                Double.parseDouble(Objects.requireNonNull(m.group(LNG)))
                         ));
-                        appLink.zoom(Float.valueOf(m.group(ZOOM)));
+                        appLink.zoom(Float.valueOf(Objects.requireNonNull(m.group(ZOOM))));
                     }
                 } else {
                     // Handle /ng links.
@@ -117,8 +118,8 @@ public class AppLink {
                     if (ll != null) {
                         String[] llComponents = ll.split(",");
                         appLink.position(new LatLng(
-                                Double.valueOf(llComponents[0]),
-                                Double.valueOf(llComponents[1])
+                                Double.parseDouble(llComponents[0]),
+                                Double.parseDouble(llComponents[1])
                         ));
                     }
                     String z = url.getQueryParameter("z");
