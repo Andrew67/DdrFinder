@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Andrés Cordero
+ * Copyright (c) 2018-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -164,11 +164,15 @@ public class MyLocationModel extends ViewModel {
                 LocationServices.getFusedLocationProviderClient(activity);
         fusedLocationProviderClient.getLastLocation()
                 // Convert Location to LatLng when successful
-                .addOnSuccessListener(location ->
+                .addOnSuccessListener(location -> {
+                    // location can be null in the success case if no data is available, such as
+                    // right after a device restart
+                    if (location != null) {
                         onSuccessListener.onSuccess(new LatLng(
-                            location.getLatitude(),
-                            location.getLongitude()
-                )));
+                                location.getLatitude(),
+                                location.getLongitude()));
+                    }
+                });
     }
 
     /**

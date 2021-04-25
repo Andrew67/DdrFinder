@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 Andrés Cordero
+ * Copyright (c) 2018-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -89,7 +89,7 @@ public class PlaceAutocompleteModel extends ViewModel {
     public void startPlaceAutocomplete(@NonNull Activity activity) {
         if (!Places.isInitialized()) {
             Places.initialize(activity.getApplicationContext(),
-                    activity.getString(R.string.GOOGLE_MAPS_API_KEY));
+                    activity.getString(R.string.GOOGLE_PLACES_API_KEY));
         }
         final List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
                 Place.Field.LAT_LNG, Place.Field.VIEWPORT);

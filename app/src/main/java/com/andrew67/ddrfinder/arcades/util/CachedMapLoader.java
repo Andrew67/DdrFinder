@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 Andrés Cordero
+ * Copyright (c) 2018-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -72,15 +72,18 @@ public class CachedMapLoader {
 
         // force || cachedApiResult == null
 
-        // Preload slightly larger bounds when zoomed in, for a smoother pan/zoom experience
-        // as network requests are reduced.
-        if (Math.abs(bounds.northeast.latitude - bounds.southwest.latitude) < 0.5
-                && Math.abs(bounds.northeast.longitude - bounds.southwest.longitude) < 0.5) {
-            bounds = LatLngBounds.builder()
-                    .include(new LatLng(bounds.northeast.latitude + 0.125, bounds.northeast.longitude + 0.125))
-                    .include(new LatLng(bounds.southwest.latitude - 0.125, bounds.southwest.longitude - 0.125))
-                    .build();
-        }
+        // Round the currently viewed bounds to the nearest whole degree, for two purposes:
+        // - when zoomed in, provides a smoother pan/zoom experience with reduced loading time
+        // - sets the precision to a minimum of 43.5km (see: https://en.wikipedia.org/wiki/Decimal_degrees)
+        //   which provides privacy to the user (especially if the bounds include their location)
+        bounds = LatLngBounds.builder()
+                .include(new LatLng(
+                        Math.ceil(bounds.northeast.latitude),
+                        Math.ceil(bounds.northeast.longitude)))
+                .include(new LatLng(
+                        Math.floor(bounds.southwest.latitude),
+                        Math.floor(bounds.southwest.longitude)))
+                .build();
 
         new NetworkMapLoader(dataSrc, new MapLoaderCallback() {
             @Override
