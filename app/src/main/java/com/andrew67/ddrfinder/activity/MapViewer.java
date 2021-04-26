@@ -71,6 +71,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -502,13 +503,20 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Opens the place search (autocomplete) overlay activity.
+     */
+    private void openPlaceSearchOverlay() {
+        LatLngBounds currentMapView = null;
+        if (mMap != null) currentMapView = mMap.getProjection().getVisibleRegion().latLngBounds;
+        placeAutocompleteModel.startPlaceAutocomplete(this, currentMapView);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.action_search) {
-            LatLngBounds currentMapView = null;
-            if (mMap != null) currentMapView = mMap.getProjection().getVisibleRegion().latLngBounds;
-            placeAutocompleteModel.startPlaceAutocomplete(this, currentMapView);
+            openPlaceSearchOverlay();
             return true;
         } else if (itemId == R.id.action_my_location) {
             myLocationModel.requestMyLocation(this);
@@ -524,6 +532,15 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_SEARCH) {
+            openPlaceSearchOverlay();
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
