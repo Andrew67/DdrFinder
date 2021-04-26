@@ -33,8 +33,10 @@ import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.andrew67.ddrfinder.R;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
@@ -83,18 +85,23 @@ public class PlaceAutocompleteModel extends ViewModel {
     }
 
     /**
-     * Starts the place autocomplete overlay activity (with filter for regions).
+     * Starts the place autocomplete overlay activity,
+     * biasing results to the current map view if available.
      * If Google Play Services requires an update, shows actionable error message to user
      */
-    public void startPlaceAutocomplete(@NonNull Activity activity) {
+    public void startPlaceAutocomplete(@NonNull Activity activity,
+                                       @Nullable LatLngBounds currentMapView) {
         if (!Places.isInitialized()) {
             Places.initialize(activity.getApplicationContext(),
                     activity.getString(R.string.GOOGLE_PLACES_API_KEY));
         }
         final List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
                 Place.Field.LAT_LNG, Place.Field.VIEWPORT);
-        final Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-                .build(activity);
+        final Autocomplete.IntentBuilder intentBuilder =
+                new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields);
+        if (currentMapView != null)
+            intentBuilder.setLocationBias(RectangularBounds.newInstance(currentMapView));
+        final Intent intent = intentBuilder.build(activity);
         activity.startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
     }
 

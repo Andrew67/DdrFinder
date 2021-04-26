@@ -504,25 +504,26 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.action_search:
-            placeAutocompleteModel.startPlaceAutocomplete(this);
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_search) {
+            LatLngBounds currentMapView = null;
+            if (mMap != null) currentMapView = mMap.getProjection().getVisibleRegion().latLngBounds;
+            placeAutocompleteModel.startPlaceAutocomplete(this, currentMapView);
             return true;
-        case R.id.action_my_location:
+        } else if (itemId == R.id.action_my_location) {
             myLocationModel.requestMyLocation(this);
             return true;
-        case R.id.action_share:
+        } else if (itemId == R.id.action_share) {
             shareCurrentAppLink();
             return true;
-        case R.id.action_reload:
+        } else if (itemId == R.id.action_reload) {
             if (mMap != null) updateMap(true);
             return true;
-        case R.id.action_settings:
+        } else if (itemId == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        default:
-            return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
