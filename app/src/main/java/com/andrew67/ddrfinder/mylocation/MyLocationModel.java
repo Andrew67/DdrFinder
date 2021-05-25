@@ -80,7 +80,7 @@ public class MyLocationModel extends ViewModel {
      * Use for attaching observers for setup when granted, or error message when denied.
      * Fires denied only when user requests location explicitly;
      * fires granted upon original grant and on every onResume thereafter.
-     * When emitting true, SecurityException should not happen for ACCESS_FINE_LOCATION
+     * When emitting true, SecurityException should not happen for ACCESS_COARSE_LOCATION
      */
     @NonNull
     public LiveData<Boolean> getPermissionGranted() {
@@ -95,11 +95,11 @@ public class MyLocationModel extends ViewModel {
      */
     public void requestMyLocation(@NonNull Activity activity) {
         if (ContextCompat.checkSelfPermission(activity,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             loadLocation(activity, updateLocationResponse);
         } else {
             ActivityCompat.requestPermissions(activity,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                     PERMISSIONS_REQUEST_LOCATION);
         }
     }
@@ -113,7 +113,7 @@ public class MyLocationModel extends ViewModel {
     public void requestMyLocationSilently(@NonNull Context activity,
                                           @NonNull OnSuccessListener<LatLng> onSuccessListener) {
         if (ContextCompat.checkSelfPermission(activity,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             loadLocation(activity, onSuccessListener);
         }
     }
@@ -141,7 +141,7 @@ public class MyLocationModel extends ViewModel {
      */
     public void onResume(@NonNull FragmentActivity activity) {
         if (ContextCompat.checkSelfPermission(activity,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             permissionGranted.setValue(true);
         } else if (permissionDeniedFromPlatform) {
             permissionDeniedFromPlatform = false;

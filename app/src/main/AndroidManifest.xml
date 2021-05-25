@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.andrew67.ddrfinder">
 
     <!-- Used for API requests -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- Used for "My Location" button and Google Maps "My Location" layer
-    	See https://developers.google.com/maps/documentation/android-api/config#specify_android_permissions -->
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-		
+    	See https://developers.google.com/maps/documentation/android-api/config#specify_android_permissions
+    	For increased privacy, only COARSE is requested now, and FINE is eliminated -->
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" tools:node="remove"/>
+
     <application
         android:name=".DdrFinderApp"
         android:allowBackup="true"
@@ -52,6 +55,7 @@
 
         <!-- Disable Firebase Analytics collection -->
         <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
 
         <!-- Split window meta-data for LG/Samsung Android pre-7.0 support -->
         <meta-data android:name="com.lge.support.SPLIT_WINDOW" android:value="true" />
