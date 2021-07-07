@@ -166,8 +166,10 @@ public class MyLocationModel extends ViewModel {
                 // Convert Location to LatLng when successful
                 .addOnSuccessListener(location -> {
                     // location can be null in the success case if no data is available, such as
-                    // right after a device restart
-                    if (location != null) {
+                    // right after a device restart;
+                    // I've also caught it set to 0,0 under similar fresh restart circumstances
+                    if (location != null &&
+                            !(location.getLatitude() == 0 && location.getLongitude() == 0)) {
                         onSuccessListener.onSuccess(new LatLng(
                                 location.getLatitude(),
                                 location.getLongitude()));
