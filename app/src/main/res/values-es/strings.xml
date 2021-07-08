@@ -21,6 +21,7 @@
     <string-array name="settings_src_entries">
         <item>Zenius -I- vanisher.com (Mundial)</item>
         <item>DDR-Navi (Japón)</item>
+        <item>OpenStreetMap (Mundial)</item>
     </string-array>
     <string name="browser_actions_copy">Copiar enlace</string>
     <string name="settings_analytics">Analítica</string>

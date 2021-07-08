@@ -36,10 +36,12 @@
     <string-array name="settings_src_entries">
         <item>Zenius -I- vanisher.com (Worldwide)</item>
         <item>DDR-Navi (Japan)</item>
+        <item>OpenStreetMap (Worldwide)</item>
     </string-array>
     <string-array name="settings_src_entryValues" translatable="false">
         <item>ziv</item>
         <item>navi</item>
+        <item>osm</item>
     </string-array>
     <string name="settings_src_default" translatable="false">ziv</string>
     <string name="settings_category_basic">Basic</string>

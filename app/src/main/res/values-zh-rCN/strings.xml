@@ -25,6 +25,7 @@
     <string-array name="settings_src_entries">
         <item>Zenius -I- vanisher.com (全球)</item>
         <item>DDR-Navi (日本)</item>
+        <item>开放街图 (全球)</item>
     </string-array>
     <string name="settings_category_basic">基本设置</string>
     <string name="settings_category_advanced">高级设置</string>
