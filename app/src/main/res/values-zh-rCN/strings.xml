@@ -48,4 +48,5 @@
     </string-array>
     <string name="has_ddr_yes">有</string>
     <string name="has_ddr_no">没有</string>
+    <string name="distance_km">约 %1$s km</string>
 </resources>
