@@ -310,8 +310,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         mMap.setOnCameraMoveStartedListener(cameraMoveStartedListener);
         mMap.setOnCameraIdleListener(cameraIdleListener);
         mMap.setOnMapClickListener(onMapClickListener);
-        mMap.setOnMarkerClickListener(mClusterManager);
-        mMap.setOnInfoWindowClickListener(mClusterManager);
 
         // Adjust map padding whenever location actions bottom sheet is collapsed
         // While the sheet no longer covers attributions while expanded, it still does
