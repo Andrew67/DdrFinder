@@ -121,17 +121,17 @@ public class LocationActionsFragment extends Fragment {
                         arcadeCity.setText(selectedLocation.arcadeLocation.getCity());
                     }
 
-                    // If distance is unset, leave blank and request to update user's location.
-                    // If user has location disabled, it stays blank silently.
-                    // If enabled, a new location is emitted which includes distance.
+                    // If distance is unset, leave blank.
+                    // Request a silent distance update. If location is disabled, it stays blank.
+                    // Otherwise, causes a newer object to get emitted with the updated distance.
                     if (selectedLocation.distanceKm == null) {
                         arcadeDistance.setText("");
-                        myLocationModel.requestMyLocationSilently(requireActivity(),
-                                selectedLocationModel::updateUserLocation);
                     } else {
                         arcadeDistance.setText(getString(R.string.distance_km,
                                 formatDistance(selectedLocation.distanceKm)));
                     }
+                    myLocationModel.requestMyLocationSilently(requireActivity(),
+                            selectedLocationModel::updateUserLocation);
 
                     // If DDR availability is available, update with the appropriate text and icon.
                     // Otherwise, set it back to blank.
