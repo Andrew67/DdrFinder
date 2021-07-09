@@ -8,7 +8,11 @@ android {
         versionName "3.0.23"
         minSdkVersion 23
         targetSdkVersion 30
-        resConfigs "en", "es", "ja", "zh-rCN"
+        resConfigs "en", "en-rGB",
+                "es", "es-rUS", "b+es+419",
+                "ja",
+                "zh", "zh-rCN",
+                "en-rXA", "ar-rXB"
         vectorDrawables.useSupportLibrary = true
 
         buildConfigField 'String', 'API_BASE_URL', '"https://ddrfinder.andrew67.com/locate.php"'
@@ -29,6 +33,7 @@ android {
         }
         debug {
             debuggable true
+            pseudoLocalesEnabled true
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
         }
