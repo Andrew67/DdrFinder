@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019 Andrés Cordero
+ * Copyright (c) 2015-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -63,7 +63,7 @@ public final class DataSource implements Parcelable {
     }
 
     /**
-     * Retuns whether the location has meaningful data for the "hasDDR" field.
+     * Returns whether the location has meaningful data for the "hasDDR" field.
      */
     public boolean hasDDR() {
         return hasDDR;

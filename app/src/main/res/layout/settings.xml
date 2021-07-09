@@ -14,7 +14,8 @@
         android:elevation="4dp"
         style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
 
-    <fragment class="com.andrew67.ddrfinder.activity.SettingsActivity$SettingsFragment"
+    <androidx.fragment.app.FragmentContainerView
+        android:name="com.andrew67.ddrfinder.activity.SettingsActivity$SettingsFragment"
         android:id="@+id/settings"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

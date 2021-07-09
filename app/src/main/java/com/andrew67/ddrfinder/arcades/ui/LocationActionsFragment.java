@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020 Andrés Cordero
+ * Copyright (c) 2018-2021 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,6 +25,7 @@ package com.andrew67.ddrfinder.arcades.ui;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
@@ -66,7 +67,7 @@ public class LocationActionsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.location_actions, container);
+        final View view = inflater.inflate(R.layout.location_actions, container, false);
 
         arcadeName = view.findViewById(R.id.location_name);
         arcadeCity = view.findViewById(R.id.location_city);
@@ -88,8 +89,8 @@ public class LocationActionsFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         final ViewModelProvider viewModelProvider = new ViewModelProvider(requireActivity());
 
         selectedLocationModel = viewModelProvider.get(SelectedLocationModel.class);
@@ -134,16 +135,16 @@ public class LocationActionsFragment extends Fragment {
 
                     // If DDR availability is available, update with the appropriate text and icon.
                     // Otherwise, set it back to blank.
-                    if (!selectedLocation.dataSource.hasDDR()) {
-                        arcadeHasDDR.setVisibility(View.INVISIBLE);
-                        arcadeHasDDRIconYes.setVisibility(View.INVISIBLE);
-                        arcadeHasDDRIconNo.setVisibility(View.INVISIBLE);
-                    } else {
+                    if (selectedLocation.dataSource.hasDDR()) {
                         arcadeHasDDR.setVisibility(View.VISIBLE);
                         arcadeHasDDRIconYes.setVisibility(selectedLocation.arcadeLocation.hasDDR() ?
                                 View.VISIBLE : View.INVISIBLE);
                         arcadeHasDDRIconNo.setVisibility(!selectedLocation.arcadeLocation.hasDDR() ?
                                 View.VISIBLE : View.INVISIBLE);
+                    } else {
+                        arcadeHasDDR.setVisibility(View.INVISIBLE);
+                        arcadeHasDDRIconYes.setVisibility(View.INVISIBLE);
+                        arcadeHasDDRIconNo.setVisibility(View.INVISIBLE);
                     }
 
                     // Set up LocationActions object that enables the available actions

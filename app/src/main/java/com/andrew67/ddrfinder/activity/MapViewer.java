@@ -228,7 +228,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      * Finalize initialization steps that depend on GoogleMap (previously in onCreate).
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setIndoorEnabled(false);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -572,6 +572,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         myLocationModel.onRequestPermissionsResult(this,
                 requestCode, permissions, grantResults);
     }
@@ -597,7 +598,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         final CameraUpdate viewportCameraUpdate = viewport == null ?
                 null : CameraUpdateFactory.newLatLngBounds(viewport, 0);
         final LatLng latLng = autocompletedPlace.getLatLng();
-        final CameraUpdate latLngCameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, BASE_ZOOM);
+        final CameraUpdate latLngCameraUpdate = latLng == null ?
+                null : CameraUpdateFactory.newLatLngZoom(latLng, BASE_ZOOM);
 
         boolean success = false;
 
@@ -615,7 +617,9 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         }
         if (!success) {
             Log.d("MapViewer", "Places API using latLng: " + latLng);
-            mMap.moveCamera(latLngCameraUpdate);
+            if (latLngCameraUpdate != null) {
+                mMap.moveCamera(latLngCameraUpdate);
+            }
         }
     }
 
