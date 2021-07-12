@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DDR 地圖</string>
+    <string name="action_share">分享</string>
+    <string name="action_search">搜尋</string>
+    <string name="action_reload">刷新</string>
+    <string name="action_my_location">我的位置</string>
+    <string name="action_settings">設置</string>
+    <string name="action_about">關於</string>
+    <string name="action_privacy_policy">隱私政策</string>
+    <string name="location_actions_navigate">導航</string>
+    <string name="location_actions_info">更多信息</string>
+    <string name="has_ddr_yes">有</string>
+    <string name="has_ddr_no">沒有</string>
+    <string name="settings_location_dialog_positive">應用設置</string>
+    <string name="distance_km">約 %1$s km</string>
+    <string name="settings_location_dialog_negative">取消</string>
+    <string name="error_zoom">請放大</string>
+    <string name="error_api">加載數據錯誤</string>
+    <string name="location_actions_copy">複製GPS坐標</string>
+    <string name="browser_actions_copy">複製鏈接</string>
+    <string name="copy_complete">已復制</string>
+    <string name="error_perm_loc">無法定位您的位置，請在手機系統設置中開啟定位服務</string>
+    <string name="error_api_ver">服務器不支持此應用的API</string>
+    <string name="error_datasrc">服務器無法識別已請求的數據源</string>
+    <string name="error_api_unexpected">未知連接錯誤</string>
+    <string name="area_no_results">這個區域沒有找到遊戲廳</string>
+    <string name="settings_src">數據源</string>
+    <string name="settings_category_basic">基本設置</string>
+    <string name="settings_category_advanced">高級設置</string>
+    <string name="settings_analytics">使用分析</string>
+    <string name="settings_analytics_summary">分享匿名使用數據來幫助我更好地提高此應用</string>
+    <string name="settings_location">開啟定位服務</string>
+    <string name="settings_location_dialog_message">如需開啟定位服務，點擊“應用設置”，進入“權限”，然後開啟“您的位置”。</string>
+    <string name="settings_custom_tabs">在應用中打開網頁</string>
+    <string name="error_opening_browser">無法打開瀏覽器</string>
+    <string name="settings_filter">篩選</string>
+    <string name="settings_filter_ddr_only">只顯示有DDR的遊戲廳</string>
+    <string name="settings_theme">主題</string>
+    <string-array name="settings_src_entries">
+        <item>Zenius -I- vanisher.com (全世界)</item>
+        <item>DDR-Navi (日本)</item>
+        <item>開放街圖 (全世界)</item>
+    </string-array>
+    <string-array name="settings_theme_entries">
+        <item>遵從系統設置</item>
+        <item>淺色</item>
+        <item>深色</item>
+    </string-array>
+</resources>

@@ -11,7 +11,7 @@ android {
         resConfigs "en", "en-rGB",
                 "es", "es-rUS", "b+es+419",
                 "ja",
-                "zh", "zh-rCN",
+                "zh", "zh-rCN", "zh-rSG", "zh-rTW", "zh-rHK",
                 "en-rXA", "ar-rXB"
         vectorDrawables.useSupportLibrary = true
 
