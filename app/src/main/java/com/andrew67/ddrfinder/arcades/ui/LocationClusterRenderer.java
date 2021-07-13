@@ -118,6 +118,12 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
         markerOptions.alpha(getAlphaForLocation(loc));
     }
 
+    @Override
+    protected void onClusterItemUpdated(@NonNull ArcadeLocation loc, @NonNull Marker marker) {
+        marker.setIcon(getIconForLocation(loc));
+        marker.setAlpha(getAlphaForLocation(loc));
+    }
+
     /**
      * Updates the marker for the given location to the "selected" color,
      * then updates the previous location's marker back to the non-selected color, as appropriate
