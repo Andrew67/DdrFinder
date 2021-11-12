@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
-        versionCode 54
-        versionName "3.0.23"
+        versionCode 55
+        versionName "3.0.24"
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 31
         resConfigs "en", "en-rGB",
                 // Uncomment to test pseudo-locales (no way to specify just for debug config)
                 //"en-rXA", "ar-rXB",
@@ -43,19 +43,19 @@ android {
 
 dependencies {
     implementation 'com.google.android.gms:play-services-base:17.6.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.0.0'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.google.android.libraries.places:places:2.5.0'
     implementation 'com.google.maps.android:android-maps-utils:2.2.5'
 
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.browser:browser:1.3.0'
+    implementation 'androidx.browser:browser:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
     implementation 'androidx.preference:preference:1.1.1'
 
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.3.1'
-    implementation 'androidx.lifecycle:lifecycle-common-java8:2.3.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.4.0'
 
     implementation 'com.squareup.moshi:moshi:1.12.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'

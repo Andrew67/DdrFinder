@@ -27,7 +27,9 @@
         android:supportsRtl="true"
         android:resizeableActivity="true">
 
-        <activity android:name=".activity.MapViewer" android:theme="@style/SplashTheme">
+        <activity android:name=".activity.MapViewer"
+            android:theme="@style/SplashTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
