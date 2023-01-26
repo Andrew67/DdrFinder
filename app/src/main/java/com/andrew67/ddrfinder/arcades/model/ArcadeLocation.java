@@ -25,6 +25,7 @@ package com.andrew67.ddrfinder.arcades.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
@@ -84,6 +85,12 @@ public final class ArcadeLocation implements Parcelable, ClusterItem {
     @NonNull
     public LatLng getPosition() {
         return (position == null) ? position = new LatLng(lat, lng) : position;
+    }
+
+    @Nullable
+    @Override
+    public Float getZIndex() {
+        return null;
     }
 
     public boolean hasDDR() {

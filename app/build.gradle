@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'com.andrew67.ddrfinder'
-    compileSdkVersion 31
+    compileSdkVersion 33
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
         versionCode 55
         versionName "3.0.25"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
         // Add to test pseudo-locales (no way to specify just for debug config)
         // 'en-rXA', 'ar-rXB',
         resConfigs 'en', 'en-rGB', 'es', 'es-rUS', 'b+es+419', 'ja', 'zh', 'zh-rCN', 'zh-rSG', 'zh-rTW', 'zh-rHK'
@@ -40,11 +40,11 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-base:18.0.1'
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    implementation 'com.google.android.gms:play-services-location:19.0.1'
-    implementation 'com.google.android.libraries.places:places:2.6.0'
-    implementation 'com.google.maps.android:android-maps-utils:2.3.0'
+    implementation 'com.google.android.gms:play-services-base:18.1.0'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.libraries.places:places:3.0.0'
+    implementation 'com.google.maps.android:android-maps-utils:3.3.0'
 
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
