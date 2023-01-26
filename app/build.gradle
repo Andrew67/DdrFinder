@@ -1,19 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace 'com.andrew67.ddrfinder'
     compileSdkVersion 31
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
         versionCode 55
-        versionName "3.0.24"
+        versionName "3.0.25"
         minSdkVersion 23
         targetSdkVersion 31
-        resConfigs "en", "en-rGB",
-                // Uncomment to test pseudo-locales (no way to specify just for debug config)
-                //"en-rXA", "ar-rXB",
-                "es", "es-rUS", "b+es+419",
-                "ja",
-                "zh", "zh-rCN", "zh-rSG", "zh-rTW", "zh-rHK"
+        // Add to test pseudo-locales (no way to specify just for debug config)
+        // 'en-rXA', 'ar-rXB',
+        resConfigs 'en', 'en-rGB', 'es', 'es-rUS', 'b+es+419', 'ja', 'zh', 'zh-rCN', 'zh-rSG', 'zh-rTW', 'zh-rHK'
         vectorDrawables.useSupportLibrary = true
 
         buildConfigField 'String', 'API_BASE_URL', '"https://ddrfinder.andrew67.com/locate.php"'
