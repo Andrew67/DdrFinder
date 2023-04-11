@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2015-2021 Andrés Cordero
+ * Copyright (c) 2015-2023 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,16 +31,21 @@ import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.util.CustomTabsUtil;
 import com.andrew67.ddrfinder.util.ThemeUtil;
+
+import java.util.Locale;
 
 import okhttp3.HttpUrl;
 
@@ -52,6 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String API_SRC_CUSTOM = "custom";
 
     public static final String KEY_PREF_THEME = "theme";
+    public static final String KEY_PREF_LOCALE = "locale";
     public static final String KEY_PREF_CUSTOMTABS = "customtabs";
 
     @Override
@@ -99,12 +105,37 @@ public class SettingsActivity extends AppCompatActivity {
                 srcPref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
             }
 
+            // Set Theme preference into OS when set
             final Preference themePref = findPreference(KEY_PREF_THEME);
             if (themePref != null) {
                 themePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
                 themePref.setOnPreferenceChangeListener((preference, newValue) -> {
                     AppCompatDelegate.setDefaultNightMode(
                             ThemeUtil.getAppCompatDelegateMode(newValue.toString()));
+                    return true;
+                });
+            }
+
+            // Set/get Locale preference into OS when set
+            final ListPreference localePref = findPreference(KEY_PREF_LOCALE);
+            if (localePref != null) {
+                // TODO: Android 13+ it can return a string that's not explicitly in our list:
+                // e.g. "es-US" instead of just "es"
+                // See: LocaleListCompat.getFirstMatch for possible solution
+                LocaleListCompat appLocales = AppCompatDelegate.getApplicationLocales();
+                if (appLocales.size() > 0) {
+                    Locale appLocale = appLocales.get(0);
+                    if (appLocale != null) {
+                        localePref.setValue(appLocale.toLanguageTag());
+                    }
+                }
+                // TODO: Above getApplicationLocales is app-specific locale only, doesn't work if
+                // e.g. User has system-wide locale set to Japanese (still picks English in UI)
+
+                localePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+                localePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                    LocaleListCompat appLocale = LocaleListCompat.forLanguageTags(newValue.toString());
+                    AppCompatDelegate.setApplicationLocales(appLocale);
                     return true;
                 });
             }

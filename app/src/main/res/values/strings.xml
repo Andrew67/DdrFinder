@@ -68,4 +68,20 @@
         <item>dark</item>
     </string-array>
     <string name="settings_theme_default" translatable="false">auto</string>
+    <string name="settings_locale">Language / 言語</string>
+    <string-array name="settings_locale_entries" translatable="false">
+        <item>English</item>
+        <item>Español</item>
+        <item>日本語</item>
+        <item>中文（简体）</item>
+        <item>中文（繁體）</item>
+    </string-array>
+    <string-array name="settings_locale_entryValues" translatable="false">
+        <item>en</item>
+        <item>es</item>
+        <item>ja</item>
+        <item>zh-Hans</item>
+        <item>zh-Hant</item>
+    </string-array>
+    <string name="settings_locale_default" translatable="false">en</string>
 </resources>

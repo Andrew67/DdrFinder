@@ -47,4 +47,5 @@
     <string name="has_ddr_yes">Sí</string>
     <string name="has_ddr_no">No</string>
     <string name="distance_km">≈ %1$s km</string>
+    <string name="settings_locale">Idioma / Language</string>
 </resources>

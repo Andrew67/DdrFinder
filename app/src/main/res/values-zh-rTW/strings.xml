@@ -47,4 +47,5 @@
         <item>淺色</item>
         <item>深色</item>
     </string-array>
+    <string name="settings_locale">語言 / Language</string>
 </resources>
