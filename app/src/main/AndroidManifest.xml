@@ -22,6 +22,7 @@
         android:theme="@style/AppTheme"
         android:supportsRtl="true"
         android:resizeableActivity="true"
+        android:enableOnBackInvokedCallback="true"
         android:localeConfig="@xml/locale_config">
 
         <activity android:name=".activity.MapViewer"

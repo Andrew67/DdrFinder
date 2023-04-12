@@ -55,6 +55,8 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.maps.android.clustering.ClusterManager;
 
 import android.app.Dialog;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.lifecycle.SnackbarMessage;
 import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
@@ -162,6 +164,19 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         placeAutocompleteModel = viewModelProvider.get(PlaceAutocompleteModel.class);
         selectedLocationModel = viewModelProvider.get(SelectedLocationModel.class);
 
+        // Callback for clearing the location to dismiss the location info when pressing "Back"
+        // See Predictive Back API: https://developer.android.com/guide/navigation/predictive-back-gesture
+        // Enable when showing location actions, disable when app can be exited
+        OnBackPressedCallback locationActionsDismissCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                selectedLocationModel.clearSelectedLocation();
+            }
+        };
+        locationActionsDismissCallback
+                .setEnabled(selectedLocationModel.getSelectedLocation().getValue() != null);
+        getOnBackPressedDispatcher().addCallback(this, locationActionsDismissCallback);
+
         // Observe the selected location state and reveal/hide the location actions, as well as move
         // the map to the location
         // For some reason, putting this code in onMapReady causes the bottom sheet to fly from
@@ -170,9 +185,11 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             if (selected == null) {
                 locationActionsBehavior.setHideable(true);
                 locationActionsBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                locationActionsDismissCallback.setEnabled(false);
             } else {
                 locationActionsBehavior.setHideable(false);
                 locationActionsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                locationActionsDismissCallback.setEnabled(true);
 
                 if (mMap != null) {
                     final double bottomPadding = getResources().getDimension(R.dimen.locationActionsFullHeight);
@@ -638,16 +655,4 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      */
     private final GoogleMap.OnMapClickListener onMapClickListener =
             point -> selectedLocationModel.clearSelectedLocation();
-
-    /**
-     * Overrides back button to dismiss location pop-up first before letting the app close.
-     */
-    @Override
-    public void onBackPressed() {
-        if (selectedLocationModel.getSelectedLocation().getValue() != null) {
-            selectedLocationModel.clearSelectedLocation();
-        } else {
-            super.onBackPressed();
-        }
-    }
 }
