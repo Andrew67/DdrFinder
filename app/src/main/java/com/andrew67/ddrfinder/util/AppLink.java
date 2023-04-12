@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Andrés Cordero
+ * Copyright (c) 2018-2023 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +23,12 @@
 
 package com.andrew67.ddrfinder.util;
 
+import android.icu.number.LocalizedNumberFormatter;
+import android.icu.number.NumberFormatter;
+import android.icu.number.Precision;
 import android.net.Uri;
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -145,14 +150,27 @@ public class AppLink {
         url.append("/map"); // Append activity; currently only map is available.
         // Append coordinates as "/@{lat},{long},{zoom}z".
         if (position != null && zoom != null) {
-            NumberFormat latLngFormatter = NumberFormat.getInstance(Locale.US);
-            latLngFormatter.setMinimumFractionDigits(0);
-            latLngFormatter.setMaximumFractionDigits(5);
+            String latitude;
+            String longitude;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                LocalizedNumberFormatter latLngFormatter = NumberFormatter
+                        .withLocale(Locale.US)
+                        .precision(Precision.minMaxFraction(0, 5));
+                latitude = latLngFormatter.format(position.latitude).toString();
+                longitude = latLngFormatter.format(position.longitude).toString();
+            } else {
+                NumberFormat latLngFormat = NumberFormat.getInstance(Locale.US);
+                latLngFormat.setMinimumFractionDigits(0);
+                latLngFormat.setMaximumFractionDigits(5);
+                latitude = latLngFormat.format(position.latitude);
+                longitude = latLngFormat.format(position.longitude);
+            }
 
             url.append("/@");
-            url.append(latLngFormatter.format(position.latitude));
+            url.append(latitude);
             url.append(',');
-            url.append(latLngFormatter.format(position.longitude));
+            url.append(longitude);
             url.append(',');
             url.append(zoom.intValue());
             url.append('z');

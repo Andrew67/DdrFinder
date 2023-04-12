@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Andrés Cordero
+ * Copyright (c) 2018-2023 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +26,10 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.icu.number.LocalizedNumberFormatter;
+import android.icu.number.NumberFormatter;
+import android.icu.number.Precision;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
@@ -45,6 +49,7 @@ import com.andrew67.ddrfinder.mylocation.MyLocationModel;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.text.NumberFormat;
+import java.util.Locale;
 
 public class LocationActionsFragment extends Fragment {
 
@@ -53,8 +58,12 @@ public class LocationActionsFragment extends Fragment {
 
     private LocationActions locationActions;
 
+    // Formatters
     private NumberFormat distanceFormat; // 2 decimal digits
     private NumberFormat latLngFormat; // 5 decimal digits (good for 1m precision)
+    // API 30+
+    private LocalizedNumberFormatter distanceFormatter; // 2 decimal digits
+    private LocalizedNumberFormatter latLngFormatter; // 5 decimal digits (good for 1m precision)
 
     private TextView arcadeName;
     private TextView arcadeCity;
@@ -154,6 +163,15 @@ public class LocationActionsFragment extends Fragment {
             };
 
     private String formatDistance(float distance) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (distanceFormatter == null) {
+                distanceFormatter = NumberFormatter
+                        .withLocale(Locale.getDefault(Locale.Category.FORMAT))
+                        .precision(Precision.maxFraction(2));
+            }
+            return distanceFormatter.format(distance).toString();
+        }
+
         if (distanceFormat == null) {
             distanceFormat = NumberFormat.getNumberInstance();
             distanceFormat.setMaximumFractionDigits(2);
@@ -162,6 +180,15 @@ public class LocationActionsFragment extends Fragment {
     }
 
     private String formatLatLng(double coord) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (latLngFormatter == null) {
+                latLngFormatter = NumberFormatter
+                        .withLocale(Locale.getDefault(Locale.Category.FORMAT))
+                        .precision(Precision.maxFraction(5));
+            }
+            return latLngFormatter.format(coord).toString();
+        }
+
         if (latLngFormat == null) {
             latLngFormat = NumberFormat.getNumberInstance();
             latLngFormat.setMaximumFractionDigits(5);
