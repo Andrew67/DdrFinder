@@ -37,15 +37,13 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.appcompat.widget.Toolbar;
 
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.util.CustomTabsUtil;
+import com.andrew67.ddrfinder.util.LocaleUtil;
 import com.andrew67.ddrfinder.util.ThemeUtil;
-
-import java.util.Locale;
 
 import okhttp3.HttpUrl;
 
@@ -119,22 +117,29 @@ public class SettingsActivity extends AppCompatActivity {
             // Set/get Locale preference into OS when set
             final ListPreference localePref = findPreference(KEY_PREF_LOCALE);
             if (localePref != null) {
-                // TODO: Android 13+ it can return a string that's not explicitly in our list:
-                // e.g. "es-US" instead of just "es"
-                // See: LocaleListCompat.getFirstMatch for possible solution
+                String[] supportedLocales = getResources()
+                        .getStringArray(R.array.settings_locale_entryValues);
+
+                // Check for app-specific locale(s) first
                 LocaleListCompat appLocales = AppCompatDelegate.getApplicationLocales();
                 if (appLocales.size() > 0) {
-                    Locale appLocale = appLocales.get(0);
+                    String appLocale = LocaleUtil.getLanguagePref(appLocales, supportedLocales);
                     if (appLocale != null) {
-                        localePref.setValue(appLocale.toLanguageTag());
+                        localePref.setValue(appLocale);
+                    }
+                } else {
+                    // Otherwise use system-level locale(s)
+                    String appLocale = LocaleUtil
+                            .getLanguagePref(LocaleListCompat.getAdjustedDefault(), supportedLocales);
+                    if (appLocale != null) {
+                        localePref.setValue(appLocale);
                     }
                 }
-                // TODO: Above getApplicationLocales is app-specific locale only, doesn't work if
-                // e.g. User has system-wide locale set to Japanese (still picks English in UI)
 
                 localePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
                 localePref.setOnPreferenceChangeListener((preference, newValue) -> {
                     LocaleListCompat appLocale = LocaleListCompat.forLanguageTags(newValue.toString());
+                    // TODO: It supports passing an empty list to revert to system-level locale
                     AppCompatDelegate.setApplicationLocales(appLocale);
                     return true;
                 });
