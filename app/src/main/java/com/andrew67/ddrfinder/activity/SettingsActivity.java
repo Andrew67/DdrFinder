@@ -120,17 +120,10 @@ public class SettingsActivity extends AppCompatActivity {
                 String[] supportedLocales = getResources()
                         .getStringArray(R.array.settings_locale_entryValues);
 
-                // Check for app-specific locale(s) first
+                // Check for app-specific locale(s)
                 LocaleListCompat appLocales = AppCompatDelegate.getApplicationLocales();
                 if (appLocales.size() > 0) {
                     String appLocale = LocaleUtil.getLanguagePref(appLocales, supportedLocales);
-                    if (appLocale != null) {
-                        localePref.setValue(appLocale);
-                    }
-                } else {
-                    // Otherwise use system-level locale(s)
-                    String appLocale = LocaleUtil
-                            .getLanguagePref(LocaleListCompat.getAdjustedDefault(), supportedLocales);
                     if (appLocale != null) {
                         localePref.setValue(appLocale);
                     }
@@ -138,9 +131,16 @@ public class SettingsActivity extends AppCompatActivity {
 
                 localePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
                 localePref.setOnPreferenceChangeListener((preference, newValue) -> {
-                    LocaleListCompat appLocale = LocaleListCompat.forLanguageTags(newValue.toString());
-                    // TODO: It supports passing an empty list to revert to system-level locale
-                    AppCompatDelegate.setApplicationLocales(appLocale);
+                    // If the new value is "auto", pass an empty list to revert to system-level locale
+                    if ("auto".equals(newValue)) {
+                        AppCompatDelegate
+                                .setApplicationLocales(LocaleListCompat.getEmptyLocaleList());
+                    } else {
+                        LocaleListCompat appLocale = LocaleListCompat
+                                .forLanguageTags(newValue.toString());
+                        AppCompatDelegate.setApplicationLocales(appLocale);
+                    }
+
                     return true;
                 });
             }
@@ -149,7 +149,7 @@ public class SettingsActivity extends AppCompatActivity {
             final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
 
             final Preference aboutAction = findPreference("action_about");
-            if (aboutAction != null) {
+            if (aboutAction != null && sharedPref != null) {
                 aboutAction.setOnPreferenceClickListener(preference -> {
                     CustomTabsUtil.launchUrl(requireActivity(), getAboutUrl(),
                             sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
@@ -158,7 +158,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             final Preference privacyPolicyAction = findPreference("action_privacy_policy");
-            if (privacyPolicyAction != null) {
+            if (privacyPolicyAction != null && sharedPref != null) {
                 privacyPolicyAction.setOnPreferenceClickListener(preference -> {
                     CustomTabsUtil.launchUrl(requireActivity(), BuildConfig.PRIVACY_POLICY_URL,
                             sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
