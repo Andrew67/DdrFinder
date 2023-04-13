@@ -10,7 +10,8 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize" />
+        android:layout_height="?attr/actionBarSize"
+        style="@style/Toolbar"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:name="com.andrew67.ddrfinder.activity.SettingsActivity$SettingsFragment"

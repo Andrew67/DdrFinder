@@ -42,9 +42,7 @@
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
         <item name="detailsColorHasDDR">@color/material_green_700</item>
-        <item name="detailsColorNoDDR">?colorError</item>
-        <item name="android:statusBarColor">?colorPrimaryContainer</item>
-        <item name="android:navigationBarColor">?colorPrimaryContainer</item>
+        <item name="detailsColorNoDDR">?attr/colorError</item>
     </style>
 
     <!-- Dark theme colors. -->
@@ -76,16 +74,15 @@
         <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
         <item name="detailsColorHasDDR">@color/material_green_200</item>
-        <item name="detailsColorNoDDR">?colorError</item>
-        <item name="android:statusBarColor">?colorSurface</item>
-        <item name="android:navigationBarColor">?colorSurface</item>
+        <item name="detailsColorNoDDR">?attr/colorError</item>
     </style>
     <style name="AppBaseTheme" parent="AppLightTheme"/>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular configuration can go here. -->
-        <item name="android:windowLightStatusBar">?isLightTheme</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryContainer</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme">
@@ -95,7 +92,15 @@
     <!-- Settings screen theme. Colors the navigation bar with surface color where possible. -->
     <style name="Base.SettingsTheme" parent="AppTheme"/>
     <style name="SettingsTheme" parent="Base.SettingsTheme">
-        <item name="android:windowBackground">?colorSurface</item>
+        <item name="android:windowBackground">?attr/colorSurface</item>
+    </style>
+
+    <!-- Custom style for app top bar -->
+    <style name="Toolbar" parent="Widget.Material3.Toolbar.Surface">
+        <item name="android:background">?attr/colorPrimaryContainer</item>
+        <item name="titleTextColor">?attr/colorOnPrimaryContainer</item>
+        <item name="subtitleTextColor">?attr/colorOnPrimaryContainer</item>
+        <item name="navigationIconTint">?attr/colorOnPrimaryContainer</item>
     </style>
 
     <!-- Custom style to create a drag handle for the bottom sheet -->
