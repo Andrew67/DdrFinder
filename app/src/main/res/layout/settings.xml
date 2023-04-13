@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:elevation="4dp"
-        style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+        style="@style/Widget.Material3.Toolbar.Surface"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:name="com.andrew67.ddrfinder.activity.SettingsActivity$SettingsFragment"
