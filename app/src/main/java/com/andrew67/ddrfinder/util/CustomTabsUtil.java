@@ -52,13 +52,13 @@ public class CustomTabsUtil {
         } else {
             CustomTabColorSchemeParams lightParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorPrimaryLightTheme))
+                            context.getTheme(), R.attr.colorPrimaryContainerLightTheme))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
                             context.getTheme(), R.attr.colorSurfaceLightTheme))
                     .build();
             CustomTabColorSchemeParams darkParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorSurfaceDarkTheme))
+                            context.getTheme(), R.attr.colorPrimaryContainerDarkTheme))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
                             context.getTheme(), R.attr.colorSurfaceDarkTheme))
                     .build();

@@ -5,10 +5,11 @@
         <!-- Customizations that need to be accessible from either active theme go here. -->
         <!-- e.g. colorPrimary and colorSurface are sent as ColorSchemeParams for Custom Tabs. -->
         <!-- Light theme -->
-        <item name="colorPrimaryLightTheme">@color/md_theme_light_primaryContainer</item>
-        <item name="colorSurfaceLightTheme">@color/md_theme_light_background</item>
+        <item name="colorPrimaryContainerLightTheme">@color/md_theme_light_primaryContainer</item>
+        <item name="colorSurfaceLightTheme">@color/md_theme_light_surface</item>
 
         <!-- Dark theme -->
+        <item name="colorPrimaryContainerDarkTheme">@color/md_theme_dark_primaryContainer</item>
         <item name="colorSurfaceDarkTheme">@color/md_theme_dark_surface</item>
     </style>
 
