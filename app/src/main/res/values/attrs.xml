@@ -10,11 +10,4 @@
 
     <attr name="attributionTextColor" format="reference"/>
     <attr name="attributionBgColor" format="reference"/>
-
-    <!-- From Material Theme Builder -->
-    <attr name="colorSuccess" format="color" />
-    <attr name="colorOnSuccess" format="color" />
-    <attr name="colorSuccessContainer" format="color" />
-    <attr name="colorOnSuccessContainer" format="color" />
-    <attr name="harmonizeSuccess" format="boolean" />
 </resources>

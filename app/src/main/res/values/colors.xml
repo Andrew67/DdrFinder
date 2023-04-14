@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#000000</color>
-    <color name="white">#ffffff</color>
-
     <!-- From the Material Design Color Tool: https://material.io/resources/color/ -->
-    <color name="material_blue_200">#90caf9</color>
-    <color name="material_blue_200_bg_dark">#1b2024</color><!-- 8% Material Blue 200 + #121212 -->
-
-    <color name="material_blue_700">#1976d2</color>
-
-    <color name="material_purple_200">#ce93d8</color>
-
-    <color name="material_purple_500">#9c27b0</color>
-    <color name="material_purple_500_dark">#6a0080</color>
-
-    <color name="material_grey_300_">#e0e0e0</color>
+    <color name="material_blue_700">#1976d2</color><!-- Primary Color -->
+    <color name="material_purple_500">#9c27b0</color><!-- Secondary Color -->
+    <color name="material_purple_500_dark">#6a0080</color><!-- Launcher Icon Background -->
 
     <color name="material_green_200">#a5d6a7</color>
     <color name="material_green_700">#388e3c</color>
@@ -84,5 +73,4 @@
     <color name="md_theme_dark_surfaceTint">#A5C8FF</color>
     <color name="md_theme_dark_outlineVariant">#43474E</color>
     <color name="md_theme_dark_scrim">#000000</color>
-    <color name="Success">#388E3C</color>
 </resources>

@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2013-2021 Andrés Cordero
+ * Copyright (c) 2013-2023 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
