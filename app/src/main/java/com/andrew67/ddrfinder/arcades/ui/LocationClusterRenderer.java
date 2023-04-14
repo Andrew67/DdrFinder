@@ -77,10 +77,10 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
         this.clusterManager = clusterManager;
 
         final Resources.Theme theme = context.getTheme();
-        final int defaultPinColor = ThemeUtil.getThemeColor(theme, R.attr.colorPrimary);
-        final int selectedPinColor = ThemeUtil.getThemeColor(theme, R.attr.colorSecondary);
-        final int defaultIconColor = ThemeUtil.getThemeColor(theme, R.attr.colorOnPrimary);
-        final int selectedIconColor = ThemeUtil.getThemeColor(theme, R.attr.colorOnSecondary);
+        final int defaultPinColor = ThemeUtil.getThemeColor(theme, androidx.appcompat.R.attr.colorPrimary);
+        final int selectedPinColor = ThemeUtil.getThemeColor(theme, com.google.android.material.R.attr.colorSecondary);
+        final int defaultIconColor = ThemeUtil.getThemeColor(theme, com.google.android.material.R.attr.colorOnPrimary);
+        final int selectedIconColor = ThemeUtil.getThemeColor(theme, com.google.android.material.R.attr.colorOnSecondary);
 
         defaultPin = getBitmapFromVector(context,
                 defaultPinColor,

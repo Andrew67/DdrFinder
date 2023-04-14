@@ -65,9 +65,9 @@ public class CustomTabsUtil {
             // For browsers that don't handle color schemes yet, send based on current theme
             CustomTabColorSchemeParams defaultParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorPrimaryContainer))
+                            context.getTheme(), com.google.android.material.R.attr.colorPrimaryContainer))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorSurface))
+                            context.getTheme(), com.google.android.material.R.attr.colorSurface))
                     .build();
 
             final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
