@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="colorPrimaryLightTheme" format="reference"/>
+    <attr name="colorPrimaryContainerLightTheme" format="reference"/>
     <attr name="colorSurfaceLightTheme" format="reference"/>
+    <attr name="colorPrimaryContainerDarkTheme" format="reference"/>
     <attr name="colorSurfaceDarkTheme" format="reference"/>
 
     <attr name="detailsColorHasDDR" format="reference"/>

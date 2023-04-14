@@ -18,8 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:elevation="4dp"
-            style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+            style="@style/Toolbar"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -36,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
                 android:visibility="invisible"
-                app:indicatorColor="?attr/colorAccent"/>
+                app:indicatorColor="?attr/colorSecondary"/>
             <TextView
                 android:id="@+id/attribution"
                 android:layout_width="wrap_content"

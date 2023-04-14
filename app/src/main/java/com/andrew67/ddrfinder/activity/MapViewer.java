@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2013-2021 Andrés Cordero
+ * Copyright (c) 2013-2023 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -57,6 +57,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import android.app.Dialog;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.lifecycle.SnackbarMessage;
 import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
@@ -120,7 +121,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
+        SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, true);

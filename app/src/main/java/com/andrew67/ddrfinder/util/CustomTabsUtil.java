@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2021 Andrés Cordero
+ * Copyright (c) 2013-2023 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -52,20 +52,20 @@ public class CustomTabsUtil {
         } else {
             CustomTabColorSchemeParams lightParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorPrimaryLightTheme))
+                            context.getTheme(), R.attr.colorPrimaryContainerLightTheme))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
                             context.getTheme(), R.attr.colorSurfaceLightTheme))
                     .build();
             CustomTabColorSchemeParams darkParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorSurfaceDarkTheme))
+                            context.getTheme(), R.attr.colorPrimaryContainerDarkTheme))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
                             context.getTheme(), R.attr.colorSurfaceDarkTheme))
                     .build();
             // For browsers that don't handle color schemes yet, send based on current theme
             CustomTabColorSchemeParams defaultParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorPrimarySurface))
+                            context.getTheme(), R.attr.colorPrimaryContainer))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
                             context.getTheme(), R.attr.colorSurface))
                     .build();

@@ -4,31 +4,36 @@
     <item
         android:id="@+id/action_my_location"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_my_location_white_24dp"
+        android:icon="@drawable/ic_my_location"
+        app:iconTint="?attr/colorControlNormal"
         android:title="@string/action_my_location" />
 
     <item
         android:id="@+id/action_search"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_search_white_24dp"
+        android:icon="@drawable/ic_search"
+        app:iconTint="?attr/colorControlNormal"
         android:title="@string/action_search" />
 
     <item
         android:id="@+id/action_share"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_share_white_24dp"
+        android:icon="@drawable/ic_share"
+        app:iconTint="?attr/colorControlNormal"
         android:title="@string/action_share" />
 
     <item
         android:id="@+id/action_reload"
         app:showAsAction="never"
-        android:icon="@drawable/ic_refresh_white_24dp"
+        android:icon="@drawable/ic_refresh"
+        app:iconTint="?attr/colorControlNormal"
         android:title="@string/action_reload" />
     
     <item
         android:id="@+id/action_settings"
         app:showAsAction="never"
-        android:icon="@drawable/ic_settings_white_24dp"
+        android:icon="@drawable/ic_settings"
+        app:iconTint="?attr/colorControlNormal"
         android:title="@string/action_settings" />
 
 </menu>

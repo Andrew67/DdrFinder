@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Andrés Cordero
+ * Copyright (c) 2016-2023 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -78,22 +78,23 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
 
         final Resources.Theme theme = context.getTheme();
         final int defaultPinColor = ThemeUtil.getThemeColor(theme, R.attr.colorPrimary);
-        final int selectedPinColor = ThemeUtil.getThemeColor(theme, R.attr.colorAccent);
-        final int iconColor = ThemeUtil.getThemeColor(theme, R.attr.colorOnPrimary);
+        final int selectedPinColor = ThemeUtil.getThemeColor(theme, R.attr.colorSecondary);
+        final int defaultIconColor = ThemeUtil.getThemeColor(theme, R.attr.colorOnPrimary);
+        final int selectedIconColor = ThemeUtil.getThemeColor(theme, R.attr.colorOnSecondary);
 
         defaultPin = getBitmapFromVector(context,
                 defaultPinColor,
-                R.drawable.ic_arcade_black_16dp, iconColor);
+                R.drawable.ic_arcade_black_16dp, defaultIconColor);
         selectedPin = getBitmapFromVector(context,
                 selectedPinColor,
-                R.drawable.ic_arcade_black_16dp, iconColor);
+                R.drawable.ic_arcade_black_16dp, selectedIconColor);
 
         ddrPin = getBitmapFromVector(context,
                 defaultPinColor,
-                R.drawable.ic_arrow_black_20dp, iconColor);
+                R.drawable.ic_arrow_black_20dp, defaultIconColor);
         ddrSelectedPin = getBitmapFromVector(context,
                 selectedPinColor,
-                R.drawable.ic_arrow_black_20dp, iconColor);
+                R.drawable.ic_arrow_black_20dp, selectedIconColor);
     }
 
     @Override
@@ -166,7 +167,7 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
 
     /**
      * Generates a bitmap for the given vector atop the marker, with the given colors.
-     * Based on code snippet from https://stackoverflow.com/questions/42365658/custom-marker-in-google-maps-in-android-with-vector-asset-icon/48356646#48356646
+     * Based on <a href="https://stackoverflow.com/questions/42365658/custom-marker-in-google-maps-in-android-with-vector-asset-icon/48356646#48356646">code snippet from StackOverflow</a>
      */
     private static Bitmap getBitmapFromVector(Context context, @ColorInt int markerColor,
                                               @DrawableRes int icon, @ColorInt int iconColor) {
