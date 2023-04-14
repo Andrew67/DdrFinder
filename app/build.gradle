@@ -4,6 +4,9 @@ apply plugin: 'org.jetbrains.kotlin.android'
 android {
     namespace 'com.andrew67.ddrfinder'
     compileSdkVersion 33
+    buildFeatures {
+        buildConfig true
+    }
     defaultConfig {
         applicationId "com.andrew67.ddrfinder"
         versionCode 55
