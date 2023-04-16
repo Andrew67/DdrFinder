@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DDR Finder</string>
+    <string name="action_about">À propos de l'application</string>
+    <string name="action_reload">Refraîchir</string>
+    <string name="action_settings">Réglages</string>
+    <string name="area_no_results">Aucune salle de jeux dans cette zone</string>
+    <string name="error_api">Erreur de chargement des données</string>
+    <string name="error_api_unexpected">Erreur de connexion inattendue</string>
+    <string name="error_datasrc">Le serveur n'a pas reconnu les sources des données spécifiées</string>
+    <string name="error_perm_loc">Pour détecter votre position, veuillez autoriser la géolocalisation pour cette application dans les réglages de votre appareil</string>
+    <string name="location_actions_copy">Copier les coordonnées GPS</string>
+    <string name="location_actions_info">Plus d'info</string>
+    <string name="location_actions_navigate">Aller</string>
+    <string name="settings_src">Source des données</string>
+    <string name="copy_complete">Copié</string>
+    <string name="error_zoom">Aggrandez la carte pour charger plus de lieux</string>
+    <string name="settings_category_basic">Réglages de base</string>
+    <string name="settings_category_advanced">Réglages avancés</string>
+    <string name="error_api_ver">Le serveur n'a pas reconnu le niveau API de cet appareil</string>
+    <string-array name="settings_src_entries">
+        <item>Zenius -I- vanisher.com (Mondial)</item>
+        <item>DDR-Navi (Japon)</item>
+        <item>OpenStreetMap (Mondial)</item>
+    </string-array>
+    <string name="browser_actions_copy">Copier le lien</string>
+    <string name="settings_analytics">Analytique</string>
+    <string name="settings_analytics_summary">Partager des données d'utilisation anonymement pour améliorer l'application</string>
+    <string name="settings_location">Activer la position actuelle</string>
+    <string name="settings_location_dialog_message">Pour activer votre position actuelle, appuyez Réglages, puis Autorisations, puis activez \"Votre position\"</string>
+    <string name="settings_location_dialog_negative">Annuler</string>
+    <string name="settings_location_dialog_positive">Réglages</string>
+    <string name="settings_custom_tabs">Ouvrir des sites Internet dans l'application</string>
+    <string name="action_share">Partager</string>
+    <string name="action_search">Recherche</string>
+    <string name="action_my_location">Ma position</string>
+    <string name="action_privacy_policy">Politique de confidentialité</string>
+    // <string name="error_opening_browser">Impossible d'ouvrir le navigateur</string>
+    <string name="settings_filter">Filtre</string>
+    <string name="settings_filter_ddr_only">Montre seulement les salles de jeux avec DDR</string>
+    <string name="settings_theme">Mode d'écran</string>
+    <string-array name="settings_theme_entries">
+        <item>Appareil</item>
+        <item>Claire</item>
+        <item>Sombre</item>
+    </string-array>
+    <string name="has_ddr_yes">Oui</string>
+    <string name="has_ddr_no">Non</string>
+    <string name="distance_km">≈ %1$s km</string>
+    <string name="settings_locale">Langue / Language</string>
+    <string-array name="settings_locale_entries">
+        <item>Usar el del dispositivo</item>
+        <item>English</item>
+        <item>Español</item>
+        <item>Français</item>
+        <item>日本語</item>
+        <item>简体中文</item>
+        <item>繁體中文</item>
+    </string-array>
+</resources>
