@@ -36,9 +36,10 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="https" android:host="ddrfinder.andrew67.com"
-                    android:pathPrefix="/ng"/>
+                <data android:scheme="https"/>
                 <data android:scheme="http"/>
+                <data android:host="ddrfinder.andrew67.com"/>
+                <data android:pathPrefix="/ng"/>
                 <data android:path="/app"/>
                 <data android:path="/app/"/>
                 <data android:path="/app/map"/>
