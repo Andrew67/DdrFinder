@@ -50,6 +50,10 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:theme="@style/SettingsTheme"/>
+        <!-- TODO: WebView activity theme -->
+        <activity
+            android:name="org.chromium.customtabsdemos.WebviewActivity"
+            android:theme="@style/Theme.Material3.DayNight"/>
 
         <!-- Google Maps meta-data -->
         <meta-data

@@ -29,6 +29,7 @@ import com.andrew67.ddrfinder.util.CustomTabsUtil;
 import com.andrew67.ddrfinder.util.GeoUriBuilder;
 import com.google.android.gms.maps.model.LatLng;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -99,18 +100,17 @@ public class LocationActions {
 
     /**
      * Launches a web browser, pointed to the location's more information URL.
-     * @param context The context which provides the ability to start activities.
-     * @param useCustomTabs Whether to attempt to use a Chrome Custom Tab intent.
-     * @param customTabsSession Optional session to attach to when using Chrome Custom Tabs.
-     * @return Success status of copying to clipboard. Can be used to show error message
+     * @param activity Activity to launch from.
+     * @param useCustomTabs Whether to attempt to use a Custom Tab intent.
+     * @param customTabsSession Optional session to attach to when using Custom Tabs.
+     * @return Success status of opening the URL in a browser. Can be used to show error message
      */
-    public boolean moreInfo(@NonNull Context context,
+    public boolean moreInfo(@NonNull Activity activity,
                             boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession) {
         try {
-            CustomTabsUtil.launchUrl(context, getInfoURL(), useCustomTabs, customTabsSession);
+            CustomTabsUtil.launchUrl(activity, getInfoURL(), useCustomTabs, customTabsSession);
             return true;
         } catch (Exception e) {
-            // TODO: User-visible error or built-in WebView solution
             Log.e("LocationActions", "Error launching Intent for HTTP(S) link", e);
             return false;
         }

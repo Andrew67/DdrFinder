@@ -23,9 +23,11 @@
 
 package com.andrew67.ddrfinder.util;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
@@ -33,6 +35,9 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
 
 import com.andrew67.ddrfinder.R;
+
+import org.chromium.customtabsdemos.CustomTabActivityHelper;
+import org.chromium.customtabsdemos.WebviewFallback;
 
 /**
  * Provides helper methods for dealing with the Custom Tabs Client library.
@@ -42,36 +47,37 @@ public class CustomTabsUtil {
     /**
      * Launches the given url from the given context in a custom tab, using our app's primary color.
      * Will throw an {@link android.content.ActivityNotFoundException} if there is no browser installed.
-     * @param context Context to launch from.
+     * @param activity Activity to launch from.
      * @param url URL to launch.
      * @param useCustomTabs Whether to attempt to use a custom tab or not (user preference).
      * @param customTabsSession When using custom tabs, optional session to attach to.
      */
-    public static void launchUrl(@NonNull Context context, @NonNull String url,
+    public static void launchUrl(@NonNull Activity activity, @NonNull String url,
                                  boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession) {
         final Uri uri = Uri.parse(url);
 
         if (!useCustomTabs) {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            activity.startActivity(new Intent(Intent.ACTION_VIEW, uri));
         } else {
-            CustomTabColorSchemeParams lightParams = new CustomTabColorSchemeParams.Builder()
+            final Resources.Theme theme = activity.getTheme();
+            final CustomTabColorSchemeParams lightParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorPrimaryContainerLightTheme))
+                            theme, R.attr.colorPrimaryContainerLightTheme))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorSurfaceLightTheme))
+                            theme, R.attr.colorSurfaceLightTheme))
                     .build();
-            CustomTabColorSchemeParams darkParams = new CustomTabColorSchemeParams.Builder()
+            final CustomTabColorSchemeParams darkParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorPrimaryContainerDarkTheme))
+                            theme, R.attr.colorPrimaryContainerDarkTheme))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), R.attr.colorSurfaceDarkTheme))
+                            theme, R.attr.colorSurfaceDarkTheme))
                     .build();
             // For browsers that don't handle color schemes yet, send based on current theme
-            CustomTabColorSchemeParams defaultParams = new CustomTabColorSchemeParams.Builder()
+            final CustomTabColorSchemeParams defaultParams = new CustomTabColorSchemeParams.Builder()
                     .setToolbarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), com.google.android.material.R.attr.colorPrimaryContainer))
+                            theme, com.google.android.material.R.attr.colorPrimaryContainer))
                     .setNavigationBarColor(ThemeUtil.getThemeColor(
-                            context.getTheme(), com.google.android.material.R.attr.colorSurface))
+                            theme, com.google.android.material.R.attr.colorSurface))
                     .build();
 
             final CustomTabsIntent.Builder customTabsIntentBuilder = new CustomTabsIntent.Builder()
@@ -82,9 +88,10 @@ public class CustomTabsUtil {
                     .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, darkParams)
                     .setDefaultColorSchemeParams(defaultParams);
             if (customTabsSession != null) customTabsIntentBuilder.setSession(customTabsSession);
-            customTabsIntentBuilder.build().launchUrl(context, uri);
-            // TODO: Add WebView fallback
-            // TODO: Change context input to activity to use CustomTabActivityHelper.openCustomTab
+            final CustomTabsIntent customTabsIntent = customTabsIntentBuilder.build();
+
+            CustomTabActivityHelper.openCustomTab(activity, customTabsIntent,
+                    uri, new WebviewFallback());
         }
     }
 
