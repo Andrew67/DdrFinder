@@ -207,7 +207,9 @@ public class LocationActionsFragment extends Fragment {
         final boolean useCustomTabs = PreferenceManager
                 .getDefaultSharedPreferences(requireActivity())
                 .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
-        final boolean moreInfoOpenSuccess = locationActions.moreInfo(requireActivity(), useCustomTabs);
+        // TODO: Pass CustomTabsSession instance from activity to this fragment
+        final boolean moreInfoOpenSuccess = locationActions
+                .moreInfo(requireActivity(), useCustomTabs, null);
         if (!moreInfoOpenSuccess) {
             if (moreInfoErrorToast == null) moreInfoErrorToast = Toast.makeText(requireActivity(),
                     R.string.error_opening_browser, Toast.LENGTH_LONG);

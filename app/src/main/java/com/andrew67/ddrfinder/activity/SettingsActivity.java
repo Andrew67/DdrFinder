@@ -161,7 +161,7 @@ public class SettingsActivity extends AppCompatActivity {
             if (aboutAction != null && sharedPref != null) {
                 aboutAction.setOnPreferenceClickListener(preference -> {
                     CustomTabsUtil.launchUrl(requireActivity(), getAboutUrl(),
-                            sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
+                            sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true), null);
                     return true;
                 });
             }
@@ -170,7 +170,7 @@ public class SettingsActivity extends AppCompatActivity {
             if (privacyPolicyAction != null && sharedPref != null) {
                 privacyPolicyAction.setOnPreferenceClickListener(preference -> {
                     CustomTabsUtil.launchUrl(requireActivity(), BuildConfig.PRIVACY_POLICY_URL,
-                            sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true));
+                            sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true), null);
                     return true;
                 });
             }

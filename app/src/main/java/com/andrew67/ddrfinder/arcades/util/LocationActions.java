@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2021 Andrés Cordero
+ * Copyright (c) 2013-2023 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,6 +37,8 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsSession;
+
 import android.util.Log;
 
 /**
@@ -97,15 +99,17 @@ public class LocationActions {
      * Launches a web browser, pointed to the location's more information URL.
      * @param context The context which provides the ability to start activities.
      * @param useCustomTabs Whether to attempt to use a Chrome Custom Tab intent.
+     * @param customTabsSession Optional session to attach to when using Chrome Custom Tabs.
      * @return Success status of copying to clipboard. Can be used to show error message
      */
-    public boolean moreInfo(@NonNull Context context, boolean useCustomTabs) {
+    public boolean moreInfo(@NonNull Context context,
+                            boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession) {
         final String infoURL = source.getInfoURL()
                 .replace("${id}", "" + location.getId())
                 .replace("${sid}", location.getSid());
 
         try {
-            CustomTabsUtil.launchUrl(context, infoURL, useCustomTabs);
+            CustomTabsUtil.launchUrl(context, infoURL, useCustomTabs, customTabsSession);
             return true;
         } catch (Exception e) {
             // TODO: User-visible error or built-in WebView solution

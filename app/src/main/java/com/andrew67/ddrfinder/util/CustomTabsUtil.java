@@ -27,8 +27,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSession;
 
 import com.andrew67.ddrfinder.R;
 
@@ -43,8 +45,10 @@ public class CustomTabsUtil {
      * @param context Context to launch from.
      * @param url URL to launch.
      * @param useCustomTabs Whether to attempt to use a custom tab or not (user preference).
+     * @param customTabsSession When using custom tabs, optional session to attach to.
      */
-    public static void launchUrl(@NonNull Context context, @NonNull String url, boolean useCustomTabs) {
+    public static void launchUrl(@NonNull Context context, @NonNull String url,
+                                 boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession) {
         final Uri uri = Uri.parse(url);
 
         if (!useCustomTabs) {
@@ -70,15 +74,17 @@ public class CustomTabsUtil {
                             context.getTheme(), com.google.android.material.R.attr.colorSurface))
                     .build();
 
-            final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+            final CustomTabsIntent.Builder customTabsIntentBuilder = new CustomTabsIntent.Builder()
                     .setShowTitle(true)
                     .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                     .setColorScheme(ThemeUtil.getCustomTabsColorScheme())
                     .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT, lightParams)
                     .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, darkParams)
-                    .setDefaultColorSchemeParams(defaultParams)
-                    .build();
-            customTabsIntent.launchUrl(context, uri);
+                    .setDefaultColorSchemeParams(defaultParams);
+            if (customTabsSession != null) customTabsIntentBuilder.setSession(customTabsSession);
+            customTabsIntentBuilder.build().launchUrl(context, uri);
+            // TODO: Add WebView fallback
+            // TODO: Change context input to activity to use CustomTabActivityHelper.openCustomTab
         }
     }
 
