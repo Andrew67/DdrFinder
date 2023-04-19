@@ -32,6 +32,7 @@ import com.andrew67.ddrfinder.R;
  */
 public class WebviewActivity extends AppCompatActivity {
     public static final String EXTRA_URL = "extra.url";
+    private ActionBar actionBar;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -40,11 +41,11 @@ public class WebviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_webview);
         final String url = getIntent().getStringExtra(EXTRA_URL);
         final WebView webView = findViewById(R.id.webview);
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new CustomWebviewClient());
         final WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         setTitle(url);
-        final ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
         webView.loadUrl(url);
     }
@@ -57,5 +58,22 @@ public class WebviewActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Copyright (c) 2023 Andrés Cordero
+     * <p>Web: <a href="https://github.com/Andrew67/DdrFinder">DdrFinder on Github</a>
+     */
+    private class CustomWebviewClient extends WebViewClient {
+        @Override
+        public void onLoadResource(WebView view, String url) {
+            super.onLoadResource(view, url);
+            if (actionBar != null) {
+                actionBar.setSubtitle(view.getUrl());
+                actionBar.setTitle(view.getTitle());
+            }
+        }
+        // TODO: Open 3rd party links using browser and not within webview
+        // TODO: Support intent:, tel:, etc URIs
     }
 }
