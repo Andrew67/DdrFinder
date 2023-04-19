@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018 Andrés Cordero
+ * Copyright (c) 2015-2023 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -88,7 +88,8 @@ public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
                     .addQueryParameter("lnglower", "" + box.southwest.longitude)
                     .build();
 
-            Log.d("api", "Request URL: " + requestUrl);
+            if (BuildConfig.DEBUG) Log.d("NetworkMapLoader", "Request URL: " + requestUrl);
+            else Log.d("NetworkMapLoader", "Performing URL request (use debug build to see URL)");
             final Request get = new Request.Builder()
                     .header("User-Agent", BuildConfig.APPLICATION_ID + " " + BuildConfig.VERSION_NAME
                             + "/Android?SDK=" + Build.VERSION.SDK_INT)
@@ -97,7 +98,7 @@ public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
 
             final Response response = client.newCall(get).execute();
             final int statusCode = response.code();
-            Log.d("api", "Status code: " + statusCode);
+            Log.d("NetworkMapLoader", "Status code: " + statusCode);
 
             // Data/error loaded OK
             if (statusCode == 200 || statusCode == 400) {
@@ -107,7 +108,7 @@ public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
                 responseBody.close();
                 assert result != null;
                 result.setBounds(box);
-                Log.d("api", "Response JSON parse complete");
+                Log.d("NetworkMapLoader", "Response JSON parse complete");
             }
             // Unexpected error code
             else {

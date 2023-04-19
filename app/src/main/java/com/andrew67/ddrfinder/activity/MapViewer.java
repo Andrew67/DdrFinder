@@ -65,7 +65,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -81,8 +81,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.chromium.customtabsdemos.CustomTabActivityHelper;
 
 public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -111,9 +109,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private ClusterManager<ArcadeLocation> mClusterManager;
     private View mapView;
 
-    // Custom Tabs Session Helper
-    private CustomTabActivityHelper customTabActivityHelper;
-
     // UI
     private MenuItem reloadButton;
     private ProgressBar progressBar;
@@ -128,8 +123,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
-
-        customTabActivityHelper = new CustomTabActivityHelper();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -564,18 +557,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
             return true;
         }
         return super.onKeyUp(keyCode, event);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        customTabActivityHelper.bindCustomTabsService(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        customTabActivityHelper.unbindCustomTabsService(this);
     }
 
     @Override

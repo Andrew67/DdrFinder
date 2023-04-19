@@ -47,6 +47,8 @@ import android.util.Log;
 public class LocationActions {
 	private final ArcadeLocation location;
 	private final DataSource source;
+    /** Cached info URL. Use {@link LocationActions#getInfoURL()} */
+    private String infoURL;
 
     /**
      * Set up a new location action helper.
@@ -104,17 +106,21 @@ public class LocationActions {
      */
     public boolean moreInfo(@NonNull Context context,
                             boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession) {
-        final String infoURL = source.getInfoURL()
-                .replace("${id}", "" + location.getId())
-                .replace("${sid}", location.getSid());
-
         try {
-            CustomTabsUtil.launchUrl(context, infoURL, useCustomTabs, customTabsSession);
+            CustomTabsUtil.launchUrl(context, getInfoURL(), useCustomTabs, customTabsSession);
             return true;
         } catch (Exception e) {
             // TODO: User-visible error or built-in WebView solution
             Log.e("LocationActions", "Error launching Intent for HTTP(S) link", e);
             return false;
         }
+    }
+
+    /** Returns the full URL for this location's "More Information" link */
+    public String getInfoURL() {
+        if (infoURL != null) return infoURL;
+        return infoURL = source.getInfoURL()
+                .replace("${id}", "" + location.getId())
+                .replace("${sid}", location.getSid());
     }
 }

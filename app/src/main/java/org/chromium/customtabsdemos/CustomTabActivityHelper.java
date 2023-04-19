@@ -17,11 +17,14 @@ package org.chromium.customtabsdemos;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
+
+import com.andrew67.ddrfinder.BuildConfig;
 
 import java.util.List;
 
@@ -101,6 +104,7 @@ public class CustomTabActivityHelper implements ServiceConnectionCallback {
         if (mClient != null) return;
 
         String packageName = CustomTabsHelper.getPackageNameToUse(activity);
+        if (BuildConfig.DEBUG) Log.d("CustomTabActivityHelper", "package: " + packageName);
         if (packageName == null) return;
 
         mConnection = new ServiceConnection(this);
@@ -117,7 +121,9 @@ public class CustomTabActivityHelper implements ServiceConnectionCallback {
         CustomTabsSession session = getSession();
         if (session == null) return false;
 
-        return session.mayLaunchUrl(uri, extras, otherLikelyBundles);
+        boolean mayLaunchUrlResponse = session.mayLaunchUrl(uri, extras, otherLikelyBundles);
+        if (BuildConfig.DEBUG) Log.d("CustomTabActivityHelper", "mayLaunchUrl: " + mayLaunchUrlResponse);
+        return mayLaunchUrlResponse;
     }
 
     @Override

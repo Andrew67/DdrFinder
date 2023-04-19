@@ -23,15 +23,19 @@
 package com.andrew67.ddrfinder.arcades.ui;
 
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.icu.number.LocalizedNumberFormatter;
 import android.icu.number.NumberFormatter;
 import android.icu.number.Precision;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -48,15 +52,18 @@ import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel;
 import com.andrew67.ddrfinder.mylocation.MyLocationModel;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.chromium.customtabsdemos.CustomTabActivityHelper;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 
-public class LocationActionsFragment extends Fragment {
+public class LocationActionsFragment extends Fragment implements LifecycleEventObserver {
 
     private SelectedLocationModel selectedLocationModel;
     private MyLocationModel myLocationModel;
 
     private LocationActions locationActions;
+    private CustomTabActivityHelper customTabActivityHelper;
 
     // Formatters
     private NumberFormat distanceFormat; // 2 decimal digits
@@ -107,6 +114,23 @@ public class LocationActionsFragment extends Fragment {
                 .observe(getViewLifecycleOwner(), onSelectedLocationUpdated);
 
         myLocationModel = viewModelProvider.get(MyLocationModel.class);
+
+        customTabActivityHelper = new CustomTabActivityHelper();
+        getLifecycle().addObserver(this);
+    }
+
+    /**
+     * Observe the lifecycle in order to manage the Custom Tab Session
+     */
+    @Override
+    public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner,
+                               @NonNull Lifecycle.Event event) {
+        if (event == Lifecycle.Event.ON_START) {
+            customTabActivityHelper.bindCustomTabsService(requireActivity());
+        }
+        if (event == Lifecycle.Event.ON_STOP) {
+            customTabActivityHelper.unbindCustomTabsService(requireActivity());
+        }
     }
 
     /**
@@ -159,6 +183,8 @@ public class LocationActionsFragment extends Fragment {
                     // Set up LocationActions object that enables the available actions
                     locationActions = new LocationActions(selectedLocation.arcadeLocation,
                             selectedLocation.dataSource);
+                    customTabActivityHelper.mayLaunchUrl(
+                            Uri.parse(locationActions.getInfoURL()), null, null);
                 }
             };
 
@@ -207,9 +233,8 @@ public class LocationActionsFragment extends Fragment {
         final boolean useCustomTabs = PreferenceManager
                 .getDefaultSharedPreferences(requireActivity())
                 .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
-        // TODO: Pass CustomTabsSession instance from activity to this fragment
         final boolean moreInfoOpenSuccess = locationActions
-                .moreInfo(requireActivity(), useCustomTabs, null);
+                .moreInfo(requireActivity(), useCustomTabs, customTabActivityHelper.getSession());
         if (!moreInfoOpenSuccess) {
             if (moreInfoErrorToast == null) moreInfoErrorToast = Toast.makeText(requireActivity(),
                     R.string.error_opening_browser, Toast.LENGTH_LONG);
