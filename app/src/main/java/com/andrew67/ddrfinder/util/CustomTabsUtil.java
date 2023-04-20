@@ -24,6 +24,7 @@
 package com.andrew67.ddrfinder.util;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -46,7 +47,7 @@ public class CustomTabsUtil {
 
     /**
      * Launches the given url from the given context in a custom tab, using our app's primary color.
-     * Will throw an {@link android.content.ActivityNotFoundException} if there is no browser installed.
+     * Will use a built-in webview fallback if there is no browser available.
      * @param activity Activity to launch from.
      * @param url URL to launch.
      * @param useCustomTabs Whether to attempt to use a custom tab or not (user preference).
@@ -57,7 +58,11 @@ public class CustomTabsUtil {
         final Uri uri = Uri.parse(url);
 
         if (!useCustomTabs) {
-            activity.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            try {
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            } catch (ActivityNotFoundException e) {
+                new WebviewFallback().openUri(activity, uri);
+            }
         } else {
             final Resources.Theme theme = activity.getTheme();
             final CustomTabColorSchemeParams lightParams = new CustomTabColorSchemeParams.Builder()

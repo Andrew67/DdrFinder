@@ -394,7 +394,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
      * Pops open the share chooser populated with an AppLink that represents the current state.
      */
     private void shareCurrentAppLink() {
-        Intent shareIntent = new Intent();
+        final Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_TEXT, currentAppLink.build().toString());
         shareIntent.setType("text/plain");
@@ -530,7 +530,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
+        final int itemId = item.getItemId();
         if (itemId == R.id.action_search) {
             openPlaceSearchOverlay();
             return true;

@@ -21,6 +21,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -42,6 +43,7 @@ import java.net.URISyntaxException;
 public class WebviewActivity extends AppCompatActivity {
     public static final String EXTRA_URL = "extra.url";
     private ActionBar actionBar;
+    private WebView webView;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -50,7 +52,7 @@ public class WebviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_webview);
 
         final String url = getIntent().getStringExtra(EXTRA_URL);
-        final WebView webView = findViewById(R.id.webview);
+        webView = findViewById(R.id.webview);
         webView.setWebViewClient(new CustomWebviewClient());
         final WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -66,10 +68,26 @@ public class WebviewActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.webview, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Respond to the action bar's Up/Home button
-        if (item.getItemId() == android.R.id.home) {
+        final int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
             finish();
+            return true;
+        } else if (itemId == R.id.action_share) {
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, webView.getUrl());
+            shareIntent.setType("text/plain");
+            startActivity(Intent.createChooser(shareIntent, getText(R.string.action_share)));
+            return true;
+        } else if (itemId == R.id.action_reload) {
+            webView.reload();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -77,7 +95,7 @@ public class WebviewActivity extends AppCompatActivity {
 
     private class CustomWebviewClient extends WebViewClient {
         @Override
-        public void onLoadResource(WebView view, String url) {
+        public void onPageFinished(WebView view, String url) {
             super.onLoadResource(view, url);
             if (actionBar != null) {
                 final Uri currentUri = Uri.parse(url);
