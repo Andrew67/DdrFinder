@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppBaseTheme" parent="AppLightTheme">
-        <item name="android:navigationBarColor">?colorPrimaryContainer</item>
-        <item name="android:windowLightNavigationBar">?isLightTheme</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
     </style>
-
-    <style name="Base.V27.SettingsTheme" parent="AppTheme">
-        <item name="android:navigationBarColor">?colorSurface</item>
-        <item name="android:windowLightNavigationBar">?isLightTheme</item>
-    </style>
-    <style name="Base.SettingsTheme" parent="Base.V27.SettingsTheme"/>
 </resources>
