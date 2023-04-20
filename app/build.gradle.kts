@@ -18,7 +18,7 @@ android {
         // Add to test pseudo-locales (no way to specify just for debug config)
         // "en-rXA", "ar-rXB",
         resourceConfigurations += listOf("en", "en-rGB",
-                "es", "es-rUS", "b+es+419",
+                "es", "es-rUS", "b+es+419", "fr",
                 "ja",
                 "zh", "zh-rCN", "zh-rSG", "zh-rTW", "zh-rHK")
         vectorDrawables.useSupportLibrary = true
