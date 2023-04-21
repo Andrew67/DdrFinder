@@ -29,6 +29,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.SharedPreferences;
 import android.icu.number.LocalizedNumberFormatter;
 import android.icu.number.NumberFormatter;
 import android.icu.number.Precision;
@@ -230,11 +231,15 @@ public class LocationActionsFragment extends Fragment implements LifecycleEventO
     private Toast moreInfoErrorToast = null;
     private void onMoreInfoClicked(@SuppressWarnings("unused") View v) {
         if (locationActions == null) return;
-        final boolean useCustomTabs = PreferenceManager
-                .getDefaultSharedPreferences(requireActivity())
+        final SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(requireActivity());
+        final boolean useCustomTabs = preferences
                 .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
+        final boolean usePartialHeight = preferences
+                .getBoolean(SettingsActivity.KEY_PREF_PARTIALHEIGHT, true);
         final boolean moreInfoOpenSuccess = locationActions
-                .moreInfo(requireActivity(), useCustomTabs, customTabActivityHelper.getSession());
+                .moreInfo(requireActivity(), useCustomTabs,
+                        customTabActivityHelper.getSession(), usePartialHeight);
         if (!moreInfoOpenSuccess) {
             if (moreInfoErrorToast == null) moreInfoErrorToast = Toast.makeText(requireActivity(),
                     R.string.error_opening_browser, Toast.LENGTH_LONG);

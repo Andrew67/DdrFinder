@@ -103,12 +103,15 @@ public class LocationActions {
      * @param activity Activity to launch from.
      * @param useCustomTabs Whether to attempt to use a Custom Tab intent.
      * @param customTabsSession Optional session to attach to when using Custom Tabs.
+     * @param usePartialHeight Whether to attempt to launch the Custom Tab as a partial overlay.
      * @return Success status of opening the URL in a browser. Can be used to show error message
      */
     public boolean moreInfo(@NonNull Activity activity,
-                            boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession) {
+                            boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession,
+                            boolean usePartialHeight) {
         try {
-            CustomTabsUtil.launchUrl(activity, getInfoURL(), useCustomTabs, customTabsSession);
+            CustomTabsUtil.launchUrl(activity, getInfoURL(),
+                    useCustomTabs, customTabsSession, usePartialHeight);
             return true;
         } catch (Exception e) {
             Log.e("LocationActions", "Error launching Intent for HTTP(S) link", e);

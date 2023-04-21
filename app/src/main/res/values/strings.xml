@@ -46,6 +46,9 @@
     <string name="settings_src_default" translatable="false">ziv</string>
     <string name="settings_category_basic">Basic</string>
     <string name="settings_category_advanced">Advanced</string>
+    <string name="settings_category_map">Map</string>
+    <string name="settings_category_app">App</string>
+    <string name="settings_category_help">Help</string>
     <string name="settings_analytics">Analytics</string>
     <string name="settings_analytics_summary">Share anonymous usage statistics to help improve the app</string>
     <string name="settings_location">Enable Current Location</string>
@@ -53,6 +56,7 @@
     <string name="settings_location_dialog_positive">Settings</string>
     <string name="settings_location_dialog_negative">Cancel</string>
     <string name="settings_custom_tabs">Open web pages in app</string>
+    <string name="settings_custom_tabs_partial_height">Open more info pages as pop-up</string>
     <string name="error_opening_browser">Could not open browser</string>
     <string name="settings_filter">Filter</string>
     <string name="settings_filter_ddr_only">Only show arcades that have DDR</string>

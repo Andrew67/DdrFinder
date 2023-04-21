@@ -52,9 +52,11 @@ public class CustomTabsUtil {
      * @param url URL to launch.
      * @param useCustomTabs Whether to attempt to use a custom tab or not (user preference).
      * @param customTabsSession When using custom tabs, optional session to attach to.
+     * @param usePartialHeight When using custom tabs, whether to use a partial height overlay (user preference or screen-dependant).
      */
     public static void launchUrl(@NonNull Activity activity, @NonNull String url,
-                                 boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession) {
+                                 boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession,
+                                 boolean usePartialHeight) {
         final Uri uri = Uri.parse(url);
 
         if (!useCustomTabs) {
@@ -92,8 +94,21 @@ public class CustomTabsUtil {
                     .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT, lightParams)
                     .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, darkParams)
                     .setDefaultColorSchemeParams(defaultParams);
-            if (customTabsSession != null) customTabsIntentBuilder.setSession(customTabsSession);
+            if (customTabsSession != null) {
+                customTabsIntentBuilder.setSession(customTabsSession);
+                if (usePartialHeight) {
+                    customTabsIntentBuilder.setInitialActivityHeightPx(600,
+                            CustomTabsIntent.ACTIVITY_HEIGHT_ADJUSTABLE);
+                }
+            }
+
             final CustomTabsIntent customTabsIntent = customTabsIntentBuilder.build();
+            if (usePartialHeight && customTabsSession != null) {
+                // Disables background interaction
+                // TODO: Use CustomTabsIntent.Builder version once available
+                customTabsIntent.intent
+                        .putExtra("androix.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION", 2);
+            }
 
             CustomTabActivityHelper.openCustomTab(activity, customTabsIntent,
                     uri, new WebviewFallback());

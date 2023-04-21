@@ -56,4 +56,8 @@
         <item>简体中文</item>
         <item>繁體中文</item>
     </string-array>
+    <string name="settings_custom_tabs_partial_height">在底部彈窗中打開網頁</string>
+    <string name="settings_category_map">地圖</string>
+    <string name="settings_category_app">APP</string>
+    <string name="settings_category_help">說明</string>
 </resources>

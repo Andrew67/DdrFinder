@@ -56,4 +56,8 @@
         <item>简体中文</item>
         <item>繁體中文</item>
     </string-array>
+    <string name="settings_custom_tabs_partial_height">情報サイトはポップアップで開く</string>
+    <string name="settings_category_map">地図</string>
+    <string name="settings_category_app">アプリ</string>
+    <string name="settings_category_help">ヘルプ</string>
 </resources>
