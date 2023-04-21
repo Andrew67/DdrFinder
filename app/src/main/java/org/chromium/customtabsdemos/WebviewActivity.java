@@ -29,6 +29,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -48,6 +49,8 @@ public class WebviewActivity extends AppCompatActivity {
     public static final String EXTRA_URL = "extra.url";
     private ActionBar actionBar;
     private WebView webView;
+    private String launchUrl;
+    private OnBackPressedCallback goBackInWebviewCallback;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -55,7 +58,7 @@ public class WebviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
 
-        final String url = getIntent().getStringExtra(EXTRA_URL);
+        launchUrl = getIntent().getStringExtra(EXTRA_URL);
         webView = findViewById(R.id.webview);
         webView.setWebViewClient(new CustomWebviewClient());
         if (BuildConfig.DEBUG) WebView.setWebContentsDebuggingEnabled(true);
@@ -68,13 +71,21 @@ public class WebviewActivity extends AppCompatActivity {
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        setTitle(url);
+        setTitle(launchUrl);
         actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
+        goBackInWebviewCallback = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                webView.goBack();
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, goBackInWebviewCallback);
+
         final Map<String, String> headers = new HashMap<>();
         headers.put("Referer", "android-app://" + getPackageName() + "/");
-        webView.loadUrl(url, headers);
+        webView.loadUrl(launchUrl, headers);
     }
 
     @Override
@@ -103,6 +114,11 @@ public class WebviewActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean isSameHostAsLaunchUrl(Uri newUri) {
+        final Uri launchUri = Uri.parse(launchUrl);
+        return launchUri.getHost().equalsIgnoreCase(newUri.getHost());
+    }
+
     private class CustomWebviewClient extends WebViewClient {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -113,24 +129,33 @@ public class WebviewActivity extends AppCompatActivity {
                 actionBar.setSubtitle(lockIconIfHttps + currentUri.getHost());
                 actionBar.setTitle(view.getTitle());
             }
+            goBackInWebviewCallback.setEnabled(webView.canGoBack());
         }
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            // TODO: Links within domains we control should stay within the webview
+            // Keep same-host navigation within the WebView
+            if (isSameHostAsLaunchUrl(request.getUrl())) return false;
+
             final Uri requestUri = request.getUrl();
             Intent intent = new Intent(Intent.ACTION_VIEW, requestUri);
-            if (requestUri.getScheme().equals("intent")) {
-                try {
+
+            // Parse "intent:" and "android-app:" URIs
+            try {
+                if (requestUri.getScheme().equalsIgnoreCase("intent")) {
                     intent = Intent.parseUri(requestUri.toString(), Intent.URI_INTENT_SCHEME);
-                } catch (URISyntaxException e) {
-                    // TODO: Error for malformed intent: URIs
+                } else if (requestUri.getScheme().equalsIgnoreCase("android-app")) {
+                    intent = Intent.parseUri(requestUri.toString(), Intent.URI_ANDROID_APP_SCHEME);
                 }
+            } catch (URISyntaxException e) {
+                // TODO: Error for malformed intent: URIs
             }
+
             try {
                 startActivity(intent);
             } catch (ActivityNotFoundException e) {
-                // TODO: Error for links for which an activity cannot be found
+                // If no activity is found for the intent, keep it within the WebView after all
+                return false;
             }
             return true;
         }
