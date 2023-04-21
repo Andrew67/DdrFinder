@@ -58,10 +58,13 @@ public class CustomTabsUtil {
                                  boolean useCustomTabs, @Nullable CustomTabsSession customTabsSession,
                                  boolean usePartialHeight) {
         final Uri uri = Uri.parse(url);
+        final Uri referrerUri = Uri.parse("android-app://" + activity.getPackageName() + "/");
 
         if (!useCustomTabs) {
             try {
-                activity.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                final Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                intent.putExtra(Intent.EXTRA_REFERRER, referrerUri);
+                activity.startActivity(intent);
             } catch (ActivityNotFoundException e) {
                 new WebviewFallback().openUri(activity, uri);
             }
@@ -103,6 +106,7 @@ public class CustomTabsUtil {
             }
 
             final CustomTabsIntent customTabsIntent = customTabsIntentBuilder.build();
+            customTabsIntent.intent.putExtra(Intent.EXTRA_REFERRER, referrerUri);
             if (usePartialHeight && customTabsSession != null) {
                 // Disables background interaction
                 // TODO: Use CustomTabsIntent.Builder version once available

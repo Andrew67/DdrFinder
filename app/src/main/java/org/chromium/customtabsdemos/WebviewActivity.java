@@ -19,6 +19,7 @@ package org.chromium.customtabsdemos;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -32,9 +33,12 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.R;
 
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This Activity is used as a fallback when there is no browser installed that supports
@@ -54,9 +58,12 @@ public class WebviewActivity extends AppCompatActivity {
         final String url = getIntent().getStringExtra(EXTRA_URL);
         webView = findViewById(R.id.webview);
         webView.setWebViewClient(new CustomWebviewClient());
+        if (BuildConfig.DEBUG) WebView.setWebContentsDebuggingEnabled(true);
+
         final WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setSupportMultipleWindows(false);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setDatabaseEnabled(true);
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,7 +71,10 @@ public class WebviewActivity extends AppCompatActivity {
         setTitle(url);
         actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
-        webView.loadUrl(url);
+
+        final Map<String, String> headers = new HashMap<>();
+        headers.put("Referer", "android-app://" + getPackageName() + "/");
+        webView.loadUrl(url, headers);
     }
 
     @Override
@@ -95,8 +105,8 @@ public class WebviewActivity extends AppCompatActivity {
 
     private class CustomWebviewClient extends WebViewClient {
         @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onLoadResource(view, url);
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
             if (actionBar != null) {
                 final Uri currentUri = Uri.parse(url);
                 final String lockIconIfHttps = currentUri.getScheme().equals("https") ? "🔒 " : "";
