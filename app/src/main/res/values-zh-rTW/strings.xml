@@ -7,6 +7,7 @@
     <string name="action_my_location">我的位置</string>
     <string name="action_settings">設置</string>
     <string name="action_about">關於</string>
+    <string name="action_ddr_calc">打開DDR Calc</string>
     <string name="action_privacy_policy">隱私政策</string>
     <string name="location_actions_navigate">導航</string>
     <string name="location_actions_info">更多信息</string>

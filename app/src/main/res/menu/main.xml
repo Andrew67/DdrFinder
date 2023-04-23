@@ -1,19 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/action_my_location"
+<!--    <item
+        android:id="@+id/action_ddr_calc"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_my_location"
+        android:icon="@drawable/ic_calculator"
         app:iconTint="?attr/colorControlNormal"
-        android:title="@string/action_my_location" />
-
-    <item
-        android:id="@+id/action_search"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_search"
-        app:iconTint="?attr/colorControlNormal"
-        android:title="@string/action_search" />
+        android:title="@string/action_ddr_calc" />-->
 
     <item
         android:id="@+id/action_share"

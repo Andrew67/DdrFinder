@@ -52,6 +52,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.maps.android.clustering.ClusterManager;
 
 import android.app.Dialog;
@@ -178,6 +179,14 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                 .setEnabled(selectedLocationModel.getSelectedLocation().getValue() != null);
         getOnBackPressedDispatcher().addCallback(this, locationActionsDismissCallback);
 
+        // Callback for the "search" floating action button
+        final FloatingActionButton searchButton = findViewById(R.id.action_search);
+        searchButton.setOnClickListener(view -> openPlaceSearchOverlay());
+
+        // Callback for the "my location" floating action button
+        final FloatingActionButton myLocationButton = findViewById(R.id.action_my_location);
+        myLocationButton.setOnClickListener(view -> myLocationModel.requestMyLocation(this));
+
         // Observe the selected location state and reveal/hide the location actions, as well as move
         // the map to the location
         // For some reason, putting this code in onMapReady causes the bottom sheet to fly from
@@ -187,10 +196,14 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                 locationActionsBehavior.setHideable(true);
                 locationActionsBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 locationActionsDismissCallback.setEnabled(false);
+                searchButton.show();
+                myLocationButton.show();
             } else {
                 locationActionsBehavior.setHideable(false);
                 locationActionsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 locationActionsDismissCallback.setEnabled(true);
+                searchButton.hide();
+                myLocationButton.hide();
 
                 if (mMap != null) {
                     final double bottomPadding = getResources().getDimension(R.dimen.locationActionsFullHeight);
@@ -533,9 +546,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         final int itemId = item.getItemId();
         if (itemId == R.id.action_search) {
             openPlaceSearchOverlay();
-            return true;
-        } else if (itemId == R.id.action_my_location) {
-            myLocationModel.requestMyLocation(this);
             return true;
         } else if (itemId == R.id.action_share) {
             shareCurrentAppLink();

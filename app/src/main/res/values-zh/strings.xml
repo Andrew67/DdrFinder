@@ -36,6 +36,7 @@
     <string name="settings_location_dialog_positive">应用设置</string>
     <string name="settings_location_dialog_negative">取消</string>
     <string name="settings_custom_tabs">在应用中打开网页</string>
+    <string name="action_ddr_calc">打开DDR Calc</string>
     <string name="action_privacy_policy">用户隐私协议</string>
     <string name="error_opening_browser">无法打开浏览器</string>
     <string name="settings_filter">筛选</string>
