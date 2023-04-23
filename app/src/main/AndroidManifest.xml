@@ -53,6 +53,9 @@
         <activity
             android:name="org.chromium.customtabsdemos.WebviewActivity"
             android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".activity.DdrCalcLauncher"
+            android:theme="@style/AppTheme"/>
 
         <!-- Google Maps meta-data -->
         <meta-data

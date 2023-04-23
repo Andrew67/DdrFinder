@@ -544,8 +544,8 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         final int itemId = item.getItemId();
-        if (itemId == R.id.action_search) {
-            openPlaceSearchOverlay();
+        if (itemId == R.id.action_ddr_calc) {
+            startActivity(new Intent(this, DdrCalcLauncher.class));
             return true;
         } else if (itemId == R.id.action_share) {
             shareCurrentAppLink();
