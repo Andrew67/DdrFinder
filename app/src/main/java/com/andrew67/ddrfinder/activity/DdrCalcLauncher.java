@@ -31,6 +31,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.andrew67.ddrfinder.util.CustomTabsUtil;
 
+/**
+ * Jumps straight into launching DDR Calc as a Custom Tab (with Webview fallback).
+ * Doesn't employ all the tricks from the TWA launcher activity, so future work may be needed.
+ * See <a href="https://github.com/GoogleChrome/android-browser-helper/blob/main/androidbrowserhelper/src/main/java/com/google/androidbrowserhelper/trusted/LauncherActivity.java">android-browser-helper LauncherActivity</a>
+ *
+ * <p>Currently lacks support for shortcuts as it causes the Custom Tab to re-open every time.
+ */
 public class DdrCalcLauncher extends AppCompatActivity {
 
     private static final String KEY_HAS_LAUNCHED = "hasLaunched";
@@ -39,6 +46,7 @@ public class DdrCalcLauncher extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (savedInstanceState != null) {
             hasLaunched = savedInstanceState.getBoolean(KEY_HAS_LAUNCHED, false);
         }
