@@ -11,7 +11,7 @@ android {
     }
     defaultConfig {
         applicationId ="com.andrew67.ddrfinder"
-        versionCode = 55
+        versionCode = 65
         versionName = "3.0.25"
         minSdk = 23
         targetSdk = 33
@@ -63,7 +63,7 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.10.0")
-    implementation("androidx.core:core-splashscreen:1.0.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.browser:browser:1.5.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
