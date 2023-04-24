@@ -70,6 +70,18 @@
   },
   {
     "featureType": "poi",
+    "elementType": "all",
+    "stylers": [
+      {
+        "saturation": "-50"
+      },
+      {
+        "lightness": "-20"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
     "elementType": "geometry",
     "stylers": [
       {

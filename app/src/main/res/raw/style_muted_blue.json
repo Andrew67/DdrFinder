@@ -13,9 +13,6 @@
     "elementType": "all",
     "stylers": [
       {
-        "visibility": "on"
-      },
-      {
         "saturation": "-50"
       }
     ]
@@ -33,9 +30,6 @@
     "featureType": "transit",
     "elementType": "all",
     "stylers": [
-      {
-        "visibility": "on"
-      },
       {
         "saturation": "-50"
       }
