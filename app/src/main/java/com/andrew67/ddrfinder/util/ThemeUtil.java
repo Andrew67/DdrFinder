@@ -24,7 +24,6 @@
 package com.andrew67.ddrfinder.util;
 
 import android.content.res.Resources;
-import android.graphics.Color;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -37,7 +36,7 @@ public class ThemeUtil {
 
     /**
      * Gets a color from the given theme.
-     * Source: http://stackoverflow.com/questions/17277618/get-color-value-programmatically-when-its-a-reference-theme/17277714#17277714
+     * Source: <a href="http://stackoverflow.com/questions/17277618/get-color-value-programmatically-when-its-a-reference-theme/17277714#17277714">StackOverflow</a>
      * @param theme Theme to extract color from
      * @param attr Reference to the color name, from R.attr
      */
@@ -46,19 +45,6 @@ public class ThemeUtil {
         TypedValue typedValue = new TypedValue();
         theme.resolveAttribute(attr, typedValue, true);
         return typedValue.data;
-    }
-
-    /**
-     * Gets the hue value for a color from the given theme.
-     * Generally used for Google Maps MarkerOptions which require a hue value.
-     * @param theme Theme to extract color from
-     * @param attr Reference to the color name, from R.attr
-     */
-    public static float getThemeColorHue(Resources.Theme theme, @AttrRes int attr) {
-        int rgbColor = getThemeColor(theme, attr);
-        float[] hsv = new float[3];
-        Color.colorToHSV(rgbColor, hsv);
-        return hsv[0];
     }
 
     /**

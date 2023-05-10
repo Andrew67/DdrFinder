@@ -24,7 +24,7 @@ package com.andrew67.ddrfinder;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.andrew67.ddrfinder.activity.SettingsActivity;

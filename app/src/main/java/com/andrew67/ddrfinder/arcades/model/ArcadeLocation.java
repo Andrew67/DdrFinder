@@ -32,7 +32,7 @@ import com.google.maps.android.clustering.ClusterItem;
 
 /**
  * Represents the API v3 arcade location.
- * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
+ * See: <a href="https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md">API docs</a>
  */
 public final class ArcadeLocation implements Parcelable, ClusterItem {
     private int id;

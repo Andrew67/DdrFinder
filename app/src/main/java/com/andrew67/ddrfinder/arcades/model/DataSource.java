@@ -29,8 +29,9 @@ import com.andrew67.ddrfinder.BuildConfig;
 
 /**
  * Represents the API v3 data source.
- * See: https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md
- * The infoURL field is ignored; mInfoURL is used in its place since this code is always on mobile
+ * See: <a href="https://github.com/Andrew67/ddr-finder/blob/master/docs/API.md">API docs</a>
+ *
+ * <p>The infoURL field is ignored; mInfoURL is used in its place since this code is always on mobile
  */
 public final class DataSource implements Parcelable {
 
