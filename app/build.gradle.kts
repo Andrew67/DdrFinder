@@ -33,6 +33,8 @@ android {
                 "\"https://ddrfinder.andrew67.com/app\"")
         buildConfigField("String", "FALLBACK_INFO_URL",
                 "\"https://ddrfinder.andrew67.com/info.php?id=\${id}&android=1\"")
+        buildConfigField("String", "DDR_CALC_URL",
+                "\"https://ddrcalc.andrew67.com/?df=1&gp=3\"")
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -64,7 +66,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("com.google.android.material:material:1.8.0")
+    implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.browser:browser:1.5.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.preference:preference:1.2.0")

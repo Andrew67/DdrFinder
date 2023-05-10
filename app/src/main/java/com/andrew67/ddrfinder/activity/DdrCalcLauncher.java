@@ -23,13 +23,17 @@
 
 package com.andrew67.ddrfinder.activity;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.andrew67.ddrfinder.BuildConfig;
 import com.andrew67.ddrfinder.util.CustomTabsUtil;
+
+import org.chromium.customtabsdemos.NativeLaunchHelper;
 
 /**
  * Jumps straight into launching DDR Calc as a Custom Tab (with Webview fallback).
@@ -51,9 +55,16 @@ public class DdrCalcLauncher extends AppCompatActivity {
             hasLaunched = savedInstanceState.getBoolean(KEY_HAS_LAUNCHED, false);
         }
 
+        // If the user has DDR Calc installed, open it as a separate app,
+        // otherwise fall back to Custom Tabs.
+        // We use the helper instead of hardcoding the package name because the user may have
+        // installed the PWA as a WebAPK, in which case we don't know the package names.
         if (!hasLaunched) {
-            CustomTabsUtil.launchUrl(this, "https://ddrcalc.andrew67.com/",
-                    true, null, false);
+            hasLaunched = NativeLaunchHelper.launchUri(this, Uri.parse(BuildConfig.DDR_CALC_URL));
+            if (!hasLaunched) {
+                CustomTabsUtil.launchUrl(this, BuildConfig.DDR_CALC_URL,
+                        true, null, false);
+            }
             hasLaunched = true;
         }
         finish();
