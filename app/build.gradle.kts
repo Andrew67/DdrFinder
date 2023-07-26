@@ -11,8 +11,8 @@ android {
     }
     defaultConfig {
         applicationId ="com.andrew67.ddrfinder"
-        versionCode = 65
-        versionName = "3.0.25"
+        versionCode = 66
+        versionName = "3.0.26"
         minSdk = 23
         targetSdk = 33
         // Add to test pseudo-locales (no way to specify just for debug config)
@@ -60,21 +60,20 @@ dependencies {
     implementation("com.google.android.gms:play-services-base:18.2.0")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation("com.google.android.libraries.places:places:3.1.0")
+    implementation("com.google.android.libraries.places:places:3.2.0")
     implementation("com.google.maps.android:android-maps-utils:3.4.0")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.core:core-ktx:1.10.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.browser:browser:1.5.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.preference:preference:1.2.0")
+    implementation("androidx.preference:preference:1.2.1")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.6.1")
 
-    implementation("com.squareup.moshi:moshi:1.14.0")
+    implementation("com.squareup.moshi:moshi:1.15.0")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 }
