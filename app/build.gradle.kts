@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.andrew67.ddrfinder"
-    compileSdk = 33
+    compileSdk = 34
     buildFeatures {
         buildConfig = true
     }
@@ -14,7 +14,7 @@ android {
         versionCode = 66
         versionName = "3.0.26"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         // Add to test pseudo-locales (no way to specify just for debug config)
         // "en-rXA", "ar-rXB",
         resourceConfigurations += listOf("en", "en-rGB",
@@ -24,17 +24,17 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         buildConfigField("String", "API_BASE_URL",
-                "\"https://ddrfinder.andrew67.com/locate.php\"")
+                "\"https://ddrfinder-api.andrew67.com/locate.php\"")
         buildConfigField("String", "ABOUT_BASE_URL",
-                "\"https://ddrfinder.andrew67.com/android/about.php\"")
+                "\"https://ddrfinder.andrew67.com/android/about/\"")
         buildConfigField("String", "PRIVACY_POLICY_URL",
-                "\"https://ddrfinder.andrew67.com/android/privacy-policy.html\"")
+                "\"https://ddrfinder.andrew67.com/android/privacy-policy/\"")
         buildConfigField("String", "APPLINK_BASE_URL",
                 "\"https://ddrfinder.andrew67.com/app\"")
         buildConfigField("String", "FALLBACK_INFO_URL",
                 "\"https://ddrfinder.andrew67.com/info.php?id=\${id}&android=1\"")
         buildConfigField("String", "DDR_CALC_URL",
-                "\"https://ddrcalc.andrew67.com/?df=1&gp=3\"")
+                "\"https://ddrcalc.andrew67.com/\"")
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -57,23 +57,23 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.gms:play-services-base:18.2.0")
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
-    implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation("com.google.android.libraries.places:places:3.2.0")
+    implementation("com.google.android.gms:play-services-base:18.3.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.1.0")
+    implementation("com.google.android.libraries.places:places:3.3.0")
     implementation("com.google.maps.android:android-maps-utils:3.4.0")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("com.google.android.material:material:1.9.0")
-    implementation("androidx.browser:browser:1.5.0")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.browser:browser:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.preference:preference:1.2.1")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-common-java8:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.7.0")
 
-    implementation("com.squareup.moshi:moshi:1.15.0")
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.moshi:moshi:1.15.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
