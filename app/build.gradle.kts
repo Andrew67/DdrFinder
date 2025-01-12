@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "com.andrew67.ddrfinder"
-    compileSdk = 34
+    compileSdk = 35
     buildFeatures {
         buildConfig = true
     }
     defaultConfig {
         applicationId ="com.andrew67.ddrfinder"
-        versionCode = 66
-        versionName = "3.0.26"
+        versionCode = 67
+        versionName = "3.0.27"
         minSdk = 23
         targetSdk = 34
         // Add to test pseudo-locales (no way to specify just for debug config)
@@ -64,15 +64,15 @@ dependencies {
     implementation("com.google.maps.android:android-maps-utils:3.4.0")
 
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.browser:browser:1.8.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
-    implementation("androidx.lifecycle:lifecycle-common-java8:2.8.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.8.7")
 
     implementation("com.squareup.moshi:moshi:1.15.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
