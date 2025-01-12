@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Andrés Cordero
+ * Copyright (c) 2018-2025 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -80,7 +80,7 @@ public class MyLocationModel extends ViewModel {
      * Use for attaching observers for setup when granted, or error message when denied.
      * Fires denied only when user requests location explicitly;
      * fires granted upon original grant and on every onResume thereafter.
-     * When emitting true, SecurityException should not happen for ACCESS_COARSE_LOCATION
+     * When emitting true, SecurityException should not happen for ACCESS_FINE_LOCATION
      */
     @NonNull
     public LiveData<Boolean> getPermissionGranted() {
@@ -95,11 +95,16 @@ public class MyLocationModel extends ViewModel {
      */
     public void requestMyLocation(@NonNull Activity activity) {
         if (ContextCompat.checkSelfPermission(activity,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(activity,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             loadLocation(activity, updateLocationResponse);
         } else {
             ActivityCompat.requestPermissions(activity,
-                    new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
                     PERMISSIONS_REQUEST_LOCATION);
         }
     }
@@ -113,7 +118,9 @@ public class MyLocationModel extends ViewModel {
     public void requestMyLocationSilently(@NonNull Context activity,
                                           @NonNull OnSuccessListener<LatLng> onSuccessListener) {
         if (ContextCompat.checkSelfPermission(activity,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(activity,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             loadLocation(activity, onSuccessListener);
         }
     }
@@ -126,7 +133,8 @@ public class MyLocationModel extends ViewModel {
                                            @SuppressWarnings("unused") @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_LOCATION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ||
+                    grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 permissionGranted.setValue(true);
                 loadLocation(activity, updateLocationResponse);
             } else {
@@ -141,7 +149,9 @@ public class MyLocationModel extends ViewModel {
      */
     public void onResume(@NonNull FragmentActivity activity) {
         if (ContextCompat.checkSelfPermission(activity,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(activity,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             permissionGranted.setValue(true);
         } else if (permissionDeniedFromPlatform) {
             permissionDeniedFromPlatform = false;

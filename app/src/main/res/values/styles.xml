@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base light/dark theme colors. -->
     <style name="AppLightDarkBaseTheme"  parent="Theme.Material3.DayNight.NoActionBar">
@@ -85,6 +85,7 @@
         <!-- All customizations that are NOT specific to a particular configuration can go here. -->
         <item name="android:statusBarColor">?attr/colorPrimaryContainer</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>
 
     <!-- Splash Screen -->

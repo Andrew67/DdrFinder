@@ -9,7 +9,7 @@
     	See https://developers.google.com/maps/documentation/android-api/config#specify_android_permissions
     	For increased privacy, only COARSE is requested now, and FINE is eliminated -->
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" tools:node="remove"/>
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <!-- Cancel out implied hardware requirements, location hardware is optional for example -->
     <uses-feature android:name="android.hardware.location" android:required="false"/>

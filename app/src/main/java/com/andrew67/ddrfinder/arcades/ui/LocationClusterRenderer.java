@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2023 Andrés Cordero
+ * Copyright (c) 2016-2025 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -84,10 +84,10 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
 
         defaultPin = getBitmapFromVector(context,
                 defaultPinColor,
-                R.drawable.ic_arcade_black_16dp, defaultIconColor);
+                null, defaultIconColor);
         selectedPin = getBitmapFromVector(context,
                 selectedPinColor,
-                R.drawable.ic_arcade_black_16dp, selectedIconColor);
+                null, selectedIconColor);
 
         ddrPin = getBitmapFromVector(context,
                 defaultPinColor,
@@ -170,7 +170,7 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
      * Based on <a href="https://stackoverflow.com/questions/42365658/custom-marker-in-google-maps-in-android-with-vector-asset-icon/48356646#48356646">code snippet from StackOverflow</a>
      */
     private static Bitmap getBitmapFromVector(Context context, @ColorInt int markerColor,
-                                              @DrawableRes int icon, @ColorInt int iconColor) {
+                                              @DrawableRes Integer icon, @ColorInt int iconColor) {
         final Drawable background = ContextCompat.getDrawable(context,
                 R.drawable.ic_map_marker_black_32dp);
         assert background != null;
@@ -178,20 +178,23 @@ public class LocationClusterRenderer extends DefaultClusterRenderer<ArcadeLocati
                 background.getIntrinsicWidth(), background.getIntrinsicHeight());
         DrawableCompat.setTint(background, markerColor);
 
-        final Drawable vectorDrawable = ContextCompat.getDrawable(context, icon);
-        assert vectorDrawable != null;
-        final int left = (background.getIntrinsicWidth() - vectorDrawable.getIntrinsicWidth()) / 2;
-        final int top = (background.getIntrinsicHeight() - vectorDrawable.getIntrinsicHeight()) / 3;
-        vectorDrawable.setBounds(left, top,
-                left + vectorDrawable.getIntrinsicWidth(),
-                top + vectorDrawable.getIntrinsicHeight());
-        DrawableCompat.setTint(vectorDrawable, iconColor);
+        Drawable vectorDrawable = null;
+        if (icon != null) {
+            vectorDrawable = ContextCompat.getDrawable(context, icon);
+            assert vectorDrawable != null;
+            final int left = (background.getIntrinsicWidth() - vectorDrawable.getIntrinsicWidth()) / 2;
+            final int top = (background.getIntrinsicHeight() - vectorDrawable.getIntrinsicHeight()) / 3;
+            vectorDrawable.setBounds(left, top,
+                    left + vectorDrawable.getIntrinsicWidth(),
+                    top + vectorDrawable.getIntrinsicHeight());
+            DrawableCompat.setTint(vectorDrawable, iconColor);
+        }
 
         final Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(),
                 background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(bitmap);
         background.draw(canvas);
-        vectorDrawable.draw(canvas);
+        if (vectorDrawable != null) vectorDrawable.draw(canvas);
         return bitmap;
     }
 

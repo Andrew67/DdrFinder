@@ -14,7 +14,7 @@ android {
         versionCode = 67
         versionName = "3.0.27"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 35
         // Add to test pseudo-locales (no way to specify just for debug config)
         // "en-rXA", "ar-rXB",
         resourceConfigurations += listOf("en", "en-rGB",
@@ -58,9 +58,9 @@ android {
 
 dependencies {
     implementation("com.google.android.gms:play-services-base:18.5.0")
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.google.android.libraries.places:places:3.5.0")
+    implementation("com.google.android.libraries.places:places:4.1.0")
     implementation("com.google.maps.android:android-maps-utils:3.4.0")
 
     implementation("androidx.appcompat:appcompat:1.7.0")
@@ -74,6 +74,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.8.7")
 
-    implementation("com.squareup.moshi:moshi:1.15.1")
+    implementation("com.squareup.moshi:moshi:1.15.2")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
