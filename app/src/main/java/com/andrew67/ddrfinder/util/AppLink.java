@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2023 Andrés Cordero
+ * Copyright (c) 2018-2025 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -57,13 +57,18 @@ public class AppLink {
 
     private final LatLng position;
     private final Float zoom;
+    private final String sourceShortName;
+    private final String gameFilter;
 
     /**
      * Build the AppLink. Cannot be called directly.
      */
-    private AppLink(@Nullable LatLng position, @Nullable Float zoom) {
+    private AppLink(@Nullable LatLng position, @Nullable Float zoom,
+                    @Nullable String sourceShortName, @Nullable String gameFilter) {
         this.position = position;
         this.zoom = zoom;
+        this.sourceShortName = sourceShortName;
+        this.gameFilter = gameFilter;
     }
 
     /**
@@ -90,7 +95,16 @@ public class AppLink {
      */
     @Nullable
     public String getSourceShortName() {
-        return null;
+        return sourceShortName;
+    }
+
+    /**
+     * Return the games to filter by, if set.
+     * @return Game filter string, or null if not specified.
+     */
+    @Nullable
+    public String getGameFilter() {
+        return gameFilter;
     }
 
     /**
@@ -174,6 +188,19 @@ public class AppLink {
             url.append(',');
             url.append(zoom.intValue());
             url.append('z');
+
+            if (sourceShortName != null || gameFilter != null) {
+                url.append('?');
+                if (sourceShortName != null) {
+                    url.append("src=");
+                    url.append(sourceShortName);
+                }
+                if (gameFilter != null) {
+                    if (sourceShortName != null) url.append('&');
+                    url.append("games=");
+                    url.append(gameFilter);
+                }
+            }
         }
         return url.toString();
     }
@@ -184,6 +211,8 @@ public class AppLink {
     public static class Builder {
         private LatLng position = null;
         private Float zoom = null;
+        private String sourceShortName = null;
+        private String gameFilter = null;
 
         public Builder position(@Nullable LatLng position) {
             this.position = position;
@@ -195,8 +224,18 @@ public class AppLink {
             return this;
         }
 
+        public Builder sourceShortName(@Nullable String sourceShortName) {
+            this.sourceShortName = sourceShortName;
+            return this;
+        }
+
+        public Builder gameFilter(@Nullable String gameFilter) {
+            this.gameFilter = gameFilter;
+            return this;
+        }
+
         public AppLink build() {
-            return new AppLink(position, zoom);
+            return new AppLink(position, zoom, sourceShortName, gameFilter);
         }
     }
 
@@ -205,7 +244,11 @@ public class AppLink {
      * @return New builder with current parameters.
      */
     public Builder buildUpon() {
-        return new Builder().position(position).zoom(zoom);
+        return new Builder()
+            .position(position)
+            .zoom(zoom)
+            .sourceShortName(sourceShortName)
+            .gameFilter(gameFilter);
     }
 
 }

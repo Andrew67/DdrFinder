@@ -47,6 +47,7 @@
     </string-array>
     <string name="has_ddr_yes">有</string>
     <string name="has_ddr_no">無</string>
+    <string name="action_launch_web">このアプリはもうアップデートされてません。\nここでタッチして新しいウェブアプリ試してみて</string>
     <string name="distance_km">約 %1$s km</string>
     <string name="settings_locale">言語 / Language</string>
     <string-array name="settings_locale_entries">

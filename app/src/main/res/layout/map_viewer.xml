@@ -30,6 +30,19 @@
                 android:id="@+id/map"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/action_launch_web"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:background="?attr/colorSecondary"
+                android:textColor="?attr/colorOnSecondary"
+                android:text="@string/action_launch_web" />
+
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/progressBar"
                 android:layout_width="match_parent"
@@ -37,6 +50,7 @@
                 android:indeterminate="true"
                 android:visibility="invisible"
                 app:indicatorColor="?attr/colorSecondary"/>
+
             <TextView
                 android:id="@+id/attribution"
                 android:layout_width="wrap_content"

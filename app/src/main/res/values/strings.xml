@@ -24,6 +24,7 @@
     <string name="error_datasrc">Server did not recognize the data source(s) requested</string>
     <string name="error_api_unexpected">Unexpected connection error</string>
     <string name="area_no_results">No arcades found in this area</string>
+    <string name="action_launch_web">This app version will no longer be updated.\nTap here to try out the new Web UI</string>
 
     <!-- Arcade location info sheet -->
     <string name="distance_km">≈ %1$s km</string>

@@ -38,6 +38,7 @@ import com.andrew67.ddrfinder.mylocation.MyLocationModel;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel;
 import com.andrew67.ddrfinder.util.AppLink;
+import com.andrew67.ddrfinder.util.CustomTabsUtil;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -186,6 +187,12 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         // Callback for the "my location" floating action button
         final FloatingActionButton myLocationButton = findViewById(R.id.action_my_location);
         myLocationButton.setOnClickListener(view -> myLocationModel.requestMyLocation(this));
+
+        // Callback for the "launch web app" header
+        final TextView launchWebHeader = findViewById(R.id.action_launch_web);
+        launchWebHeader.setOnClickListener(view ->
+            CustomTabsUtil.launchUrl(this, currentAppLink.build().toString(),
+                true, null, false));
 
         // Observe the selected location state and reveal/hide the location actions, as well as move
         // the map to the location
@@ -596,6 +603,12 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
 
         // Re-check in case dataSrc was changed
         if (mMap != null) updateMap(false);
+
+        // Update app link with dataSrc and gameFilter
+        final boolean hasDDROnly = sharedPref.getBoolean(SettingsActivity.KEY_PREF_FILTER_DDR_ONLY, false);
+        final String datasrc = sharedPref.getString(SettingsActivity.KEY_PREF_API_SRC, null);
+        currentAppLink.gameFilter(hasDDROnly ? "ddr" : null);
+        currentAppLink.sourceShortName(datasrc);
     }
 
     @Override

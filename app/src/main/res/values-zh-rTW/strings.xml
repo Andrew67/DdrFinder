@@ -14,6 +14,7 @@
     <string name="has_ddr_yes">有</string>
     <string name="has_ddr_no">沒有</string>
     <string name="settings_location_dialog_positive">應用設置</string>
+    <string name="action_launch_web">此APP將不再進行更新。\n點此試用全新網頁版APP</string>
     <string name="distance_km">約 %1$s km</string>
     <string name="settings_location_dialog_negative">取消</string>
     <string name="error_zoom">請放大</string>
