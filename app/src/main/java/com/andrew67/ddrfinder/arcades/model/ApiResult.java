@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019 Andrés Cordero
+ * Copyright (c) 2015-2025 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -40,15 +40,18 @@ public final class ApiResult {
     private Integer errorCode;
     private List<DataSource> sources;
     private List<ArcadeLocation> locations;
+    private Deprecations deprecations;
     private transient LatLngBounds bounds; // non-API
 
     private ApiResult() { }
 
     public ApiResult(List<DataSource> sources,
                       List<ArcadeLocation> locations,
+                      Deprecations deprecations,
                       LatLngBounds bounds) {
         this.sources = sources;
         this.locations = locations;
+        this.deprecations = deprecations;
         this.bounds = bounds;
     }
 
@@ -86,6 +89,11 @@ public final class ApiResult {
     public List<DataSource> getSources() {
         if (sources != null) return sources;
         else return Collections.emptyList();
+    }
+
+    @NonNull
+    public Deprecations getDeprecations() {
+        return deprecations;
     }
 
     /**

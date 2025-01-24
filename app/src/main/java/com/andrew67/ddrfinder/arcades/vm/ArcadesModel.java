@@ -54,6 +54,7 @@ public class ArcadesModel extends ViewModel {
     private final MutableLiveData<List<ArcadeLocation>> arcadeLocations = new MutableLiveData<>();
     private final Map<String, DataSource> dataSources = new HashMap<>();
     private final MutableLiveData<String> attribution = new MutableLiveData<>();
+    private final MutableLiveData<Integer> deprecationLevel = new MutableLiveData<>();
 
     // Fire once
     private final SingleLiveEvent<Boolean> inProgress = new SingleLiveEvent<>();
@@ -69,6 +70,11 @@ public class ArcadesModel extends ViewModel {
     /** Get the attribution to show on the current map */
     public LiveData<String> getAttribution() {
         return attribution;
+    }
+
+    /** Get the deprecation level to show the warning/error states */
+    public LiveData<Integer> getDeprecationLevel() {
+        return deprecationLevel;
     }
 
     /** Get the progress state of the map loader request. This is an indeterminate bar */
@@ -113,6 +119,7 @@ public class ArcadesModel extends ViewModel {
                 for (DataSource src : result.getSources()) dataSources.put(src.getShortName(), src);
 
                 attribution.setValue(AttributionGenerator.fromSources(result.getSources()));
+                deprecationLevel.setValue(result.getDeprecations().getGooglePlay());
             }
 
             @Override

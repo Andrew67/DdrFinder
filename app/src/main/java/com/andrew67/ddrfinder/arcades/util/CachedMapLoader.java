@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Andrés Cordero
+ * Copyright (c) 2018-2025 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,6 +29,7 @@ import android.util.Log;
 import com.andrew67.ddrfinder.arcades.model.ApiResult;
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation;
 import com.andrew67.ddrfinder.arcades.model.DataSource;
+import com.andrew67.ddrfinder.arcades.model.Deprecations;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -45,6 +46,7 @@ import java.util.Set;
 public class CachedMapLoader {
     private static final String TAG = "CachedMapLoader";
     private final List<ApiResult> resultsCache = Collections.synchronizedList(new ArrayList<>());
+    private Deprecations deprecationsCache;
 
     // Singleton pattern
     private CachedMapLoader() { }
@@ -94,6 +96,7 @@ public class CachedMapLoader {
             @Override
             public void onLocationsLoaded(@NonNull ApiResult result) {
                 resultsCache.add(result);
+                deprecationsCache = result.getDeprecations();
                 callback.onLocationsLoaded(result);
             }
 
@@ -165,7 +168,7 @@ public class CachedMapLoader {
         if (loadedNE && loadedSW && loadedNW && loadedSE) loaded = true;
 
         if (loaded) return new ApiResult(new ArrayList<>(cachedSources),
-                new ArrayList<>(cachedArcadeLocations), box);
+                new ArrayList<>(cachedArcadeLocations), deprecationsCache, box);
         else return null;
     }
 }

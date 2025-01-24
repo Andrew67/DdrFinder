@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023 Andrés Cordero
+ * Copyright (c) 2015-2025 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -81,6 +81,7 @@ public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
             final HttpUrl requestUrl = apiUrl.newBuilder()
                     .addQueryParameter("version", "30")
                     .addQueryParameter("canHandleLargeDataset", "")
+                    .addQueryParameter("showDeprecationFlags", "")
                     .addQueryParameter("datasrc", datasrc)
                     .addQueryParameter("latupper", "" + box.northeast.latitude)
                     .addQueryParameter("lngupper", "" + box.northeast.longitude)
@@ -131,7 +132,7 @@ public class NetworkMapLoader extends AsyncTask<LatLngBounds, Void, ApiResult> {
         } else {
             switch(result.getErrorCode()) {
                 case ApiResult.ERROR_OK:
-                    if (result.getLocations().size() == 0) {
+                    if (result.getLocations().isEmpty()) {
                         callback.onError(ApiResult.ERROR_NO_RESULTS, R.string.area_no_results);
                     }
                     callback.onLocationsLoaded(result);

@@ -116,6 +116,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private ProgressBar progressBar;
     private TextView attributionText;
     private BottomSheetBehavior<View> locationActionsBehavior;
+    private TextView deprecationWarningBanner;
 
     // Helpers
     private SharedPreferences sharedPref;
@@ -188,12 +189,6 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         final FloatingActionButton myLocationButton = findViewById(R.id.action_my_location);
         myLocationButton.setOnClickListener(view -> myLocationModel.requestMyLocation(this));
 
-        // Callback for the "launch web app" header
-        final TextView launchWebHeader = findViewById(R.id.action_launch_web);
-        launchWebHeader.setOnClickListener(view ->
-            CustomTabsUtil.launchUrl(this, currentAppLink.build().toString(),
-                true, null, false));
-
         // Observe the selected location state and reveal/hide the location actions, as well as move
         // the map to the location
         // For some reason, putting this code in onMapReady causes the bottom sheet to fly from
@@ -245,6 +240,15 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                     getResources().getString(R.string.settings_src_default)).apply();
         }
 
+        // Deprecation warning banner / forced navigation to web version
+        deprecationWarningBanner = findViewById(R.id.action_launch_web);
+        deprecationWarningBanner.setOnClickListener(view ->
+                CustomTabsUtil.launchUrl(this, currentAppLink.build().toString(),
+                        true, null, false));
+        arcadesModel.getDeprecationLevel().observe(this, deprecationLevel -> {
+            if (deprecationLevel > 0) deprecationWarningBanner.setVisibility(View.VISIBLE);
+            // TODO: deprecationLevel > 1
+        });
     }
 
     @Override
