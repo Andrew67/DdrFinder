@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.andrew67.ddrfinder.R;
 import com.andrew67.ddrfinder.arcades.model.DataSource;
+import com.andrew67.ddrfinder.arcades.ui.AppDiscontinuedDialogFragment;
 import com.andrew67.ddrfinder.arcades.vm.ArcadesModel;
 import com.andrew67.ddrfinder.arcades.ui.LocationClusterRenderer;
 import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel;
@@ -117,6 +118,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
     private TextView attributionText;
     private BottomSheetBehavior<View> locationActionsBehavior;
     private TextView deprecationWarningBanner;
+    private AppDiscontinuedDialogFragment appDiscontinuedDialogFragment;
 
     // Helpers
     private SharedPreferences sharedPref;
@@ -247,7 +249,16 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
                         true, null, false));
         arcadesModel.getDeprecationLevel().observe(this, deprecationLevel -> {
             if (deprecationLevel > 0) deprecationWarningBanner.setVisibility(View.VISIBLE);
-            // TODO: deprecationLevel > 1
+            if (deprecationLevel > 1) {
+                if (appDiscontinuedDialogFragment == null) {
+                    appDiscontinuedDialogFragment = new AppDiscontinuedDialogFragment();
+                    appDiscontinuedDialogFragment.setOkListener(() ->
+                        CustomTabsUtil.launchUrl(this, currentAppLink.build().toString(),
+                                true, null, false));
+                }
+                if (!appDiscontinuedDialogFragment.isAdded())
+                    appDiscontinuedDialogFragment.show(getSupportFragmentManager(), "dialog");
+            }
         });
     }
 

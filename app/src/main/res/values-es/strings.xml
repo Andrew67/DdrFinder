@@ -48,6 +48,9 @@
     <string name="has_ddr_yes">Sí</string>
     <string name="has_ddr_no">No</string>
     <string name="action_launch_web">Esta aplicación no recibirá más actualizaciones.\nToque aquí para probar la nueva aplicación web</string>
+    <string name="eol_title">Aplicación descontinuada</string>
+    <string name="eol_text">Esta versión de la aplicación ha sido descontinuada.\nToque OK para abrir la nueva aplicación web</string>
+    <string name="eol_ok">OK</string>
     <string name="distance_km">≈ %1$s km</string>
     <string name="settings_locale">Idioma / Language</string>
     <string-array name="settings_locale_entries">

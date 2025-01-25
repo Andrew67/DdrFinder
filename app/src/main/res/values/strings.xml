@@ -26,6 +26,11 @@
     <string name="area_no_results">No arcades found in this area</string>
     <string name="action_launch_web">This app version will no longer be updated.\nTap here to try out the new Web UI</string>
 
+    <!-- EOL dialog -->
+    <string name="eol_title">App Discontinued</string>
+    <string name="eol_text">This version of the app has been discontinued.\nTap OK to launch the new Web App</string>
+    <string name="eol_ok">OK</string>
+
     <!-- Arcade location info sheet -->
     <string name="distance_km">≈ %1$s km</string>
     <string name="coordinates" translatable="false">%1$s°, %2$s°</string>
