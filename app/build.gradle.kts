@@ -1,11 +1,10 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 
 android {
     namespace = "com.andrew67.ddrfinder"
-    compileSdk = 36
+    compileSdk = 37
     buildFeatures {
         buildConfig = true
     }
@@ -43,9 +42,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildTypes {
         release {
             isShrinkResources = true
@@ -66,13 +62,13 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
     implementation("com.google.android.gms:play-services-base:18.10.0")
-    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.android.gms:play-services-maps:20.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.google.android.libraries.places:places:4.1.0")
-    implementation("com.google.maps.android:android-maps-utils:3.4.0")
+    implementation("com.google.android.libraries.places:places:4.4.1")
+    implementation("com.google.maps.android:android-maps-utils:4.4.0")
 
     implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.core:core-ktx:1.18.0")
+    implementation("androidx.core:core-ktx:1.19.0")
     implementation("androidx.core:core-splashscreen:1.2.0")
     implementation("com.google.android.material:material:1.14.0")
     implementation("androidx.browser:browser:1.10.0")
