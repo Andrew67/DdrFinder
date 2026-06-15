@@ -12,7 +12,7 @@ android {
         applicationId ="com.andrew67.ddrfinder"
         versionCode = 68
         versionName = "3.0.28"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 35
         vectorDrawables.useSupportLibrary = true
 
@@ -64,7 +64,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-base:18.10.0")
     implementation("com.google.android.gms:play-services-maps:20.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.google.android.libraries.places:places:4.4.1")
+    implementation("com.google.android.libraries.places:places:5.2.0")
     implementation("com.google.maps.android:android-maps-utils:4.4.0")
 
     implementation("androidx.appcompat:appcompat:1.7.1")
@@ -79,5 +79,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-common-java8:2.10.0")
 
     implementation("com.squareup.moshi:moshi:1.15.2")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:5.4.0")
 }

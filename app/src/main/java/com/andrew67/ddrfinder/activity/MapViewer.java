@@ -655,7 +655,7 @@ public class MapViewer extends AppCompatActivity implements OnMapReadyCallback {
         final LatLngBounds viewport = autocompletedPlace.getViewport();
         final CameraUpdate viewportCameraUpdate = viewport == null ?
                 null : CameraUpdateFactory.newLatLngBounds(viewport, 0);
-        final LatLng latLng = autocompletedPlace.getLatLng();
+        final LatLng latLng = autocompletedPlace.getLocation();
         final CameraUpdate latLngCameraUpdate = latLng == null ?
                 null : CameraUpdateFactory.newLatLngZoom(latLng, BASE_ZOOM);
 

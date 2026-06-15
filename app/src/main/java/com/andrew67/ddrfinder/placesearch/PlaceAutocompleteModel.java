@@ -95,8 +95,8 @@ public class PlaceAutocompleteModel extends ViewModel {
             Places.initialize(activity.getApplicationContext(),
                     activity.getString(R.string.GOOGLE_PLACES_API_KEY));
         }
-        final List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
-                Place.Field.LAT_LNG, Place.Field.VIEWPORT);
+        final List<Place.Field> fields = Arrays.asList(Place.Field.ID,
+                Place.Field.LOCATION, Place.Field.VIEWPORT);
         final Autocomplete.IntentBuilder intentBuilder =
                 new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields);
         if (currentMapView != null)

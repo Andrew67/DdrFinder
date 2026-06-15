@@ -78,15 +78,6 @@
         <!-- Disable Firebase Analytics collection -->
         <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
         <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
-
-        <!-- Split window meta-data for LG/Samsung Android pre-7.0 support -->
-        <meta-data android:name="com.lge.support.SPLIT_WINDOW" android:value="true" />
-        <uses-library android:required="false" android:name="com.sec.android.app.multiwindow" />
-        <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />
-        <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W" android:value="632.0dip" />
-        <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H" android:value="598.0dip" />
-        <meta-data android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable" android:value="true" />
-
     </application>
 
     <queries>
