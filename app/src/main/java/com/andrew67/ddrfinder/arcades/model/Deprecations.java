@@ -64,7 +64,7 @@ public final class Deprecations implements Parcelable {
     }
 
     public static final Creator<Deprecations> CREATOR
-            = new Creator<Deprecations>() {
+            = new Creator<>() {
         public Deprecations createFromParcel(Parcel in) {
             return new Deprecations(in);
         }

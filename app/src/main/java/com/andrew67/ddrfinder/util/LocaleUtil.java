@@ -15,7 +15,7 @@ public class LocaleUtil {
     @Nullable
     public static String getLanguagePref(@NonNull LocaleListCompat appLocales,
                                          @NonNull String[] supportedLocales) {
-        if (appLocales.size() == 0) return null;
+        if (appLocales.isEmpty()) return null;
         Locale appLocale = appLocales.getFirstMatch(supportedLocales);
         if (appLocale == null) return null;
 

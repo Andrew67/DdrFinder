@@ -103,7 +103,7 @@ public final class DataSource implements Parcelable {
     }
 
     public static final Parcelable.Creator<DataSource> CREATOR
-            = new Parcelable.Creator<DataSource>() {
+            = new Parcelable.Creator<>() {
         public DataSource createFromParcel(Parcel in) {
             return new DataSource(in);
         }

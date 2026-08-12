@@ -138,7 +138,7 @@ public final class ArcadeLocation implements Parcelable, ClusterItem {
     }
 
     public static final Parcelable.Creator<ArcadeLocation> CREATOR
-            = new Parcelable.Creator<ArcadeLocation>() {
+            = new Parcelable.Creator<>() {
         public ArcadeLocation createFromParcel(Parcel in) {
             return new ArcadeLocation(in);
         }

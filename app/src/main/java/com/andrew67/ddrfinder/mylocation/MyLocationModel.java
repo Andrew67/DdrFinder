@@ -190,7 +190,7 @@ public class MyLocationModel extends ViewModel {
     /**
      * Listener for {@link #loadLocation} which updates the locationResponse LiveData
      */
-    private final OnSuccessListener<LatLng> updateLocationResponse = new OnSuccessListener<LatLng>() {
+    private final OnSuccessListener<LatLng> updateLocationResponse = new OnSuccessListener<>() {
         @Override
         public void onSuccess(@NonNull LatLng latLng) {
             locationResponse.postValue(MyLocationResponse.withLocation(latLng));

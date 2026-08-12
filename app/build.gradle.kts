@@ -24,7 +24,8 @@ android {
         buildConfigField("String", "APPLINK_BASE_URL",
                 "\"https://ddrfinder.andrew67.com/app\"")
         buildConfigField("String", "FALLBACK_INFO_URL",
-                "\"https://ddrfinder.andrew67.com/info.php?id=\${id}&android=1\"")
+            $$"\"https://ddrfinder.andrew67.com/info.php?id=${id}&android=1\""
+        )
         buildConfigField("String", "DDR_CALC_URL",
                 "\"https://ddrcalc.andrew67.com/?df=1\"")
     }
