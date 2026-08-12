@@ -10,11 +10,10 @@ android {
     }
     defaultConfig {
         applicationId ="com.andrew67.ddrfinder"
-        versionCode = 68
-        versionName = "3.0.28"
+        versionCode = 69
+        versionName = "3.0.29"
         minSdk = 24
         targetSdk = 35
-        vectorDrawables.useSupportLibrary = true
 
         buildConfigField("String", "API_BASE_URL",
                 "\"https://ddrfinder-api.andrew67.com/locate.php\"")
@@ -63,20 +62,20 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-base:18.10.0")
     implementation("com.google.android.gms:play-services-maps:20.0.0")
-    implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.google.android.libraries.places:places:5.2.0")
-    implementation("com.google.maps.android:android-maps-utils:4.4.0")
+    implementation("com.google.android.gms:play-services-location:21.4.0")
+    implementation("com.google.android.libraries.places:places:5.3.0")
+    implementation("com.google.maps.android:android-maps-utils:5.1.0")
 
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.core:core-ktx:1.19.0")
     implementation("androidx.core:core-splashscreen:1.2.0")
     implementation("com.google.android.material:material:1.14.0")
     implementation("androidx.browser:browser:1.10.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.2")
     implementation("androidx.preference:preference-ktx:1.2.1")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
-    implementation("androidx.lifecycle:lifecycle-common-java8:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.11.0")
 
     implementation("com.squareup.moshi:moshi:1.15.2")
     implementation("com.squareup.okhttp3:okhttp:5.4.0")

@@ -68,7 +68,7 @@
                 style="@style/BottomSheetListDetail"
                 app:layout_constraintTop_toTopOf="@+id/action_moreinfo"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_check_black_24dp"
+                android:src="@drawable/ic_check_black_24dp"
                 app:tint="?detailsColorHasDDR" />
 
             <ImageView
@@ -77,7 +77,7 @@
                 style="@style/BottomSheetListDetail"
                 app:layout_constraintTop_toTopOf="@+id/action_moreinfo"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_close_black_24dp"
+                android:src="@drawable/ic_close_black_24dp"
                 app:tint="?detailsColorNoDDR" />
 
             <ImageView
@@ -87,7 +87,7 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/location_city"
-                app:srcCompat="@drawable/ic_navigation_black_24dp" />
+                android:src="@drawable/ic_navigation_black_24dp" />
 
             <TextView
                 style="@style/BottomSheetListItem"
@@ -104,7 +104,7 @@
                 android:contentDescription="@string/location_actions_info"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ic_action_navigate"
-                app:srcCompat="@drawable/ic_info_outline_black_24dp" />
+                android:src="@drawable/ic_info_outline_black_24dp" />
 
             <TextView
                 style="@style/BottomSheetListItem"
@@ -121,7 +121,7 @@
                 android:contentDescription="@string/location_actions_copy"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ic_action_moreinfo"
-                app:srcCompat="@drawable/ic_content_copy_black_24dp" />
+                android:src="@drawable/ic_content_copy_black_24dp" />
 
             <TextView
                 style="@style/BottomSheetListItem"

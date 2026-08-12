@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Luis Torres
  * Web: https://github.com/ltorres8890/Clima
  *
- * Copyright (c) 2015-2023 Andrés Cordero
+ * Copyright (c) 2015-2026 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +27,6 @@
 package com.andrew67.ddrfinder.activity;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -119,20 +118,12 @@ public class SettingsActivity extends AppCompatActivity {
             // Set/get Locale preference into OS when set
             final ListPreference localePref = findPreference(KEY_PREF_LOCALE);
             if (localePref != null) {
-                // Hide the in-app language selector before Android 7.0, as language resolution
-                // fails for some languages (e.g. zh-Hans and zh-Hant) before then.
-                // See https://developer.android.com/guide/topics/resources/multilingual-support
-                // System-level language will still work since we defined configs using country code
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                    localePref.setVisible(false);
-                }
-
                 String[] supportedLocales = getResources()
                         .getStringArray(R.array.settings_locale_entryValues);
 
                 // Check for app-specific locale(s)
                 LocaleListCompat appLocales = AppCompatDelegate.getApplicationLocales();
-                if (appLocales.size() > 0) {
+                if (!appLocales.isEmpty()) {
                     String appLocale = LocaleUtil.getLanguagePref(appLocales, supportedLocales);
                     if (appLocale != null) {
                         localePref.setValue(appLocale);
