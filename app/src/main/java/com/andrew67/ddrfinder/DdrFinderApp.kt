@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Andrés Cordero
+ * Copyright (c) 2016-2026 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,28 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.andrew67.ddrfinder;
+package com.andrew67.ddrfinder
 
-import android.app.Application;
-import android.content.SharedPreferences;
-import androidx.preference.PreferenceManager;
-import androidx.appcompat.app.AppCompatDelegate;
+import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.PreferenceManager
+import com.andrew67.ddrfinder.activity.SettingsActivity
+import com.andrew67.ddrfinder.util.ThemeUtil
 
-import com.andrew67.ddrfinder.activity.SettingsActivity;
-import com.andrew67.ddrfinder.util.ThemeUtil;
+class DdrFinderApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
 
-public class DdrFinderApp extends Application {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-
-        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         // Auto/Light/Dark theme preference is not persisted automatically across process restarts
-        final String theme = sharedPref.getString(SettingsActivity.KEY_PREF_THEME, "auto");
-        AppCompatDelegate.setDefaultNightMode(ThemeUtil.getAppCompatDelegateMode(theme));
+        val theme = sharedPref.getString(SettingsActivity.KEY_PREF_THEME, "auto")!!
+        AppCompatDelegate.setDefaultNightMode(ThemeUtil.getAppCompatDelegateMode(theme))
     }
-
 }

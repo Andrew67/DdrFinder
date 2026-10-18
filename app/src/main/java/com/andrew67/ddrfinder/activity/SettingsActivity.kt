@@ -23,151 +23,140 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.andrew67.ddrfinder.activity
 
-package com.andrew67.ddrfinder.activity;
-
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.os.LocaleListCompat;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.appcompat.widget.Toolbar;
-
-import android.view.MenuItem;
-
-import com.andrew67.ddrfinder.BuildConfig;
-import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.util.CustomTabsUtil;
-import com.andrew67.ddrfinder.util.LocaleUtil;
-import com.andrew67.ddrfinder.util.ThemeUtil;
-
-import okhttp3.HttpUrl;
+import android.os.Bundle
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
+import androidx.core.os.LocaleListCompat
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import com.andrew67.ddrfinder.BuildConfig
+import com.andrew67.ddrfinder.R
+import com.andrew67.ddrfinder.util.CustomTabsUtil
+import com.andrew67.ddrfinder.util.LocaleUtil
+import com.andrew67.ddrfinder.util.ThemeUtil
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 // Based on https://developer.android.com/guide/topics/ui/settings.html#Fragment
-public class SettingsActivity extends AppCompatActivity {
+class SettingsActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    public static final String KEY_PREF_FILTER_DDR_ONLY = "filter_ddr_only";
-    public static final String KEY_PREF_API_SRC = "api_src";
-    public static final String API_SRC_CUSTOM = "custom";
+        setContentView(R.layout.settings)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        setTitle(R.string.action_settings)
 
-    public static final String KEY_PREF_THEME = "theme";
-    public static final String KEY_PREF_LOCALE = "locale";
-    public static final String KEY_PREF_CUSTOMTABS = "customtabs";
-    public static final String KEY_PREF_PARTIALHEIGHT = "customtabs_partialheight";
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.settings);
-        final Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setTitle(R.string.action_settings);
-
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
         }
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private static String getAboutUrl() {
-        return HttpUrl.get(BuildConfig.ABOUT_BASE_URL).newBuilder()
-                .addQueryParameter("c", String.valueOf(BuildConfig.VERSION_CODE))
-                .addQueryParameter("n", BuildConfig.VERSION_NAME)
-                .build()
-                .toString();
-    }
-
-    public static class SettingsFragment extends PreferenceFragmentCompat {
-
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    class SettingsFragment : PreferenceFragmentCompat() {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             // Load the preferences from an XML resource
-            setPreferencesFromResource(R.xml.preferences, rootKey);
+            setPreferencesFromResource(R.xml.preferences, rootKey)
 
             // Set preference summaries to current values
-            final Preference srcPref = findPreference(KEY_PREF_API_SRC);
-            if (srcPref != null) {
-                srcPref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-            }
+            val srcPref = findPreference<Preference>(KEY_PREF_API_SRC)
+            srcPref?.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance())
 
             // Set Theme preference into OS when set
-            final Preference themePref = findPreference(KEY_PREF_THEME);
-            if (themePref != null) {
-                themePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-                themePref.setOnPreferenceChangeListener((preference, newValue) -> {
-                    AppCompatDelegate.setDefaultNightMode(
-                            ThemeUtil.getAppCompatDelegateMode(newValue.toString()));
-                    return true;
-                });
+            val themePref = findPreference<Preference>(KEY_PREF_THEME)
+            themePref?.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance())
+            themePref?.setOnPreferenceChangeListener { _, newValue: Any? ->
+                AppCompatDelegate.setDefaultNightMode(
+                    ThemeUtil.getAppCompatDelegateMode(newValue.toString())
+                )
+                true
             }
 
             // Set/get Locale preference into OS when set
-            final ListPreference localePref = findPreference(KEY_PREF_LOCALE);
+            val localePref = findPreference<ListPreference>(KEY_PREF_LOCALE)
             if (localePref != null) {
-                String[] supportedLocales = getResources()
-                        .getStringArray(R.array.settings_locale_entryValues);
+                val supportedLocales = resources
+                    .getStringArray(R.array.settings_locale_entryValues)
 
                 // Check for app-specific locale(s)
-                LocaleListCompat appLocales = AppCompatDelegate.getApplicationLocales();
-                if (!appLocales.isEmpty()) {
-                    String appLocale = LocaleUtil.getLanguagePref(appLocales, supportedLocales);
+                val appLocales = AppCompatDelegate.getApplicationLocales()
+                if (!appLocales.isEmpty) {
+                    val appLocale = LocaleUtil.getLanguagePref(appLocales, supportedLocales)
                     if (appLocale != null) {
-                        localePref.setValue(appLocale);
+                        localePref.setValue(appLocale)
                     }
                 }
 
-                localePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-                localePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                localePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance())
+                localePref.setOnPreferenceChangeListener { _, newValue: Any? ->
                     // If the new value is "auto", pass an empty list to revert to system-level locale
-                    if ("auto".equals(newValue)) {
+                    if ("auto" == newValue) {
                         AppCompatDelegate
-                                .setApplicationLocales(LocaleListCompat.getEmptyLocaleList());
+                            .setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
                     } else {
-                        LocaleListCompat appLocale = LocaleListCompat
-                                .forLanguageTags(newValue.toString());
-                        AppCompatDelegate.setApplicationLocales(appLocale);
+                        val appLocale = LocaleListCompat
+                            .forLanguageTags(newValue.toString())
+                        AppCompatDelegate.setApplicationLocales(appLocale)
                     }
-
-                    return true;
-                });
+                    true
+                }
             }
 
             // Set "About" and "Privacy Policy" listeners
-            final SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
+            val sharedPref = preferenceScreen.getSharedPreferences()
 
-            final Preference aboutAction = findPreference("action_about");
+            val aboutAction = findPreference<Preference>("action_about")
             if (aboutAction != null && sharedPref != null) {
-                aboutAction.setOnPreferenceClickListener(preference -> {
-                    CustomTabsUtil.launchUrl(requireActivity(), getAboutUrl(),
-                            sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true),
-                            null, false);
-                    return true;
-                });
+                aboutAction.setOnPreferenceClickListener {
+                    CustomTabsUtil.launchUrl(
+                        requireActivity(),
+                        aboutUrl,
+                        sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true),
+                        null, false
+                    )
+                    true
+                }
             }
 
-            final Preference privacyPolicyAction = findPreference("action_privacy_policy");
+            val privacyPolicyAction = findPreference<Preference>("action_privacy_policy")
             if (privacyPolicyAction != null && sharedPref != null) {
-                privacyPolicyAction.setOnPreferenceClickListener(preference -> {
-                    CustomTabsUtil.launchUrl(requireActivity(), BuildConfig.PRIVACY_POLICY_URL,
+                privacyPolicyAction.onPreferenceClickListener =
+                    Preference.OnPreferenceClickListener {
+                        CustomTabsUtil.launchUrl(
+                            requireActivity(), BuildConfig.PRIVACY_POLICY_URL,
                             sharedPref.getBoolean(KEY_PREF_CUSTOMTABS, true),
-                            null, false);
-                    return true;
-                });
+                            null, false
+                        )
+                        true
+                    }
             }
         }
+    }
+
+    companion object {
+        const val KEY_PREF_FILTER_DDR_ONLY = "filter_ddr_only"
+        const val KEY_PREF_API_SRC = "api_src"
+        const val API_SRC_CUSTOM = "custom"
+
+        const val KEY_PREF_THEME = "theme"
+        const val KEY_PREF_LOCALE = "locale"
+        const val KEY_PREF_CUSTOMTABS = "customtabs"
+        const val KEY_PREF_PARTIALHEIGHT = "customtabs_partialheight"
+
+        private val aboutUrl
+            get() = BuildConfig.ABOUT_BASE_URL.toHttpUrl().newBuilder()
+                .addQueryParameter("c", BuildConfig.VERSION_CODE.toString())
+                .addQueryParameter("n", BuildConfig.VERSION_NAME)
+                .build()
+                .toString()
     }
 }

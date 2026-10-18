@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2023 Andrés Cordero
+ * Copyright (c) 2018-2026 Andrés Cordero
  * Web: https://github.com/Andrew67/DdrFinder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,241 +20,241 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.andrew67.ddrfinder.arcades.ui;
+package com.andrew67.ddrfinder.arcades.ui
 
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+import android.icu.number.LocalizedNumberFormatter
+import android.icu.number.NumberFormatter
+import android.icu.number.Precision
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
+import com.andrew67.ddrfinder.R
+import com.andrew67.ddrfinder.activity.SettingsActivity
+import com.andrew67.ddrfinder.arcades.util.LocationActions
+import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel
+import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel.CompositeArcade
+import com.andrew67.ddrfinder.mylocation.MyLocationModel
+import com.google.android.gms.maps.model.LatLng
+import org.chromium.customtabsdemos.CustomTabActivityHelper
+import java.text.NumberFormat
+import java.util.Locale
 
-import android.content.SharedPreferences;
-import android.icu.number.LocalizedNumberFormatter;
-import android.icu.number.NumberFormatter;
-import android.icu.number.Precision;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import androidx.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+class LocationActionsFragment : Fragment(), LifecycleEventObserver {
+    private lateinit var selectedLocationModel: SelectedLocationModel
+    private lateinit var myLocationModel: MyLocationModel
 
-import com.andrew67.ddrfinder.R;
-import com.andrew67.ddrfinder.activity.SettingsActivity;
-import com.andrew67.ddrfinder.arcades.util.LocationActions;
-import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel;
-import com.andrew67.ddrfinder.mylocation.MyLocationModel;
-import com.google.android.gms.maps.model.LatLng;
-
-import org.chromium.customtabsdemos.CustomTabActivityHelper;
-
-import java.text.NumberFormat;
-import java.util.Locale;
-
-public class LocationActionsFragment extends Fragment implements LifecycleEventObserver {
-
-    private SelectedLocationModel selectedLocationModel;
-    private MyLocationModel myLocationModel;
-
-    private LocationActions locationActions;
-    private CustomTabActivityHelper customTabActivityHelper;
+    private lateinit var locationActions: LocationActions
+    private lateinit var customTabActivityHelper: CustomTabActivityHelper
 
     // Formatters
-    private NumberFormat distanceFormat; // 2 decimal digits
-    private NumberFormat latLngFormat; // 5 decimal digits (good for 1m precision)
+    private var distanceFormat: NumberFormat? = null // 2 decimal digits
+    private var latLngFormat: NumberFormat? = null // 5 decimal digits (good for 1m precision)
+
     // API 30+
-    private LocalizedNumberFormatter distanceFormatter; // 2 decimal digits
-    private LocalizedNumberFormatter latLngFormatter; // 5 decimal digits (good for 1m precision)
+    private var distanceFormatter: LocalizedNumberFormatter? = null // 2 decimal digits
+    private var latLngFormatter: LocalizedNumberFormatter? =
+        null // 5 decimal digits (good for 1m precision)
 
-    private TextView arcadeName;
-    private TextView arcadeCity;
-    private TextView arcadeDistance;
-    private TextView arcadeHasDDR;
-    private AppCompatImageView arcadeHasDDRIconYes;
-    private AppCompatImageView arcadeHasDDRIconNo;
+    private lateinit var arcadeName: TextView
+    private lateinit var arcadeCity: TextView
+    private lateinit var arcadeDistance: TextView
+    private lateinit var arcadeHasDDR: TextView
+    private lateinit var arcadeHasDDRIconYes: ImageView
+    private lateinit var arcadeHasDDRIconNo: ImageView
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.location_actions, container, false);
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.location_actions, container, false)
 
-        arcadeName = view.findViewById(R.id.location_name);
-        arcadeCity = view.findViewById(R.id.location_city);
-        arcadeDistance = view.findViewById(R.id.location_distance);
-        arcadeHasDDR = view.findViewById(R.id.location_has_ddr);
-        arcadeHasDDRIconYes = view.findViewById(R.id.location_has_ddr_icon_yes);
-        arcadeHasDDRIconNo = view.findViewById(R.id.location_has_ddr_icon_no);
+        arcadeName = view.findViewById(R.id.location_name)
+        arcadeCity = view.findViewById(R.id.location_city)
+        arcadeDistance = view.findViewById(R.id.location_distance)
+        arcadeHasDDR = view.findViewById(R.id.location_has_ddr)
+        arcadeHasDDRIconYes = view.findViewById(R.id.location_has_ddr_icon_yes)
+        arcadeHasDDRIconNo = view.findViewById(R.id.location_has_ddr_icon_no)
 
-        final View navigate = view.findViewById(R.id.action_navigate);
-        navigate.setOnClickListener(this::onNavigateClicked);
+        view.findViewById<View>(R.id.action_navigate).setOnClickListener { onNavigateClicked() }
+        view.findViewById<View>(R.id.action_moreinfo).setOnClickListener { onMoreInfoClicked() }
+        view.findViewById<View>(R.id.action_copygps).setOnClickListener { onCopyClicked() }
 
-        final View moreInfo = view.findViewById(R.id.action_moreinfo);
-        moreInfo.setOnClickListener(this::onMoreInfoClicked);
-
-        final View copyGps = view.findViewById(R.id.action_copygps);
-        copyGps.setOnClickListener(this::onCopyClicked);
-
-        return view;
+        return view
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        final ViewModelProvider viewModelProvider = new ViewModelProvider(requireActivity());
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val viewModelProvider = ViewModelProvider(requireActivity())
 
-        selectedLocationModel = viewModelProvider.get(SelectedLocationModel.class);
-        selectedLocationModel.getSelectedLocation()
-                .observe(getViewLifecycleOwner(), onSelectedLocationUpdated);
+        selectedLocationModel = viewModelProvider[SelectedLocationModel::class.java]
+        selectedLocationModel.selectedLocation
+            .observe(getViewLifecycleOwner(), onSelectedLocationUpdated)
 
-        myLocationModel = viewModelProvider.get(MyLocationModel.class);
+        myLocationModel = viewModelProvider[MyLocationModel::class.java]
 
-        customTabActivityHelper = new CustomTabActivityHelper();
-        getLifecycle().addObserver(this);
+        customTabActivityHelper = CustomTabActivityHelper()
+        lifecycle.addObserver(this)
     }
 
     /**
      * Observe the lifecycle in order to manage the Custom Tab Session
      */
-    @Override
-    public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner,
-                               @NonNull Lifecycle.Event event) {
+    override fun onStateChanged(
+        source: LifecycleOwner,
+        event: Lifecycle.Event
+    ) {
         if (event == Lifecycle.Event.ON_START) {
-            customTabActivityHelper.bindCustomTabsService(requireActivity());
+            customTabActivityHelper.bindCustomTabsService(requireActivity())
         }
         if (event == Lifecycle.Event.ON_STOP) {
-            customTabActivityHelper.unbindCustomTabsService(requireActivity());
+            customTabActivityHelper.unbindCustomTabsService(requireActivity())
         }
     }
 
     /**
      * Updates the UI with name/city and requests a new location to update the distance if empty
      */
-    private final Observer<SelectedLocationModel.CompositeArcade> onSelectedLocationUpdated =
-            selectedLocation -> {
-                if (selectedLocation == null) {
-                    arcadeName.setText("");
-                    arcadeCity.setText("");
-                    arcadeDistance.setText("");
-                } else {
-                    arcadeName.setText(selectedLocation.arcadeLocation.getName());
+    private val onSelectedLocationUpdated = Observer { selectedLocation: CompositeArcade? ->
+        if (selectedLocation == null) {
+            arcadeName.text = ""
+            arcadeCity.text = ""
+            arcadeDistance.text = ""
+        } else {
+            arcadeName.text = selectedLocation.arcadeLocation.name
 
-                    // If city information is not available, show coordinates instead.
-                    if (selectedLocation.arcadeLocation.getCity().isEmpty()) {
-                        final LatLng coords = selectedLocation.arcadeLocation.getPosition();
-                        arcadeCity.setText(getString(R.string.coordinates,
-                                formatLatLng(coords.latitude), formatLatLng(coords.longitude)));
-                    } else {
-                        arcadeCity.setText(selectedLocation.arcadeLocation.getCity());
-                    }
+            // If city information is not available, show coordinates instead.
+            if (selectedLocation.arcadeLocation.city.isEmpty()) {
+                val coords = selectedLocation.arcadeLocation.position
+                arcadeCity.text = getString(
+                    R.string.coordinates,
+                    formatLatLng(coords.latitude), formatLatLng(coords.longitude)
+                )
+            } else {
+                arcadeCity.text = selectedLocation.arcadeLocation.city
+            }
 
-                    // If distance is unset, leave blank.
-                    // Request a silent distance update. If location is disabled, it stays blank.
-                    // Otherwise, causes a newer object to get emitted with the updated distance.
-                    if (selectedLocation.distanceKm == null) {
-                        arcadeDistance.setText("");
-                    } else {
-                        arcadeDistance.setText(getString(R.string.distance_km,
-                                formatDistance(selectedLocation.distanceKm)));
-                    }
-                    myLocationModel.requestMyLocationSilently(requireActivity(),
-                            selectedLocationModel::updateUserLocation);
+            // If distance is unset, leave blank.
+            // Request a silent distance update. If location is disabled, it stays blank.
+            // Otherwise, causes a newer object to get emitted with the updated distance.
+            if (selectedLocation.distanceKm == null) {
+                arcadeDistance.text = ""
+            } else {
+                arcadeDistance.text = getString(
+                    R.string.distance_km,
+                    formatDistance(selectedLocation.distanceKm)
+                )
+            }
+            myLocationModel.requestMyLocationSilently(
+                requireActivity()
+            ) { userLocation: LatLng -> selectedLocationModel.updateUserLocation(userLocation) }
 
-                    // If DDR availability is available, update with the appropriate text and icon.
-                    // Otherwise, set it back to blank.
-                    if (selectedLocation.dataSource.hasDDR()) {
-                        arcadeHasDDR.setVisibility(View.VISIBLE);
-                        arcadeHasDDRIconYes.setVisibility(selectedLocation.arcadeLocation.hasDDR() ?
-                                View.VISIBLE : View.INVISIBLE);
-                        arcadeHasDDRIconNo.setVisibility(!selectedLocation.arcadeLocation.hasDDR() ?
-                                View.VISIBLE : View.INVISIBLE);
-                    } else {
-                        arcadeHasDDR.setVisibility(View.INVISIBLE);
-                        arcadeHasDDRIconYes.setVisibility(View.INVISIBLE);
-                        arcadeHasDDRIconNo.setVisibility(View.INVISIBLE);
-                    }
+            // If DDR availability is available, update with the appropriate text and icon.
+            // Otherwise, set it back to blank.
+            if (selectedLocation.dataSource.hasDDR()) {
+                arcadeHasDDR.visibility = View.VISIBLE
+                arcadeHasDDRIconYes.setVisibility(
+                    if (selectedLocation.arcadeLocation.hasDDR()) View.VISIBLE else View.INVISIBLE)
+                arcadeHasDDRIconNo.setVisibility(
+                    if (!selectedLocation.arcadeLocation.hasDDR()) View.VISIBLE else View.INVISIBLE)
+            } else {
+                arcadeHasDDR.visibility = View.INVISIBLE
+                arcadeHasDDRIconYes.setVisibility(View.INVISIBLE)
+                arcadeHasDDRIconNo.setVisibility(View.INVISIBLE)
+            }
 
-                    // Set up LocationActions object that enables the available actions
-                    locationActions = new LocationActions(selectedLocation.arcadeLocation,
-                            selectedLocation.dataSource);
-                    customTabActivityHelper.mayLaunchUrl(
-                            Uri.parse(locationActions.getInfoURL()), null, null);
-                }
-            };
+            // Set up LocationActions object that enables the available actions
+            locationActions = LocationActions(
+                selectedLocation.arcadeLocation,
+                selectedLocation.dataSource
+            )
+            customTabActivityHelper.mayLaunchUrl(
+                Uri.parse(locationActions.getInfoURL()), null, null
+            )
+        }
+    }
 
-    private String formatDistance(float distance) {
+    private fun formatDistance(distance: Float): String {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (distanceFormatter == null) {
                 distanceFormatter = NumberFormatter
-                        .withLocale(Locale.getDefault(Locale.Category.FORMAT))
-                        .precision(Precision.maxFraction(2));
+                    .withLocale(Locale.getDefault(Locale.Category.FORMAT))
+                    .precision(Precision.maxFraction(2))
             }
-            return distanceFormatter.format(distance).toString();
+            return distanceFormatter!!.format(distance.toDouble()).toString()
         }
 
         if (distanceFormat == null) {
-            distanceFormat = NumberFormat.getNumberInstance();
-            distanceFormat.setMaximumFractionDigits(2);
+            distanceFormat = NumberFormat.getNumberInstance()
+            distanceFormat!!.setMaximumFractionDigits(2)
         }
-        return distanceFormat.format(distance);
+        return distanceFormat!!.format(distance.toDouble())
     }
 
-    private String formatLatLng(double coord) {
+    private fun formatLatLng(coord: Double): String {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (latLngFormatter == null) {
                 latLngFormatter = NumberFormatter
-                        .withLocale(Locale.getDefault(Locale.Category.FORMAT))
-                        .precision(Precision.maxFraction(5));
+                    .withLocale(Locale.getDefault(Locale.Category.FORMAT))
+                    .precision(Precision.maxFraction(5))
             }
-            return latLngFormatter.format(coord).toString();
+            return latLngFormatter!!.format(coord).toString()
         }
 
         if (latLngFormat == null) {
-            latLngFormat = NumberFormat.getNumberInstance();
-            latLngFormat.setMaximumFractionDigits(5);
+            latLngFormat = NumberFormat.getNumberInstance()
+            latLngFormat!!.setMaximumFractionDigits(5)
         }
-        return latLngFormat.format(coord);
+        return latLngFormat!!.format(coord)
     }
 
-    private void onNavigateClicked(@SuppressWarnings("unused") View v) {
-        if (locationActions == null) return;
-        locationActions.navigate(requireActivity());
+    private fun onNavigateClicked() {
+        locationActions.navigate(requireActivity())
     }
 
-    private Toast moreInfoErrorToast = null;
-    private void onMoreInfoClicked(@SuppressWarnings("unused") View v) {
-        if (locationActions == null) return;
-        final SharedPreferences preferences = PreferenceManager
-                .getDefaultSharedPreferences(requireActivity());
-        final boolean useCustomTabs = preferences
-                .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true);
-        final boolean usePartialHeight = preferences
-                .getBoolean(SettingsActivity.KEY_PREF_PARTIALHEIGHT, true);
-        final boolean moreInfoOpenSuccess = locationActions
-                .moreInfo(requireActivity(), useCustomTabs,
-                        customTabActivityHelper.getSession(), usePartialHeight);
+    private var moreInfoErrorToast: Toast? = null
+    private fun onMoreInfoClicked() {
+        val preferences = PreferenceManager
+            .getDefaultSharedPreferences(requireActivity())
+        val useCustomTabs = preferences
+            .getBoolean(SettingsActivity.KEY_PREF_CUSTOMTABS, true)
+        val usePartialHeight = preferences
+            .getBoolean(SettingsActivity.KEY_PREF_PARTIALHEIGHT, true)
+        val moreInfoOpenSuccess = locationActions
+            .moreInfo(
+                requireActivity(), useCustomTabs,
+                customTabActivityHelper.getSession(), usePartialHeight
+            )
         if (!moreInfoOpenSuccess) {
-            if (moreInfoErrorToast == null) moreInfoErrorToast = Toast.makeText(requireActivity(),
-                    R.string.error_opening_browser, Toast.LENGTH_LONG);
-            moreInfoErrorToast.show();
+            if (moreInfoErrorToast == null) moreInfoErrorToast = Toast.makeText(
+                requireActivity(),
+                R.string.error_opening_browser, Toast.LENGTH_LONG
+            )
+            moreInfoErrorToast!!.show()
         }
     }
 
-    private Toast copiedToast = null;
-    private void onCopyClicked(@SuppressWarnings("unused") View v) {
-        if (locationActions == null) return;
-        final boolean copySuccess = locationActions.copyGps(requireActivity());
+    private var copiedToast: Toast? = null
+    private fun onCopyClicked() {
+        val copySuccess = locationActions.copyGps(requireActivity())
         if (copySuccess) {
-            if (copiedToast == null) copiedToast = Toast.makeText(requireActivity(),
-                    R.string.copy_complete, Toast.LENGTH_SHORT);
-            copiedToast.show();
+            if (copiedToast == null) copiedToast = Toast.makeText(
+                requireActivity(),
+                R.string.copy_complete, Toast.LENGTH_SHORT
+            )
+            copiedToast!!.show()
         }
     }
 }
