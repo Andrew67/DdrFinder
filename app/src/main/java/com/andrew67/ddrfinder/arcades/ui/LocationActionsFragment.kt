@@ -34,6 +34,27 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -61,15 +82,9 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
 
     // Formatters
     private var distanceFormat: NumberFormat? = null // 2 decimal digits
-    private var latLngFormat: NumberFormat? = null // 5 decimal digits (good for 1m precision)
-
     // API 30+
     private var distanceFormatter: LocalizedNumberFormatter? = null // 2 decimal digits
-    private var latLngFormatter: LocalizedNumberFormatter? =
-        null // 5 decimal digits (good for 1m precision)
 
-    private lateinit var arcadeName: TextView
-    private lateinit var arcadeCity: TextView
     private lateinit var arcadeDistance: TextView
     private lateinit var arcadeHasDDR: TextView
     private lateinit var arcadeHasDDRIconYes: ImageView
@@ -81,8 +96,6 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
     ): View? {
         val view = inflater.inflate(R.layout.location_actions, container, false)
 
-        arcadeName = view.findViewById(R.id.location_name)
-        arcadeCity = view.findViewById(R.id.location_city)
         arcadeDistance = view.findViewById(R.id.location_distance)
         arcadeHasDDR = view.findViewById(R.id.location_has_ddr)
         arcadeHasDDRIconYes = view.findViewById(R.id.location_has_ddr_icon_yes)
@@ -107,6 +120,47 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
 
         customTabActivityHelper = CustomTabActivityHelper()
         lifecycle.addObserver(this)
+
+        view.findViewById<ComposeView>(R.id.compose_view).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val selectedLocation = selectedLocationModel.selectedLocation.observeAsState()
+                val arcadeLocation = selectedLocation.value?.arcadeLocation
+                MaterialTheme(
+                    colorScheme = if (isSystemInDarkTheme())
+                        darkColorScheme() else lightColorScheme()
+                ) {
+                    Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                        Box(
+                            Modifier
+                            .size(width = 24.dp, height = 4.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(MaterialTheme.colorScheme.onSurfaceVariant)
+                        )
+                        Box(Modifier.height(6.dp))
+                        arcadeLocation?.name?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1, // TODO: Improve
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                        arcadeLocation?.city?.let {
+                            Text(
+                                it,
+                                fontStyle = FontStyle.Italic,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1, // TODO: Improve
+                                overflow = TextOverflow.StartEllipsis,
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -129,23 +183,8 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
      */
     private val onSelectedLocationUpdated = Observer { selectedLocation: CompositeArcade? ->
         if (selectedLocation == null) {
-            arcadeName.text = ""
-            arcadeCity.text = ""
             arcadeDistance.text = ""
         } else {
-            arcadeName.text = selectedLocation.arcadeLocation.name
-
-            // If city information is not available, show coordinates instead.
-            if (selectedLocation.arcadeLocation.city.isEmpty()) {
-                val coords = selectedLocation.arcadeLocation.position
-                arcadeCity.text = getString(
-                    R.string.coordinates,
-                    formatLatLng(coords.latitude), formatLatLng(coords.longitude)
-                )
-            } else {
-                arcadeCity.text = selectedLocation.arcadeLocation.city
-            }
-
             // If distance is unset, leave blank.
             // Request a silent distance update. If location is disabled, it stays blank.
             // Otherwise, causes a newer object to get emitted with the updated distance.
@@ -201,23 +240,6 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
             distanceFormat!!.setMaximumFractionDigits(2)
         }
         return distanceFormat!!.format(distance.toDouble())
-    }
-
-    private fun formatLatLng(coord: Double): String {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (latLngFormatter == null) {
-                latLngFormatter = NumberFormatter
-                    .withLocale(Locale.getDefault(Locale.Category.FORMAT))
-                    .precision(Precision.maxFraction(5))
-            }
-            return latLngFormatter!!.format(coord).toString()
-        }
-
-        if (latLngFormat == null) {
-            latLngFormat = NumberFormat.getNumberInstance()
-            latLngFormat!!.setMaximumFractionDigits(5)
-        }
-        return latLngFormat!!.format(coord)
     }
 
     private fun onNavigateClicked() {

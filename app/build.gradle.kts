@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -7,6 +8,7 @@ android {
     compileSdk = 37
     buildFeatures {
         buildConfig = true
+        compose = true
     }
     defaultConfig {
         applicationId ="com.andrew67.ddrfinder"
@@ -59,16 +61,17 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.material3:material3:1.4.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
-    implementation("com.google.android.gms:play-services-base:18.10.0")
+    implementation("com.google.android.gms:play-services-base:18.11.1")
     implementation("com.google.android.gms:play-services-maps:20.0.0")
     implementation("com.google.android.gms:play-services-location:21.4.0")
     implementation("com.google.android.libraries.places:places:5.3.0")
     implementation("com.google.maps.android:android-maps-utils:5.1.0")
 
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.core:core-ktx:1.19.0")
+    implementation("androidx.appcompat:appcompat:1.8.0")
+    implementation("androidx.core:core-ktx:1.19.1")
     implementation("androidx.core:core-splashscreen:1.2.0")
     implementation("com.google.android.material:material:1.14.0")
     implementation("androidx.browser:browser:1.10.0")
@@ -79,5 +82,30 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-common-java8:2.11.0")
 
     implementation("com.squareup.moshi:moshi:1.15.2")
-    implementation("com.squareup.okhttp3:okhttp:5.4.0")
+    implementation("com.squareup.okhttp3:okhttp:5.5.0")
+
+    // Jetpack Compose
+    val composeBom = platform("androidx.compose:compose-bom:2026.09.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    // Material Design 3
+    implementation("androidx.compose.material3:material3")
+    // Android Studio Preview support
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // UI Tests
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // Optional - Add window size utils
+    implementation("androidx.compose.material3.adaptive:adaptive")
+
+    // Optional - Integration with activities
+    implementation("androidx.activity:activity-compose:1.13.0")
+    // Optional - Integration with ViewModels
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
+    // Optional - Integration with LiveData
+    implementation("androidx.compose.runtime:runtime-livedata")
 }
