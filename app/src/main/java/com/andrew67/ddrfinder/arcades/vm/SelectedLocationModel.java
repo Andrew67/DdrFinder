@@ -81,8 +81,8 @@ public class SelectedLocationModel extends ViewModel {
         if (selectedLocationValue == null) return;
 
         // Calculate the distance
-        final LatLng arcadeLocationPosition = selectedLocationValue.arcadeLocation.getPosition();
-        final float distanceKm = getDistanceKmBetween(userLocation, arcadeLocationPosition);
+        final var arcadeLocationPosition = selectedLocationValue.arcadeLocation.getPosition();
+        final var distanceKm = getDistanceKmBetween(userLocation, arcadeLocationPosition);
 
         // Update ViewModel with new instance that includes the updated distance
         selectedLocation.setValue(selectedLocationValue.cloneWithDistance(distanceKm));
@@ -94,7 +94,7 @@ public class SelectedLocationModel extends ViewModel {
     private Float getDistanceKmBetween(@Nullable LatLng loc1, @Nullable LatLng loc2) {
         if (loc1 == null || loc2 == null) return null;
 
-        final float[] results = new float[1]; // Implementation detail; distance in meters is [0]
+        final var results = new float[1]; // Implementation detail; distance in meters is [0]
         Location.distanceBetween(
                 loc1.latitude, loc1.longitude,
                 loc2.latitude, loc2.longitude,

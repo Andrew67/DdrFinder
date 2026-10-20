@@ -26,11 +26,27 @@
 package com.andrew67.ddrfinder.activity
 
 import android.os.Bundle
-import android.view.MenuItem
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.core.os.LocaleListCompat
+import androidx.fragment.compose.AndroidFragment
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -45,21 +61,41 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.settings)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        setTitle(R.string.action_settings)
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setContent { SettingsScreen() }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            finish()
-            return true
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun SettingsScreen() {
+        MaterialTheme (
+            // TODO: App-specific color theme
+            colorScheme = if (isSystemInDarkTheme())
+                darkColorScheme() else lightColorScheme()
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.primary,
+                            navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        title = { Text(stringResource(R.string.action_settings)) },
+                        navigationIcon = {
+                            IconButton(onClick = { finish() }) {
+                                Icon(
+                                    painterResource(R.drawable.ic_arrow_back),
+                                    contentDescription = "Back", // TODO: i18n
+                                )
+                            }
+                        },
+                    )
+                },
+            ) {
+                padding ->
+                AndroidFragment<SettingsFragment>(modifier = Modifier.padding(padding))
+            }
         }
-        return super.onOptionsItemSelected(item)
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {

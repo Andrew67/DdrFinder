@@ -38,6 +38,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,12 +46,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -110,36 +114,51 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
 
         view.findViewById<ComposeView>(R.id.compose_view).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                val selectedLocation = selectedLocationModel.selectedLocation.observeAsState()
-                val arcadeLocation = selectedLocation.value?.arcadeLocation
-                val distanceKm = selectedLocation.value?.distanceKm
-                val dataSource = selectedLocation.value?.dataSource
+            setContent { LocationActionsCard() }
+        }
+    }
 
-                MaterialTheme(
-                    // TODO: App-specific color theme
-                    colorScheme = if (isSystemInDarkTheme())
-                        darkColorScheme() else lightColorScheme()
+    @Composable
+    fun LocationActionsCard() {
+        val selectedLocation = selectedLocationModel.selectedLocation.observeAsState()
+        val arcadeLocation = selectedLocation.value?.arcadeLocation
+        val distanceKm = selectedLocation.value?.distanceKm
+        val dataSource = selectedLocation.value?.dataSource
+
+        MaterialTheme(
+            // TODO: App-specific color theme
+            colorScheme = if (isSystemInDarkTheme())
+                darkColorScheme() else lightColorScheme()
+        ) {
+            ElevatedCard(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 16.dp
+                ),
+            ) {
+                Column(
+                    Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .fillMaxWidth()
                 ) {
-                    Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                        Box(
-                            Modifier
+                    Box(
+                        Modifier
                             .size(width = 24.dp, height = 4.dp)
                             .align(Alignment.CenterHorizontally)
                             .clip(RoundedCornerShape(4.dp))
                             .background(MaterialTheme.colorScheme.onSurfaceVariant)
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    arcadeLocation?.name?.let {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1, // TODO: Improve
+                            overflow = TextOverflow.Ellipsis,
                         )
-                        Spacer(Modifier.height(6.dp))
-                        arcadeLocation?.name?.let {
-                            Text(
-                                it,
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1, // TODO: Improve
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                        arcadeLocation?.city?.let {
+                    }
+                    arcadeLocation?.city?.let {
+                        if (it.isNotEmpty()) {
                             Text(
                                 it,
                                 fontStyle = FontStyle.Italic,
@@ -148,66 +167,66 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
                                 overflow = TextOverflow.StartEllipsis,
                             )
                         }
-                        Button(
-                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                            onClick = { onNavigateClicked() }
-                        ) {
-                            Icon(
-                                painterResource(R.drawable.ic_navigation_black_24dp),
-                                contentDescription = null,
+                    }
+                    Button(
+                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                        onClick = { onNavigateClicked() }
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.ic_navigation),
+                            contentDescription = null,
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(stringResource(R.string.location_actions_navigate))
+                        distanceKm?.let {
+                            Spacer(Modifier.width(24.dp))
+                            Text(
+                                stringResource(
+                                    R.string.distance_km,
+                                    formatDistance(it)
+                                ),
                             )
-                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                            Text(stringResource(R.string.location_actions_navigate))
-                            distanceKm?.let {
-                                Spacer(Modifier.width(24.dp))
-                                Text(
-                                    stringResource(
-                                        R.string.distance_km,
-                                        formatDistance(it)
-                                    ),
+                        }
+                    }
+                    FilledTonalButton(
+                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                        onClick = { onMoreInfoClicked() }
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.ic_info_outline),
+                            contentDescription = null,
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(stringResource(R.string.location_actions_info))
+                        if (dataSource?.hasDDR() == true) {
+                            Spacer(Modifier.width(24.dp))
+                            Text(stringResource(R.string.has_ddr))
+                            Spacer(Modifier.width(4.dp))
+                            if (arcadeLocation?.hasDDR() == true) {
+                                Icon(
+                                    painterResource(R.drawable.ic_check_black_24dp),
+                                    contentDescription =
+                                        stringResource(R.string.has_ddr_yes),
+                                )
+                            } else {
+                                Icon(
+                                    painterResource(R.drawable.ic_close_black_24dp),
+                                    contentDescription =
+                                        stringResource(R.string.has_ddr_no),
                                 )
                             }
                         }
-                        FilledTonalButton(
-                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                            onClick = { onMoreInfoClicked() }
-                        ) {
-                            Icon(
-                                painterResource(R.drawable.ic_info_outline_black_24dp),
-                                contentDescription = null,
-                            )
-                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                            Text(stringResource(R.string.location_actions_info))
-                            dataSource?.hasDDR().let {
-                                Spacer(Modifier.width(24.dp))
-                                Text(stringResource(R.string.has_ddr))
-                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                                if (arcadeLocation?.hasDDR() == true) {
-                                    Icon(
-                                        painterResource(R.drawable.ic_check_black_24dp),
-                                        contentDescription =
-                                            stringResource(R.string.has_ddr_yes),
-                                    )
-                                } else {
-                                    Icon(
-                                        painterResource(R.drawable.ic_close_black_24dp),
-                                        contentDescription =
-                                            stringResource(R.string.has_ddr_no),
-                                        )
-                                }
-                            }
-                        }
-                        FilledTonalButton(
-                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                            onClick = { onCopyClicked() }
-                        ) {
-                            Icon(
-                                painterResource(R.drawable.ic_content_copy_black_24dp),
-                                contentDescription = null,
-                            )
-                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                            Text(stringResource(R.string.location_actions_copy))
-                        }
+                    }
+                    FilledTonalButton(
+                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                        onClick = { onCopyClicked() }
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.ic_content_copy),
+                            contentDescription = null,
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(stringResource(R.string.location_actions_copy))
                     }
                 }
             }
