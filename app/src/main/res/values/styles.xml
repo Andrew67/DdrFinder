@@ -105,35 +105,4 @@
         <item name="navigationIconTint">?attr/colorOnPrimaryContainer</item>
     </style>
 
-    <!-- Custom styles for bottom-sheet list images/texts -->
-    <style name="BottomSheetListItem" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:paddingStart">72dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:textAlignment">viewStart</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Menu</item>
-    </style>
-    <style name="BottomSheetListIcon" parent="AppTheme">
-        <item name="android:layout_width">56dp</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="tint">?attr/colorControlNormal</item>
-    </style>
-    <style name="BottomSheetListDetail" parent="AppTheme">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.SearchResult.Subtitle</item>
-    </style>
-
 </resources>

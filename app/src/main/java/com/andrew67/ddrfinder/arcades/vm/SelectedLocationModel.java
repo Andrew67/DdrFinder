@@ -77,14 +77,15 @@ public class SelectedLocationModel extends ViewModel {
         previousUserLocation = userLocation;
 
         // Skip if no location is currently selected
-        if (selectedLocation.getValue() == null) return;
+        final var selectedLocationValue = selectedLocation.getValue();
+        if (selectedLocationValue == null) return;
 
         // Calculate the distance
-        final LatLng arcadeLocationPosition = selectedLocation.getValue().arcadeLocation.getPosition();
+        final LatLng arcadeLocationPosition = selectedLocationValue.arcadeLocation.getPosition();
         final float distanceKm = getDistanceKmBetween(userLocation, arcadeLocationPosition);
 
         // Update ViewModel with new instance that includes the updated distance
-        selectedLocation.setValue(selectedLocation.getValue().cloneWithDistance(distanceKm));
+        selectedLocation.setValue(selectedLocationValue.cloneWithDistance(distanceKm));
     }
 
     /**

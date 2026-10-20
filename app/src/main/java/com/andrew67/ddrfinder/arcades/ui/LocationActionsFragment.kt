@@ -31,17 +31,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
@@ -52,6 +57,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -80,32 +87,12 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
     private lateinit var locationActions: LocationActions
     private lateinit var customTabActivityHelper: CustomTabActivityHelper
 
-    // Formatters
-    private var distanceFormat: NumberFormat? = null // 2 decimal digits
-    // API 30+
-    private var distanceFormatter: LocalizedNumberFormatter? = null // 2 decimal digits
-
-    private lateinit var arcadeDistance: TextView
-    private lateinit var arcadeHasDDR: TextView
-    private lateinit var arcadeHasDDRIconYes: ImageView
-    private lateinit var arcadeHasDDRIconNo: ImageView
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.location_actions, container, false)
-
-        arcadeDistance = view.findViewById(R.id.location_distance)
-        arcadeHasDDR = view.findViewById(R.id.location_has_ddr)
-        arcadeHasDDRIconYes = view.findViewById(R.id.location_has_ddr_icon_yes)
-        arcadeHasDDRIconNo = view.findViewById(R.id.location_has_ddr_icon_no)
-
-        view.findViewById<View>(R.id.action_navigate).setOnClickListener { onNavigateClicked() }
-        view.findViewById<View>(R.id.action_moreinfo).setOnClickListener { onMoreInfoClicked() }
-        view.findViewById<View>(R.id.action_copygps).setOnClickListener { onCopyClicked() }
-
-        return view
+        return inflater.inflate(R.layout.location_actions,
+            container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -126,7 +113,11 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
             setContent {
                 val selectedLocation = selectedLocationModel.selectedLocation.observeAsState()
                 val arcadeLocation = selectedLocation.value?.arcadeLocation
+                val distanceKm = selectedLocation.value?.distanceKm
+                val dataSource = selectedLocation.value?.dataSource
+
                 MaterialTheme(
+                    // TODO: App-specific color theme
                     colorScheme = if (isSystemInDarkTheme())
                         darkColorScheme() else lightColorScheme()
                 ) {
@@ -138,10 +129,10 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
                             .clip(RoundedCornerShape(4.dp))
                             .background(MaterialTheme.colorScheme.onSurfaceVariant)
                         )
-                        Box(Modifier.height(6.dp))
+                        Spacer(Modifier.height(6.dp))
                         arcadeLocation?.name?.let {
                             Text(
-                                text = it,
+                                it,
                                 style = MaterialTheme.typography.titleLarge,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 1, // TODO: Improve
@@ -156,6 +147,66 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
                                 maxLines = 1, // TODO: Improve
                                 overflow = TextOverflow.StartEllipsis,
                             )
+                        }
+                        Button(
+                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                            onClick = { onNavigateClicked() }
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.ic_navigation_black_24dp),
+                                contentDescription = null,
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text(stringResource(R.string.location_actions_navigate))
+                            distanceKm?.let {
+                                Spacer(Modifier.width(24.dp))
+                                Text(
+                                    stringResource(
+                                        R.string.distance_km,
+                                        formatDistance(it)
+                                    ),
+                                )
+                            }
+                        }
+                        FilledTonalButton(
+                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                            onClick = { onMoreInfoClicked() }
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.ic_info_outline_black_24dp),
+                                contentDescription = null,
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text(stringResource(R.string.location_actions_info))
+                            dataSource?.hasDDR().let {
+                                Spacer(Modifier.width(24.dp))
+                                Text(stringResource(R.string.has_ddr))
+                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                if (arcadeLocation?.hasDDR() == true) {
+                                    Icon(
+                                        painterResource(R.drawable.ic_check_black_24dp),
+                                        contentDescription =
+                                            stringResource(R.string.has_ddr_yes),
+                                    )
+                                } else {
+                                    Icon(
+                                        painterResource(R.drawable.ic_close_black_24dp),
+                                        contentDescription =
+                                            stringResource(R.string.has_ddr_no),
+                                        )
+                                }
+                            }
+                        }
+                        FilledTonalButton(
+                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                            onClick = { onCopyClicked() }
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.ic_content_copy_black_24dp),
+                                contentDescription = null,
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text(stringResource(R.string.location_actions_copy))
                         }
                     }
                 }
@@ -179,40 +230,15 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
     }
 
     /**
-     * Updates the UI with name/city and requests a new location to update the distance if empty
+     * One-time setup tasks per location selection
      */
     private val onSelectedLocationUpdated = Observer { selectedLocation: CompositeArcade? ->
-        if (selectedLocation == null) {
-            arcadeDistance.text = ""
-        } else {
-            // If distance is unset, leave blank.
+        if (selectedLocation != null) {
             // Request a silent distance update. If location is disabled, it stays blank.
             // Otherwise, causes a newer object to get emitted with the updated distance.
-            if (selectedLocation.distanceKm == null) {
-                arcadeDistance.text = ""
-            } else {
-                arcadeDistance.text = getString(
-                    R.string.distance_km,
-                    formatDistance(selectedLocation.distanceKm)
-                )
-            }
             myLocationModel.requestMyLocationSilently(
                 requireActivity()
             ) { userLocation: LatLng -> selectedLocationModel.updateUserLocation(userLocation) }
-
-            // If DDR availability is available, update with the appropriate text and icon.
-            // Otherwise, set it back to blank.
-            if (selectedLocation.dataSource.hasDDR()) {
-                arcadeHasDDR.visibility = View.VISIBLE
-                arcadeHasDDRIconYes.setVisibility(
-                    if (selectedLocation.arcadeLocation.hasDDR()) View.VISIBLE else View.INVISIBLE)
-                arcadeHasDDRIconNo.setVisibility(
-                    if (!selectedLocation.arcadeLocation.hasDDR()) View.VISIBLE else View.INVISIBLE)
-            } else {
-                arcadeHasDDR.visibility = View.INVISIBLE
-                arcadeHasDDRIconYes.setVisibility(View.INVISIBLE)
-                arcadeHasDDRIconNo.setVisibility(View.INVISIBLE)
-            }
 
             // Set up LocationActions object that enables the available actions
             locationActions = LocationActions(
@@ -220,33 +246,43 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
                 selectedLocation.dataSource
             )
             customTabActivityHelper.mayLaunchUrl(
-                Uri.parse(locationActions.getInfoURL()), null, null
+                Uri.parse(locationActions.getInfoURL()),
+                null, null
             )
         }
     }
 
+    // Formatters
+    /** 2 decimal digits */
+    private val distanceFormat: NumberFormat by lazy {
+        NumberFormat.getNumberInstance().apply {
+            setMaximumFractionDigits(2)
+        }
+    }
+    // API 30+
+    @delegate:RequiresApi(Build.VERSION_CODES.R)
+    private val distanceFormatter: LocalizedNumberFormatter by lazy {
+        NumberFormatter
+            .withLocale(Locale.getDefault(Locale.Category.FORMAT))
+            .precision(Precision.maxFraction(2))
+    }
     private fun formatDistance(distance: Float): String {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (distanceFormatter == null) {
-                distanceFormatter = NumberFormatter
-                    .withLocale(Locale.getDefault(Locale.Category.FORMAT))
-                    .precision(Precision.maxFraction(2))
-            }
-            return distanceFormatter!!.format(distance.toDouble()).toString()
+            return distanceFormatter.format(distance.toDouble()).toString()
         }
-
-        if (distanceFormat == null) {
-            distanceFormat = NumberFormat.getNumberInstance()
-            distanceFormat!!.setMaximumFractionDigits(2)
-        }
-        return distanceFormat!!.format(distance.toDouble())
+        return distanceFormat.format(distance.toDouble())
     }
 
     private fun onNavigateClicked() {
         locationActions.navigate(requireActivity())
     }
 
-    private var moreInfoErrorToast: Toast? = null
+    private val moreInfoErrorToast: Toast by lazy {
+        Toast.makeText(
+            requireActivity(),
+            R.string.error_opening_browser, Toast.LENGTH_LONG
+        )
+    }
     private fun onMoreInfoClicked() {
         val preferences = PreferenceManager
             .getDefaultSharedPreferences(requireActivity())
@@ -259,24 +295,17 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
                 requireActivity(), useCustomTabs,
                 customTabActivityHelper.getSession(), usePartialHeight
             )
-        if (!moreInfoOpenSuccess) {
-            if (moreInfoErrorToast == null) moreInfoErrorToast = Toast.makeText(
-                requireActivity(),
-                R.string.error_opening_browser, Toast.LENGTH_LONG
-            )
-            moreInfoErrorToast!!.show()
-        }
+        if (!moreInfoOpenSuccess) moreInfoErrorToast.show()
     }
 
-    private var copiedToast: Toast? = null
+    private val copiedToast: Toast by lazy {
+        Toast.makeText(
+            requireActivity(),
+            R.string.copy_complete, Toast.LENGTH_SHORT
+        )
+    }
     private fun onCopyClicked() {
         val copySuccess = locationActions.copyGps(requireActivity())
-        if (copySuccess) {
-            if (copiedToast == null) copiedToast = Toast.makeText(
-                requireActivity(),
-                R.string.copy_complete, Toast.LENGTH_SHORT
-            )
-            copiedToast!!.show()
-        }
+        if (copySuccess) copiedToast.show()
     }
 }
