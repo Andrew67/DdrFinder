@@ -16,27 +16,6 @@
         android:layout_height="match_parent" />
 
     <!-- TODO: Migrate below to support edge-to-edge -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/action_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="112dp"
-        android:contentDescription="@string/action_search"
-        android:src="@drawable/ic_search"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/action_my_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="32dp"
-        android:contentDescription="@string/action_my_location"
-        style="@style/Widget.Material3.FloatingActionButton.Secondary"
-        android:src="@drawable/ic_my_location"/>
-
     <androidx.fragment.app.FragmentContainerView
         android:name="com.andrew67.ddrfinder.arcades.ui.LocationActionsFragment"
         android:id="@+id/locationActions"

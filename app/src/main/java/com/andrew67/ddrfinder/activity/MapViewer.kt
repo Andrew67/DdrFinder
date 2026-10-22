@@ -43,11 +43,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -112,7 +116,6 @@ import com.google.android.gms.security.ProviderInstaller
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener
 import kotlin.math.max
@@ -197,14 +200,6 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
             .isEnabled = selectedLocationModel.selectedLocation.value != null
         onBackPressedDispatcher.addCallback(this, locationActionsDismissCallback)
 
-        // Callback for the "search" floating action button
-        val searchButton = findViewById<FloatingActionButton>(R.id.action_search)
-        searchButton.setOnClickListener { openPlaceSearchOverlay() }
-
-        // Callback for the "my location" floating action button
-        val myLocationButton = findViewById<FloatingActionButton>(R.id.action_my_location)
-        myLocationButton.setOnClickListener { myLocationModel.requestMyLocation(this) }
-
         // Observe the selected location state and reveal/hide the location actions, as well as move
         // the map to the location
         // For some reason, putting this code in onMapReady causes the bottom sheet to fly from
@@ -215,14 +210,10 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
                     locationActionsBehavior.isHideable = true
                     locationActionsBehavior.setState(BottomSheetBehavior.STATE_HIDDEN)
                     locationActionsDismissCallback.isEnabled = false
-                    searchButton.show()
-                    myLocationButton.show()
                 } else {
                     locationActionsBehavior.isHideable = false
                     locationActionsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
                     locationActionsDismissCallback.isEnabled = true
-                    searchButton.hide()
-                    myLocationButton.hide()
                 }
             }
 
@@ -302,7 +293,7 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
                         actions = { MenuActions() },
                     )
                 },
-                floatingActionButton = { }, // TODO: FABs
+                floatingActionButton = { FloatingActionButtons() },
             ) { padding ->
                 Box(modifier = Modifier.padding(padding))
                 {
@@ -395,6 +386,31 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
                         startActivity(Intent(this@MapViewer, SettingsActivity::class.java))
                         expanded = false
                     }
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun FloatingActionButtons() {
+        Column(Modifier.padding(bottom = 16.dp)) {
+            FloatingActionButton(
+                onClick = { openPlaceSearchOverlay() }
+            ) {
+                Icon(
+                    painterResource(R.drawable.ic_search),
+                    contentDescription = stringResource(R.string.action_search),
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+            FloatingActionButton(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                onClick = { myLocationModel.requestMyLocation(this@MapViewer) },
+            ) {
+                Icon(
+                    painterResource(R.drawable.ic_my_location),
+                    contentDescription = stringResource(R.string.action_my_location),
                 )
             }
         }
@@ -592,7 +608,7 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         startActivity(
             Intent.createChooser(
                 shareIntent,
-                getResources().getText(R.string.action_share)
+                resources.getText(R.string.action_share)
             )
         )
     }
