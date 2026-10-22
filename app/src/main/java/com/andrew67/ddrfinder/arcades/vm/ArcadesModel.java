@@ -55,9 +55,7 @@ public class ArcadesModel extends ViewModel {
     private final Map<String, DataSource> dataSources = new HashMap<>();
     private final MutableLiveData<String> attribution = new MutableLiveData<>();
     private final MutableLiveData<Integer> deprecationLevel = new MutableLiveData<>();
-
-    // Fire once
-    private final SingleLiveEvent<Boolean> inProgress = new SingleLiveEvent<>();
+    private final MutableLiveData<Boolean> inProgress = new MutableLiveData<>();
     private final SnackbarMessage errorMessage = new SnackbarMessage();
 
     private final CachedMapLoader cachedMapLoader = CachedMapLoader.getInstance();

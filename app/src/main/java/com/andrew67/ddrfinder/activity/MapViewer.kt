@@ -33,18 +33,53 @@ import android.os.Bundle
 import android.util.Log
 import android.util.SparseArray
 import android.view.KeyEvent
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.rememberTooltipState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.compose.AndroidFragment
 import androidx.lifecycle.SnackbarMessage.SnackbarObserver
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
@@ -80,7 +115,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.time.Duration.Companion.hours
 
@@ -107,14 +141,9 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
     // Map
     private var mMap: GoogleMap? = null
     private var mClusterManager: ClusterManager<ArcadeLocation>? = null
-    private lateinit var mapView: View
 
     // UI
-    private lateinit var reloadButton: MenuItem
-    private lateinit var progressBar: ProgressBar
-    private lateinit var attributionText: TextView
     private lateinit var locationActionsBehavior: BottomSheetBehavior<View>
-    private lateinit var deprecationWarningBanner: TextView
     private var appDiscontinuedDialogFragment: AppDiscontinuedDialogFragment? = null
 
     // Helpers
@@ -130,11 +159,7 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         state = getSharedPreferences("state", MODE_PRIVATE)
 
         setContentView(R.layout.map_viewer)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
 
-        attributionText = findViewById(R.id.attribution)
-        progressBar = findViewById(R.id.progressBar)
         locationActionsBehavior =
             BottomSheetBehavior.from(findViewById(R.id.locationActions)).apply {
                 setState(BottomSheetBehavior.STATE_HIDDEN)
@@ -150,11 +175,6 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         // Set up arcades model and hook up attribution text, progress bar and errors to it
         val viewModelProvider = ViewModelProvider(this)
         arcadesModel = viewModelProvider[ArcadesModel::class.java].also {
-            it.attribution.observe(this) { s -> attributionText.text = s }
-            it.progress.observe(this) { aBoolean ->
-                if (aBoolean) showProgressBar()
-                else hideProgressBar()
-            }
             it.errorMessage.observe(
                 this,
                 SnackbarObserver { resourceId -> this.showMessage(resourceId) })
@@ -203,25 +223,8 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
                     locationActionsDismissCallback.isEnabled = true
                     searchButton.hide()
                     myLocationButton.hide()
-
-                    if (mMap != null) {
-                        val bottomPadding =
-                            getResources().getDimension(R.dimen.locationActionsFullHeight)
-                                .toDouble()
-                        val originalLocation = selected.arcadeLocation.position
-                        val adjustedLocation = LatLng(
-                            originalLocation.latitude - convertPxHeightToLat(bottomPadding) / 2,
-                            originalLocation.longitude
-                        )
-                        animateToLocation(adjustedLocation)
-                    }
                 }
             }
-
-        mapView = findViewById(R.id.map)
-        val supportMapFragment =
-            supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        supportMapFragment?.getMapAsync(this)
 
         // Restore selected arcade location across process death
         if (savedInstanceState != null) {
@@ -251,16 +254,8 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        // Deprecation warning banner / forced navigation to web version
-        deprecationWarningBanner = findViewById(R.id.action_launch_web)
-        deprecationWarningBanner.setOnClickListener {
-            CustomTabsUtil.launchUrl(
-                this, currentAppLink.build().toString(),
-                true, null, false
-            )
-        }
+        // Deprecation warning dialog / forced navigation to web version
         arcadesModel.deprecationLevel.observe(this, { deprecationLevel ->
-            if (deprecationLevel!! > 0) deprecationWarningBanner.visibility = View.VISIBLE
             if (deprecationLevel > 1) {
                 if (appDiscontinuedDialogFragment == null) {
                     appDiscontinuedDialogFragment = AppDiscontinuedDialogFragment().also {
@@ -278,6 +273,154 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
                 )
             }
         })
+
+        findViewById<ComposeView>(R.id.compose_view).apply {
+            setContent { MapViewerScreen() }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun MapViewerScreen() {
+        val inProgress = arcadesModel.progress.observeAsState()
+        val deprecationLevel = arcadesModel.deprecationLevel.observeAsState()
+        val attributionText = arcadesModel.attribution.observeAsState()
+
+        MaterialTheme (
+            // TODO: App-specific color theme
+            colorScheme = if (isSystemInDarkTheme())
+                darkColorScheme() else lightColorScheme()
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        title = { Text(stringResource(R.string.app_name)) },
+                        actions = { MenuActions() },
+                    )
+                },
+                floatingActionButton = { }, // TODO: FABs
+            ) { padding ->
+                Box(modifier = Modifier.padding(padding))
+                {
+                    AndroidFragment<SupportMapFragment> { it.getMapAsync(this@MapViewer) }
+                    if (inProgress.value == true) {
+                        LinearProgressIndicator(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.secondary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    }
+                    deprecationLevel.value?.let {
+                        if (it > 0) { DeprecationBanner() }
+                    }
+                    attributionText.value?.let {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                shadow = Shadow(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    offset = Offset(2f, 2f),
+                                    blurRadius = 4f,
+                                )
+                            ),
+                            modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun MenuActions() {
+        var expanded by remember { mutableStateOf(false) }
+
+        // RowScope here, so these icons will be placed horizontally
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                TooltipAnchorPosition.Below
+            ),
+            tooltip = { PlainTooltip { Text(stringResource(R.string.action_ddr_calc)) } },
+            state = rememberTooltipState(),
+        ) {
+            IconButton(onClick = { startActivity(
+                Intent(this@MapViewer, DdrCalcLauncher::class.java)
+            ) }) {
+                Icon(
+                    painterResource(R.drawable.ic_calculator),
+                    contentDescription = stringResource(R.string.action_ddr_calc),
+                )
+            }
+        }
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                TooltipAnchorPosition.Below
+            ),
+            tooltip = { PlainTooltip { Text(stringResource(R.string.action_share)) } },
+            state = rememberTooltipState(),
+        ) {
+            IconButton(onClick = { shareCurrentAppLink() }) {
+                Icon(
+                    painterResource(R.drawable.ic_share),
+                    contentDescription = stringResource(R.string.action_share),
+                )
+            }
+        }
+        Box {
+            IconButton(onClick = { expanded = !expanded }) {
+                Icon(
+                    painterResource(R.drawable.ic_more_vert),
+                    contentDescription = "More" // TODO: i18n
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.action_reload)) },
+                    onClick = {
+                        if (mMap != null) updateMap(true)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.action_settings)) },
+                    onClick = {
+                        startActivity(Intent(this@MapViewer, SettingsActivity::class.java))
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun DeprecationBanner() {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .focusable()
+                .clickable() {
+                    CustomTabsUtil.launchUrl(
+                        this@MapViewer, currentAppLink.build().toString(),
+                        true, null, false
+                    )
+                }
+        ) {
+            Text(
+                stringResource(R.string.action_launch_web),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.padding(16.dp, 8.dp),
+            )
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -309,7 +452,7 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
 
         // Load custom "Aubergine" style when device is in dark mode
         try {
-            if ((getResources().configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK)
+            if ((resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK)
                 == Configuration.UI_MODE_NIGHT_YES
             ) {
                 mMap!!.setMapStyle(
@@ -398,17 +541,15 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
 
         // Adjust map padding whenever location actions bottom sheet is collapsed
         // While the sheet no longer covers attributions while expanded, it still does
-        // while collapsed (when width < 500dp where we don't use too much side margin)
+        // while collapsed.
         // This keeps the Google attribution in view
         locationActionsBehavior.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (getResources().getBoolean(R.bool.locationActionsPushAttributionUp)) {
-                    val bottomPadding =
-                        if (newState == BottomSheetBehavior.STATE_COLLAPSED) getResources().getDimension(
-                            R.dimen.locationActionsPeekHeight
-                        ).toInt() else 0
-                    mMap!!.setPadding(0, 0, 0, bottomPadding)
-                }
+                val bottomPadding =
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) resources.getDimension(
+                        R.dimen.locationActionsPeekHeight
+                    ).toInt() else 0
+                mMap!!.setPadding(0, 0, 0, bottomPadding)
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -437,24 +578,6 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         ) {
             locationActionsBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
         }
-    }
-
-    /**
-     * Converts the given height in pixels (usually a bottom padding) into an amount of latitude,
-     * in order to adjust the coordinates that we animate the map towards while the bottom sheet
-     * is open. We don't use GoogleMap.setPadding due to unintended side-effects that are more
-     * suited towards a static padding.
-     * Returns 0 if the map has not completed layout (hitting occasionally when activity destroyed).
-     */
-    private fun convertPxHeightToLat(heightInPx: Double): Double {
-        val mapContainerHeightInPx = mapView.height.toDouble()
-        if (mapContainerHeightInPx == 0.0) return 0.0
-
-        val mapContainerLatLngBounds = mMap!!.projection.visibleRegion.latLngBounds
-        val mapContainerHeightInLat =
-            abs(mapContainerLatLngBounds.northeast.latitude - mapContainerLatLngBounds.southwest.latitude)
-        val mapContainerScaleFactor = mapContainerHeightInLat / mapContainerHeightInPx
-        return mapContainerScaleFactor * heightInPx
     }
 
     /**
@@ -550,16 +673,6 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         mMap!!.animateCamera(CameraUpdateFactory.newLatLng(latLng), 300, null)
     }
 
-    private fun showProgressBar() {
-        progressBar.visibility = View.VISIBLE
-        reloadButton.isEnabled = false
-    }
-
-    private fun hideProgressBar() {
-        reloadButton.isEnabled = true
-        progressBar.visibility = View.INVISIBLE
-    }
-
     // Keep toast references mapped by resource id, to prevent excessive repeated toasts.
     private val toasts = SparseArray<Toast>()
     private fun showMessage(@StringRes resourceId: Int) {
@@ -574,12 +687,6 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        reloadButton = menu.findItem(R.id.action_reload)
-        return super.onCreateOptionsMenu(menu)
-    }
-
     /**
      * Opens the place search (autocomplete) overlay activity.
      */
@@ -587,28 +694,6 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         var currentMapView: LatLngBounds? = null
         if (mMap != null) currentMapView = mMap!!.projection.visibleRegion.latLngBounds
         placeAutocompleteModel.startPlaceAutocomplete(this, currentMapView)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_ddr_calc -> {
-                startActivity(Intent(this, DdrCalcLauncher::class.java))
-                return true
-            }
-            R.id.action_share -> {
-                shareCurrentAppLink()
-                return true
-            }
-            R.id.action_reload -> {
-                if (mMap != null) updateMap(true)
-                return true
-            }
-            R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                return true
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
