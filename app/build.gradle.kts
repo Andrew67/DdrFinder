@@ -15,7 +15,7 @@ android {
         versionCode = 69
         versionName = "3.0.29"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 37
 
         buildConfigField("String", "API_BASE_URL",
                 "\"https://ddrfinder-api.andrew67.com/locate.php\"")

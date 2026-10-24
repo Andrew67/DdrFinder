@@ -34,7 +34,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -144,65 +146,69 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
                             )
                         }
                     }
-                    Button(
-                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                        onClick = { onNavigateClicked() }
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        Icon(
-                            painterResource(R.drawable.ic_navigation),
-                            contentDescription = null,
-                        )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(stringResource(R.string.location_actions_navigate))
-                        distanceKm?.let {
-                            Spacer(Modifier.width(24.dp))
-                            Text(
-                                stringResource(
-                                    R.string.distance_km,
-                                    formatDistance(it)
-                                ),
+                        Button(
+                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                            onClick = { onNavigateClicked() }
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.ic_navigation),
+                                contentDescription = null,
                             )
-                        }
-                    }
-                    FilledTonalButton(
-                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                        onClick = { onMoreInfoClicked() }
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.ic_info_outline),
-                            contentDescription = null,
-                        )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(stringResource(R.string.location_actions_info))
-                        if (dataSource?.hasDDR() == true) {
-                            Spacer(Modifier.width(24.dp))
-                            Text(stringResource(R.string.has_ddr))
-                            Spacer(Modifier.width(4.dp))
-                            if (arcadeLocation?.hasDDR() == true) {
-                                Icon(
-                                    painterResource(R.drawable.ic_check_black_24dp),
-                                    contentDescription =
-                                        stringResource(R.string.has_ddr_yes),
-                                )
-                            } else {
-                                Icon(
-                                    painterResource(R.drawable.ic_close_black_24dp),
-                                    contentDescription =
-                                        stringResource(R.string.has_ddr_no),
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text(stringResource(R.string.location_actions_navigate))
+                            distanceKm?.let {
+                                Spacer(Modifier.width(24.dp))
+                                Text(
+                                    stringResource(
+                                        R.string.distance_km,
+                                        formatDistance(it)
+                                    ),
                                 )
                             }
                         }
-                    }
-                    FilledTonalButton(
-                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                        onClick = { onCopyClicked() }
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.ic_content_copy),
-                            contentDescription = null,
-                        )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(stringResource(R.string.location_actions_copy))
+                        FilledTonalButton(
+                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                            onClick = { onMoreInfoClicked() }
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.ic_info_outline),
+                                contentDescription = null,
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text(stringResource(R.string.location_actions_info))
+                            if (dataSource?.hasDDR() == true) {
+                                Spacer(Modifier.width(24.dp))
+                                Text(stringResource(R.string.has_ddr))
+                                Spacer(Modifier.width(4.dp))
+                                if (arcadeLocation?.hasDDR() == true) {
+                                    Icon(
+                                        painterResource(R.drawable.ic_check_black_24dp),
+                                        contentDescription =
+                                            stringResource(R.string.has_ddr_yes),
+                                    )
+                                } else {
+                                    Icon(
+                                        painterResource(R.drawable.ic_close_black_24dp),
+                                        contentDescription =
+                                            stringResource(R.string.has_ddr_no),
+                                    )
+                                }
+                            }
+                        }
+                        FilledTonalButton(
+                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                            onClick = { onCopyClicked() }
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.ic_content_copy),
+                                contentDescription = null,
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text(stringResource(R.string.location_actions_copy))
+                        }
                     }
                 }
             }

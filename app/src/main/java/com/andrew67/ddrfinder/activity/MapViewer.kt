@@ -106,7 +106,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
-import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
@@ -303,7 +302,7 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
                             modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp)
                         )
                     }
-                    // TODO: Animation
+                    // TODO: Animation using AnimatedContent() once no longer using fragment
                     Box(
                         Modifier
                             .align(Alignment.BottomCenter)
