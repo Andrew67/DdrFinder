@@ -41,7 +41,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -65,8 +64,6 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -99,6 +96,7 @@ import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel.CompositeArcade
 import com.andrew67.ddrfinder.mylocation.MyLocationModel
 import com.andrew67.ddrfinder.placesearch.PlaceAutocompleteModel
 import com.andrew67.ddrfinder.util.AppLink
+import com.andrew67.ddrfinder.util.AppTheme
 import com.andrew67.ddrfinder.util.CustomTabsUtil
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
@@ -258,17 +256,13 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         val attributionText = arcadesModel.attribution.observeAsState()
         val selectedLocation = selectedLocationModel.selectedLocation.observeAsState()
 
-        MaterialTheme (
-            // TODO: App-specific color theme
-            colorScheme = if (isSystemInDarkTheme())
-                darkColorScheme() else lightColorScheme()
-        ) {
+        AppTheme {
             Scaffold(
                 topBar = {
                     TopAppBar(
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         ),
                         title = { Text(stringResource(R.string.app_name)) },
                         actions = { MenuActions() },

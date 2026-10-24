@@ -33,7 +33,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -50,8 +49,6 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -74,6 +71,7 @@ import com.andrew67.ddrfinder.arcades.util.LocationActions
 import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel
 import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel.CompositeArcade
 import com.andrew67.ddrfinder.mylocation.MyLocationModel
+import com.andrew67.ddrfinder.util.AppTheme
 import com.google.android.gms.maps.model.LatLng
 import org.chromium.customtabsdemos.CustomTabActivityHelper
 import java.text.NumberFormat
@@ -119,36 +117,27 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
         val distanceKm = selectedLocation.value?.distanceKm
         val dataSource = selectedLocation.value?.dataSource
 
-        MaterialTheme(
-            // TODO: App-specific color theme
-            colorScheme = if (isSystemInDarkTheme())
-                darkColorScheme() else lightColorScheme()
-        ) {
+        AppTheme {
             ElevatedCard(
                 Modifier.padding(start = 8.dp, end = 8.dp, bottom = 32.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ),
             ) {
                 Column(Modifier.padding(16.dp).fillMaxWidth())
                 {
                     arcadeLocation?.name?.let {
-                        Text(
-                            it,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
+                        Text(it, style = MaterialTheme.typography.titleLarge)
                     }
                     arcadeLocation?.city?.let {
                         if (it.isNotEmpty()) {
-                            Text(
-                                it,
-                                fontStyle = FontStyle.Italic,
-                                color = MaterialTheme.colorScheme.onSurface,
-                            )
+                            Text(it, fontStyle = FontStyle.Italic)
                         }
                     }
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp))
+                    {
                         Button(
                             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                             onClick = { onNavigateClicked() }

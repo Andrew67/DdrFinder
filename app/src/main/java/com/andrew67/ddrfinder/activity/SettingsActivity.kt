@@ -29,7 +29,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,8 +38,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -52,6 +49,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.andrew67.ddrfinder.BuildConfig
 import com.andrew67.ddrfinder.R
+import com.andrew67.ddrfinder.util.AppTheme
 import com.andrew67.ddrfinder.util.CustomTabsUtil
 import com.andrew67.ddrfinder.util.LocaleUtil
 import com.andrew67.ddrfinder.util.ThemeUtil
@@ -67,18 +65,14 @@ class SettingsActivity : AppCompatActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SettingsScreen() {
-        MaterialTheme (
-            // TODO: App-specific color theme
-            colorScheme = if (isSystemInDarkTheme())
-                darkColorScheme() else lightColorScheme()
-        ) {
+        AppTheme {
             Scaffold(
                 topBar = {
                     TopAppBar(
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor = MaterialTheme.colorScheme.primary,
-                            navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         ),
                         title = { Text(stringResource(R.string.action_settings)) },
                         navigationIcon = {
