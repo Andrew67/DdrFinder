@@ -33,9 +33,9 @@ import android.os.Bundle
 import android.util.Log
 import android.util.SparseArray
 import android.view.KeyEvent
-import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
@@ -48,6 +48,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.visible
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -77,7 +78,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -91,6 +91,7 @@ import com.andrew67.ddrfinder.R
 import com.andrew67.ddrfinder.arcades.model.ArcadeLocation
 import com.andrew67.ddrfinder.arcades.model.DataSource
 import com.andrew67.ddrfinder.arcades.ui.AppDiscontinuedDialogFragment
+import com.andrew67.ddrfinder.arcades.ui.LocationActionsFragment
 import com.andrew67.ddrfinder.arcades.ui.LocationClusterRenderer
 import com.andrew67.ddrfinder.arcades.vm.ArcadesModel
 import com.andrew67.ddrfinder.arcades.vm.SelectedLocationModel
@@ -114,8 +115,6 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.security.ProviderInstaller
 import com.google.android.libraries.places.api.model.Place
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener
 import kotlin.math.max
@@ -146,7 +145,6 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
     private var mClusterManager: ClusterManager<ArcadeLocation>? = null
 
     // UI
-    private lateinit var locationActionsBehavior: BottomSheetBehavior<View>
     private var appDiscontinuedDialogFragment: AppDiscontinuedDialogFragment? = null
 
     // Helpers
@@ -160,13 +158,6 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, true)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         state = getSharedPreferences("state", MODE_PRIVATE)
-
-        setContentView(R.layout.map_viewer)
-
-        locationActionsBehavior =
-            BottomSheetBehavior.from(findViewById(R.id.locationActions)).apply {
-                setState(BottomSheetBehavior.STATE_HIDDEN)
-            }
 
         onCreateSavedInstanceState = savedInstanceState
 
@@ -205,16 +196,8 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         // For some reason, putting this code in onMapReady causes the bottom sheet to fly from
         // above, instead of the correct behavior of popping up from underneath
         selectedLocationModel.selectedLocation
-            .observe(this) { selected: CompositeArcade? ->
-                if (selected == null) {
-                    locationActionsBehavior.isHideable = true
-                    locationActionsBehavior.setState(BottomSheetBehavior.STATE_HIDDEN)
-                    locationActionsDismissCallback.isEnabled = false
-                } else {
-                    locationActionsBehavior.isHideable = false
-                    locationActionsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
-                    locationActionsDismissCallback.isEnabled = true
-                }
+            .observe(this) { selectedLocation: CompositeArcade? ->
+                locationActionsDismissCallback.isEnabled = selectedLocation != null
             }
 
         // Restore selected arcade location across process death
@@ -265,9 +248,7 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
-        findViewById<ComposeView>(R.id.compose_view).apply {
-            setContent { MapViewerScreen() }
-        }
+        setContent { MapViewerScreen() }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -276,6 +257,7 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         val inProgress = arcadesModel.progress.observeAsState()
         val deprecationLevel = arcadesModel.deprecationLevel.observeAsState()
         val attributionText = arcadesModel.attribution.observeAsState()
+        val selectedLocation = selectedLocationModel.selectedLocation.observeAsState()
 
         MaterialTheme (
             // TODO: App-specific color theme
@@ -320,6 +302,14 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
                             ),
                             modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp)
                         )
+                    }
+                    // TODO: Animation
+                    Box(
+                        Modifier
+                            .align(Alignment.BottomCenter)
+                            .visible(selectedLocation.value != null)
+                    ) {
+                        AndroidFragment<LocationActionsFragment>()
                     }
                 }
             }
@@ -393,7 +383,9 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
 
     @Composable
     fun FloatingActionButtons() {
-        Column(Modifier.padding(bottom = 16.dp)) {
+        val selectedLocation = selectedLocationModel.selectedLocation.observeAsState()
+
+        Column(Modifier.padding(bottom = 16.dp).visible(selectedLocation.value == null)) {
             FloatingActionButton(
                 onClick = { openPlaceSearchOverlay() }
             ) {
@@ -550,27 +542,9 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
         mClusterManager!!.setOnClusterItemClickListener(onClusterItemClickListener)
 
         mMap?.apply {
-            setOnCameraMoveStartedListener(cameraMoveStartedListener)
             setOnCameraIdleListener(cameraIdleListener)
             setOnMapClickListener { selectedLocationModel.clearSelectedLocation() }
         }
-
-        // Adjust map padding whenever location actions bottom sheet is collapsed
-        // While the sheet no longer covers attributions while expanded, it still does
-        // while collapsed.
-        // This keeps the Google attribution in view
-        locationActionsBehavior.addBottomSheetCallback(object : BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                val bottomPadding =
-                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) resources.getDimension(
-                        R.dimen.locationActionsPeekHeight
-                    ).toInt() else 0
-                mMap!!.setPadding(0, 0, 0, bottomPadding)
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-            }
-        })
     }
 
     /**
@@ -583,17 +557,6 @@ class MapViewer : AppCompatActivity(), OnMapReadyCallback {
 
         mClusterManager!!.onCameraIdle()
         updateMap(false)
-    }
-
-    /**
-     * Listener class that collapses the location actions sheet whenever the user pans the map etc
-     */
-    private val cameraMoveStartedListener = OnCameraMoveStartedListener { reason ->
-        if (reason == OnCameraMoveStartedListener.REASON_GESTURE &&
-            locationActionsBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED
-        ) {
-            locationActionsBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
-        }
     }
 
     /**

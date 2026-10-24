@@ -33,17 +33,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -56,15 +52,12 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -94,9 +87,8 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.location_actions,
-            container, false)
+    ): View {
+        return ComposeView(requireContext())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -112,7 +104,7 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
         customTabActivityHelper = CustomTabActivityHelper()
         lifecycle.addObserver(this)
 
-        view.findViewById<ComposeView>(R.id.compose_view).apply {
+        (view as ComposeView).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent { LocationActionsCard() }
         }
@@ -131,30 +123,16 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
                 darkColorScheme() else lightColorScheme()
         ) {
             ElevatedCard(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 16.dp
-                ),
+                Modifier.padding(start = 8.dp, end = 8.dp, bottom = 32.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
             ) {
-                Column(
-                    Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .fillMaxWidth()
-                ) {
-                    Box(
-                        Modifier
-                            .size(width = 24.dp, height = 4.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(MaterialTheme.colorScheme.onSurfaceVariant)
-                    )
-                    Spacer(Modifier.height(6.dp))
+                Column(Modifier.padding(16.dp).fillMaxWidth())
+                {
                     arcadeLocation?.name?.let {
                         Text(
                             it,
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1, // TODO: Improve
-                            overflow = TextOverflow.Ellipsis,
                         )
                     }
                     arcadeLocation?.city?.let {
@@ -163,8 +141,6 @@ class LocationActionsFragment : Fragment(), LifecycleEventObserver {
                                 it,
                                 fontStyle = FontStyle.Italic,
                                 color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1, // TODO: Improve
-                                overflow = TextOverflow.StartEllipsis,
                             )
                         }
                     }
